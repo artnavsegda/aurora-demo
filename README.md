@@ -137,6 +137,28 @@ Node-тесты без дополнительных зависимостей (`n
 
 `npm run test:watch` — то же в watch-режиме.
 
+## Тесты прод-Авроры Vue 2
+
+Отдельный пакет `aurora-vue2-tests/` — юнит-тесты для прод-Авроры (ветка
+`compressed`), которые по корпоративной политике нельзя положить в её
+репозиторий. Тесты импортируют `src/` из соседнего репозитория, а не копируют код.
+
+```sh
+cd aurora-vue2-tests
+npm install
+AURORA_SRC=/Users/artnavsegda/Desktop/aurora/src npm test
+npm run coverage
+```
+
+Из корня демо-репозитория:
+
+```sh
+npm run test:aurora
+npm run coverage:aurora
+```
+
+Подробности — в `aurora-vue2-tests/README.md`.
+
 ## Что проверено
 
 - Aurora (`Desktop/aurora/dist`): вход `demo`, меню, dashboard, `/ip/interface`

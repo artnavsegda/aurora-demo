@@ -1,0 +1,13 @@
+diff --git a/src/components/Schema.vue b/src/components/Schema.vue
+index f6edf0e..14e5b36 100644
+--- a/src/components/Schema.vue
++++ b/src/components/Schema.vue
+@@ -461,7 +461,7 @@ export default {
+     },
+ 
+     errorUpdate(o) {
+-      this.errors[o.name] = o.err;
++      this.$set(this.errors, o.name, o.err);
+     },
+ 
+     updateValue(o, param) {
