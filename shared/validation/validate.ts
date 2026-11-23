@@ -1,4 +1,5 @@
 import { isEmpty, isPairSchema, normalizeValue } from "./normalize.ts"
+import { resolveSchema } from "./resolve.ts"
 import { messages } from "./messages.ts"
 import type {
     FormValidationResult,
@@ -154,6 +155,7 @@ export function validateValue(
     ctx: ValidationContext = {},
 ): ValidationResult {
     const path = ctx.path ?? ""
+    schema = resolveSchema(schema, ctx)
 
     if (ctx.skipHidden !== false && schema.hidden === true)
         return { valid: true, issues: [] }
@@ -227,9 +229,11 @@ export function validateForm(
     values: Record<string, unknown>,
     ctx: ValidationContext = {},
 ): FormValidationResult {
-    const issues = schema.properties
-        ? validateObject(schema, values ?? {}, ctx, ctx.path ?? "")
-        : validateValue(schema, values, ctx).issues
+    const root = ctx.root ?? schema
+    const formSchema = resolveSchema(schema, { ...ctx, root, values })
+    const issues = formSchema.properties
+        ? validateObject(formSchema, values ?? {}, { ...ctx, root, values }, ctx.path ?? "")
+        : validateValue(formSchema, values, { ...ctx, root }).issues
 
     const errors: Record<string, string> = {}
     for (const item of issues) {

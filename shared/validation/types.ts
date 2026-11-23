@@ -61,9 +61,17 @@ export interface ValidationSchema {
 export interface ValidationContext {
     /** Обязательность поля из required[] секции/действия. */
     required?: boolean
-    /** Значения остальных полей — для сообщений/будущих зависимостей. */
+    /** Значения соседних полей — для modificator и будущих зависимостей. */
     values?: Record<string, unknown>
-    /** Подставленный enum из @cue. */
+    /** Корень документа для локальных $ref (#/definitions/...). */
+    root?: ValidationSchema
+    /** Реестр внешних схем: { "/defaults": schema, "/ip/interface": schema }. */
+    registry?: Record<string, ValidationSchema>
+    /** Значения внешних условий: { "/defaults/ipsec_installed": "true" }. */
+    externalValues?: Record<string, unknown>
+    /** Уже загруженный enum из @cue: { "interface": [...], "bridge0.interface": [...] }. */
+    cueEnums?: Record<string, unknown[]>
+    /** Подставленный enum из @cue для одного значения. */
     enumValues?: unknown[]
     /** Не проверять скрытые поля (по умолчанию true). */
     skipHidden?: boolean

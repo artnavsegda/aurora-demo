@@ -197,8 +197,9 @@ npm run coverage:aurora
 ## Валидатор схем
 
 `shared/validation/` — чистый TypeScript-валидатор без Svelte/DOM/Node-
-зависимостей. Подходит для Halo, Aurora и демо-бэкенда: принимает уже
-эффективную схему (`$ref`/`modificator`/`cue` резолвит вызывающий код).
+зависимостей. Подходит для Halo, Aurora и демо-бэкенда. Раскрывает `$ref`,
+применяет `modificator` и подставляет `enum` из `@cue` по переданному
+контексту; сеть и кэш остаются на стороне вызывающего кода.
 
 ```ts
 import { validateValue, validateForm } from "./shared/validation/index.ts"

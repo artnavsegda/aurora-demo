@@ -21,10 +21,25 @@ form.errors       // { field: "value required" }
 form.issues       // [{ path, code, message, value }]
 ```
 
-Схема должна быть уже **эффективной**: `$ref`, `modificator` и `cue enum`
-подставляет вызывающий код. Валидатор не знает про `refResolver`, `Sch` и
-QueryBuilder — поэтому его можно использовать в Halo, в демо-бэкенде и в
-юнит-тестах без браузера.
+Валидатор сам раскрывает `$ref`, применяет `modificator` и подставляет
+`enum` из `@cue`, если передать контекст:
+
+```ts
+const result = validateValue(schema, value, {
+    root: documentSchema,
+    registry: { "/defaults": defaultsSchema },
+    values: row,
+    externalValues: { "/defaults/ipsec_installed": true },
+    cueEnums: { interface: ["bridge0", "modem1"] },
+    path: "bridge0.interface",
+})
+```
+
+`$ref` поддерживает локальные (`#/definitions/...`) и внешние
+(`/defaults#/definitions/...`) ссылки. `modificator` понимает локальные
+поля и абсолютные условия `/defaults/...`; `cueEnums` может быть задан
+для поля или для `items`. Загрузку `@cue` и кэш делает вызывающий код —
+валидатор не ходит в сеть и остаётся чистым.
 
 ## Что проверяется
 

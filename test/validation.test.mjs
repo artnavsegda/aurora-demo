@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { describe, test } from "node:test"
 
 import { loadDocs, effectiveSchema } from "../scripts/check-schemas.mjs"
-import { validateForm, validateValue } from "../shared/validation/index.ts"
+import { resolveSchema, validateForm, validateValue } from "../shared/validation/index.ts"
 
 const docs = loadDocs()
 const ACTION_KEYS = ["actions", "add", "apply", "delete", "clean", "status", "reorder"]
@@ -162,6 +162,141 @@ describe("shared/validation", () => {
         }
         for (const [docPath, doc] of docs) {
             assert.doesNotThrow(() => validateForm(doc, {}), docPath)
+        }
+    })
+
+    test("$ref: локальные, внешние и соседние ключи", () => {
+        const root = {
+            definitions: {
+                port: { type: "number", minimum: 1, maximum: 100 },
+            },
+        }
+        assert.equal(validateValue({ $ref: "#/definitions/port" }, 0, { root }).valid, false)
+        assert.equal(validateValue({ $ref: "#/definitions/port", maximum: 10 }, 50, { root }).issues[0].code, "maximum")
+
+        const registry = {
+            "/defaults": {
+                definitions: {
+                    host: { type: "string", pattern: "^[a-z]+$", patternDescription: "letters" },
+                },
+            },
+        }
+        assert.equal(validateValue(
+            { $ref: "/defaults#/definitions/host" },
+            "123",
+            { registry },
+        ).issues[0].message, "letters")
+
+        // цикл не должен вешать валидатор
+        const cyclic = { definitions: { a: { $ref: "#/definitions/b" }, b: { $ref: "#/definitions/a" } } }
+        assert.doesNotThrow(() => validateValue({ $ref: "#/definitions/a" }, "x", { root: cyclic }))
+    })
+
+    test("modificator: локальные условия, /defaults и then.$ref", () => {
+        const local = {
+            type: "string",
+            hidden: true,
+            modificator: [{ if: [{ mode: "advanced" }], then: { hidden: false, pattern: "^[a-z]+$" } }],
+        }
+        assert.equal(resolveSchema(local, { values: { mode: "advanced" } }).hidden, false)
+        assert.equal(validateValue(local, "123", { values: { mode: "advanced" } }).valid, false)
+        assert.equal(validateValue(local, "123", { values: { mode: "simple" } }).valid, true)
+
+        const external = {
+            type: "string",
+            hidden: true,
+            modificator: [{ if: [{ "/defaults/ipsec_installed": "true" }], then: { hidden: false } }],
+        }
+        assert.equal(resolveSchema(external, {
+            externalValues: { "/defaults/ipsec_installed": "true" },
+        }).hidden, false)
+        assert.equal(resolveSchema(external, {
+            externalValues: { "/defaults/ipsec_installed": "false" },
+        }).hidden, true)
+
+        const negated = {
+            type: "string",
+            hidden: true,
+            modificator: [{ if: [{ protocol: "!gre" }], then: { hidden: false } }],
+        }
+        assert.equal(resolveSchema(negated, { values: { protocol: "udp" } }).hidden, false)
+        assert.equal(resolveSchema(negated, { values: { protocol: "gre" } }).hidden, true)
+
+        const root = { definitions: { name: { type: "string", pattern: "^[a-z]+$" } } }
+        const withRef = {
+            type: "string",
+            modificator: [{ if: [{ mode: "a" }], then: { $ref: "#/definitions/name" } }],
+        }
+        assert.equal(validateValue(withRef, "123", { root, values: { mode: "a" } }).valid, false)
+    })
+
+    test("cue enum: верхний уровень и items", () => {
+        const scalar = { type: "string", cue: ["/defaults/server"] }
+        assert.equal(validateValue(scalar, "bad", {
+            cueEnums: { value: ["one", "two"] },
+            path: "value",
+        }).valid, false)
+        assert.equal(validateValue(scalar, "one", {
+            cueEnums: { value: ["one", "two"] },
+            path: "value",
+        }).valid, true)
+
+        const array = { type: "array", items: { type: "string", cue: ["/network/device"] } }
+        assert.equal(validateValue(array, ["bad"], {
+            cueEnums: { value: ["one", "two"] },
+            path: "value",
+        }).valid, false)
+        assert.equal(validateValue(array, ["two"], {
+            cueEnums: { value: ["one", "two"] },
+            path: "value",
+        }).valid, true)
+
+        assert.equal(validateValue(scalar, "one", {
+            enumValues: ["one"],
+            path: "value",
+        }).valid, true)
+    })
+
+    test("реальные схемы: modificator и cue применяются как в UI", () => {
+        const registry = Object.fromEntries(docs)
+        const iface = docs.get("/ip/interface")
+        const ifaceProps = iface.patternProperties[".*"].properties
+        assert.equal(resolveSchema(ifaceProps["ip-address"], {
+            root: iface,
+            registry,
+            values: { type: "static" },
+        }).hidden, false)
+        assert.equal(resolveSchema(ifaceProps["ip-address"], {
+            root: iface,
+            registry,
+            values: { type: "dhcp" },
+        }).hidden, true)
+
+        const filter = docs.get("/firewall/filter")
+        const src = filter.patternProperties[".*"].properties.src
+        const effective = resolveSchema(src, {
+            root: filter,
+            registry,
+            values: { chain: "output" },
+        })
+        assert.ok(effective.cue.includes("/firewall/zone[type:address]"))
+
+        const ref = resolveSchema({ $ref: "/defaults#/definitions/port" }, {
+            registry,
+            root: {},
+        })
+        assert.equal(ref.type, "string")
+    })
+
+    test("resolver на реальных схемах: все $ref и modificator не бросают", () => {
+        const registry = Object.fromEntries(docs)
+        for (const { node, docPath } of allNodes()) {
+            assert.doesNotThrow(() => resolveSchema(node, {
+                root: docs.get(docPath),
+                registry,
+                values: {},
+                externalValues: {},
+            }), `${docPath}`)
         }
     })
 
