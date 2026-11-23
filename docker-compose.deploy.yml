@@ -1,0 +1,29 @@
+services:
+  aurora:
+    image: aurora-demo-backend:2026-11-23-amd64
+    hostname: aurora-demo
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      FRONTEND_DIST: /app/frontend/aurora
+      DEMO_SESSION_TTL: "3600"
+      DEMO_MAX_SESSIONS: "200"
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 256m
+    pids_limit: 100
+    restart: unless-stopped
+    stop_grace_period: 10s
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

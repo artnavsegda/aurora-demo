@@ -105,6 +105,19 @@ Vue 2 `Schema.errorUpdate()` пишет новый ключ в `this.errors` н�
 Карточка: Kaiten `#75512469`. Патч:
 `patches/aurora-vue2-schema-haserrors.patch`.
 
+## Halo
+
+Halo (`donyx/main`) — отдельный Svelte-клиент, поэтому у него свой конфиг и
+селекторы: `playwright.halo.config.mjs`, `e2e/halo/`. Запуск:
+
+```sh
+HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
+  npm run test:e2e:halo
+```
+
+Общие бизнес-сценарии продублированы в `e2e/10-halo-parity.spec.mjs` для
+Aurora Vue 2/Vue 3. Список известных недоработок Halo — в `e2e/halo/README.md`.
+
 ## Ошибки самих схем
 
 Статический разбор: `node scripts/check-schemas.mjs --all` (или

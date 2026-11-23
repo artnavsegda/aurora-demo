@@ -44,26 +44,32 @@ PORT=8098 npm start
 
 ### Docker
 
-Перед сборкой нужно положить собранный фронтенд в `frontend/aurora`
-(в образе он лежит по `/app/frontend/aurora`):
+Образ демо-бэкенда содержит **только Aurora Vue 2** (`frontend/aurora`).
+Halo/donyx в образ не входит — это внутренняя разработка.
+
+Сборка:
 
 ```sh
-make prepare FRONTEND=/Users/artnavsegda/Desktop/aurora/dist
-docker compose up --build
+# frontend/aurora уже содержит Vue 2 dist; при обновлении:
+# scripts/prepare-frontend.sh /path/to/aurora-vue2/dist
+docker build --platform linux/amd64 -t aurora-demo-backend:2026-11-23-amd64 .
+docker compose -f docker-compose.deploy.yml up -d
 ```
 
-Или одной командой:
+Запуск одного контейнера без compose:
 
 ```sh
-make docker
+docker run -d --name aurora-demo \
+  -p 8080:8080 \
+  --read-only --tmpfs /tmp:rw,noexec,nosuid,nodev \
+  --cap-drop ALL --security-opt no-new-privileges:true \
+  aurora-demo-backend:2026-11-23-amd64
 ```
 
-`make prepare` можно не делать, тогда контейнер поднимется с заглушкой
-`public/index.html`, а API будет работать — удобно для smoke-теста.
-
-Контейнер: non-root, read-only rootfs, `cap_drop: ALL`, лимит памяти, healthcheck.
-Docker daemon в моём окружении был выключен, поэтому `docker build` я не прогонял —
-первую сборку нужно проверить на машине с Docker.
+Образ: non-root, read-only rootfs, `cap_drop: ALL`, лимит памяти,
+healthcheck. Проверено: `docker build --platform linux/amd64`, `/healthz`,
+отдача Vue 2, `/script/auth`, `docker load` из сохранённого tar.
+Пошаговая инструкция для площадки — `DEPLOY-DOCKER.md`.
 
 ## Что реализовано
 
@@ -214,6 +220,24 @@ npm run test:e2e
 Подробности, список сценариев и известные баги Vue 2 (ожидаемые падения) —
 в `e2e/README.md`; найденные ошибки самих схем — в `e2e/SCHEMA-ISSUES.md`.
 
+### Halo (donyx)
+
+Стабильная Halo (`donyx/main`) проверяется отдельным конфигом; её тесты лежат
+в `e2e/halo/`:
+
+```sh
+cd /Users/artnavsegda/Documents/GitHub/donyx
+npm run build
+
+cd /Users/artnavsegda/Documents/GitHub/aurora-demo
+HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
+  npm run test:e2e:halo
+```
+
+Ограничения и известные недоработки Halo — в `e2e/halo/README.md`.
+Сценарии parity (commit/revert, ADD, ping required, Stop, flat-схема) лежат в
+`e2e/10-halo-parity.spec.mjs` и проходят на Aurora Vue 2/Vue 3.
+
 ## Что проверено
 
 - Aurora (`Desktop/aurora/dist`): вход `demo`, меню, dashboard, `/ip/interface`
@@ -223,7 +247,8 @@ npm run test:e2e
   `/script/dashboard`), `/ip/interface`.
 - API: `@schemas`, `@get`, `@set`, `apply`, `add`, `delete`, `clean`, `status`,
   `@cue`, `commit`, `revert`, `journal`, `dashboard`, `upload`.
-- Docker-образ не проверялся в этом окружении (Docker daemon был выключен).
+- Docker-образ собран для Aurora Vue 2, проверены healthcheck, отдача
+  `frontend/aurora`, `/script/auth` и `docker load`.
 
 ## Проверка API
 

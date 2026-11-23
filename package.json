@@ -18,7 +18,8 @@
     "test:e2e:vue3": "playwright test --project=vue3",
     "check:schemas": "node scripts/check-schemas.mjs --all",
     "check:schemas:errors": "node scripts/check-schemas.mjs",
-    "test:e2e:adversarial": "playwright test e2e/09-adversarial-schemas.spec.mjs"
+    "test:e2e:adversarial": "playwright test e2e/09-adversarial-schemas.spec.mjs",
+    "test:e2e:halo": "playwright test --config playwright.halo.config.mjs"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",

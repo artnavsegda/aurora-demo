@@ -1,9 +1,14 @@
 FROM node:22-alpine
 
+LABEL org.opencontainers.image.title="aurora-demo-backend" \
+      org.opencontainers.image.description="Demo backend for Aurora with Aurora Vue 2 frontend" \
+      org.opencontainers.image.source="https://github.com/artnavsegda/aurora-demo"
+
 WORKDIR /app
 
 ENV NODE_ENV=production \
-    PORT=8080
+    PORT=8080 \
+    FRONTEND_DIST=/app/frontend/aurora
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
@@ -13,7 +18,7 @@ COPY schemas ./schemas
 COPY fixtures ./fixtures
 COPY public ./public
 
-# сюда кладутся собранные фронтенды: frontend/aurora и frontend/halo
+# сюда кладётся собранный фронтенд Aurora Vue 2: frontend/aurora
 COPY frontend ./frontend
 
 RUN chown -R node:node /app

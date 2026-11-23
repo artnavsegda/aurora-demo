@@ -1,0 +1,36 @@
+.git
+.gitignore
+node_modules
+npm-debug.log*
+coverage
+.nyc_output
+test-results
+playwright-report
+blob-report
+.tap
+.venv
+venv
+__pycache__
+*.pyc
+.DS_Store
+
+# тестовое окружение и отчёты
+aurora-vue2-tests
+aurora-vue3-tests
+e2e
+test
+test-schemas
+patches
+scripts
+playwright*.config.mjs
+
+# собранные фронтенды, которые не входят в образ
+frontend/vue2
+frontend/vue3
+frontend/halo
+frontend/README.md
+
+# артефакты/логи
+*.tar
+*.tgz
+*.log
