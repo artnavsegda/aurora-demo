@@ -29,7 +29,8 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - плоская схема `/system/management`: hostname + Apply;
 - потоковый ping, вывод в Bypass;
 - журнал: Halo шлёт тело без `Content-Type`, демо-бэкенд теперь разбирает
-  такой JSON, как прод-wrapper.
+  такой JSON, как прод-wrapper;
+- `09-input-sync`: поле обновляется из `data` после refetch (`$effect.pre`).
 
 ## Известные недоработки Halo
 
@@ -66,7 +67,7 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 `03-validation`, `04-commit-revert`, `06-actions` — по одной-две проверки из
 списка выше. `01-dashboard`, `02-edit-apply`, `05-journal`,
-`07-flat-schema`, `08-crud` проходят.
+`07-flat-schema`, `08-crud`, `09-input-sync` проходят.
 
 ## Aurora parity
 
