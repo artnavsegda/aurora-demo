@@ -19,13 +19,16 @@
     "check:schemas": "node scripts/check-schemas.mjs --all",
     "check:schemas:errors": "node scripts/check-schemas.mjs",
     "test:e2e:adversarial": "playwright test e2e/09-adversarial-schemas.spec.mjs",
-    "test:e2e:halo": "playwright test --config playwright.halo.config.mjs"
+    "test:e2e:halo": "playwright test --config playwright.halo.config.mjs",
+    "test:validation": "node --test test/validation.test.mjs",
+    "typecheck:validation": "tsc -p tsconfig.validation.json"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",
     "fastify": "^5.2.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.65.1"
+    "@playwright/test": "^1.65.1",
+    "typescript": "^5.9.3"
   }
 }

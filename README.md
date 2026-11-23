@@ -194,6 +194,35 @@ npm run coverage:aurora
 
 Подробности — в `aurora-vue2-tests/README.md`.
 
+## Валидатор схем
+
+`shared/validation/` — чистый TypeScript-валидатор без Svelte/DOM/Node-
+зависимостей. Подходит для Halo, Aurora и демо-бэкенда: принимает уже
+эффективную схему (`$ref`/`modificator`/`cue` резолвит вызывающий код).
+
+```ts
+import { validateValue, validateForm } from "./shared/validation/index.ts"
+
+const check = validateValue(schema, value, { required: true })
+const form = validateForm(sectionSchema, values, { path: "bridge0" })
+form.valid
+form.errors
+form.issues
+```
+
+Проверяет `required`, pattern, enum/strictEnum, границы, длины, boolean,
+массивы/pair, `hidden`/`readOnly`. Битый pattern возвращает issue
+`invalid-pattern`, а не бросает исключение.
+
+```sh
+npm run test:validation
+npm run typecheck:validation
+```
+
+Тест прогоняет синтетические правила и все реальные схемы (включая
+`patternExample`); найденные ошибки самих схем перечислены в
+`e2e/SCHEMA-ISSUES.md`.
+
 ## Композитные e2e (Vue 2 + Vue 3)
 
 `e2e/` — Playwright-тесты, которые гоняют один сценарий на двух сборках
