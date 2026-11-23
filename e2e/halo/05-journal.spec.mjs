@@ -3,7 +3,6 @@ import { expect, test } from '@playwright/test'
 import { collectHttpErrors, journalButton, login } from './helpers.mjs'
 
 test('Halo: журнал открывается и показывает строки', async ({ page }) => {
-    test.fail(true, 'Halo: journal запрос без Content-Type получает 400')
     const httpErrors = collectHttpErrors(page)
     await login(page, 'halo-journal')
 

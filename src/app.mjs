@@ -93,6 +93,17 @@ export async function buildApp(options = {}) {
         },
     })
 
+    // Прод-wrapper (irzos-feeds/horizont/.../script/wrapper) читает тело из
+    // stdin и не смотрит на Content-Type. Halo отправляет journal как
+    // text/plain — принимаем такой JSON, иначе демо отвечает 400.
+    app.addContentTypeParser(['text/plain', 'application/x-www-form-urlencoded'], { parseAs: 'string' }, (request, body, done) => {
+        try {
+            done(null, JSON.parse(body))
+        } catch (e) {
+            done(null, body)
+        }
+    })
+
     app.get('/healthz', async () => ({
         ok: true,
         sessions: sessions.sessions.size,

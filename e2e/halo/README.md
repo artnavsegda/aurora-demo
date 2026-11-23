@@ -25,9 +25,11 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - вход и dashboard (сводка, Storage/RAM/CPU, modem);
 - список схем, открытие строк и flat-схем;
 - `@set` при изменении поля, `apply`;
-- `add` / `delete` / `clean` на бэкенде;
+- `delete` / `clean` на бэкенде;
 - плоская схема `/system/management`: hostname + Apply;
-- потоковый ping, вывод в Bypass.
+- потоковый ping, вывод в Bypass;
+- журнал: Halo шлёт тело без `Content-Type`, демо-бэкенд теперь разбирает
+  такой JSON, как прод-wrapper.
 
 ## Известные недоработки Halo
 
@@ -45,25 +47,26 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
    `commitMutation.mutate()`), запрос `commit` не уходит.
 4. **Нет глобального revert** в шапке; revert есть только как действие
    `/system/config`.
-5. **Журнал не работает**: запрос `POST /script/wrapper?journal=` идёт без
-   `Content-Type: application/json`, бэкенд отвечает `400 Bad Request`,
-   в UI видно `Bad Request`.
-6. **Required не блокирует действия**: ping с пустым host уходит в
+5. **Required не блокирует действия**: ping с пустым host уходит в
    `ping,/tools`; бэкенд подставляет `1.1.1.1`.
-7. **Stop не останавливает поток**: `onStop={() => {}}` в
+6. **Stop не останавливает поток**: `onStop={() => {}}` в
    `src/Dashboard.svelte`, вывод ping продолжает дописываться.
-8. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
+7. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
    `/modules/dashboard/hardware/index.js` и `.../mobile/index.js` (404).
    Это ограничение демо-модулей, а не входа/схем.
-9. **Качество кода**: в flat-схеме `Render.svelte` передаёт
+8. **Качество кода**: в flat-схеме `Render.svelte` передаёт
    `selectedKey="wtf"`, в production остались `console.log`, а
    `commitMutation` объявлен, но не используется.
 
+Журнал **не является багом Halo**: прод-wrapper читает JSON из stdin без
+проверки `Content-Type`, Halo это делает корректно. Ошибка была в демо-бэкенде,
+он теперь принимает `text/plain` с JSON.
+
 ## Ожидаемые падения
 
-`03-validation`, `04-commit-revert`, `05-journal`, `06-actions` — по одной-
-две проверки из списка выше. `01-dashboard`, `02-edit-apply`,
-`07-flat-schema` проходят.
+`03-validation`, `04-commit-revert`, `06-actions` — по одной-две проверки из
+списка выше. `01-dashboard`, `02-edit-apply`, `05-journal`,
+`07-flat-schema`, `08-crud` проходят.
 
 ## Aurora parity
 

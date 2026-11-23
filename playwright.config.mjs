@@ -26,6 +26,9 @@ function server(port, dist) {
 
 export default defineConfig({
     testDir: './e2e',
+    // Halo-тесты запускаются отдельным playwright.halo.config.mjs и не должны
+    // попадать в проекты Aurora Vue 2/Vue 3.
+    testIgnore: '**/halo/**',
     fullyParallel: false,
     workers: 1,
     reporter: 'line',

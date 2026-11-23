@@ -44,6 +44,33 @@ describe('HTTP: потоковые действия и upload', () => {
         assert.match(body, /1 packets transmitted/)
     })
 
+    test('journal принимает тело без application/json, как прод-wrapper', { timeout: 15000 }, async () => {
+        const tok = await token('journal-text-plain')
+        const controller = new AbortController()
+        const res = await fetch(`${base}/script/wrapper?journal=`, {
+            method: 'POST',
+            // Halo шлёт строку без Content-Type; fetch выставит text/plain.
+            body: JSON.stringify({ type: 'journal', path: '/tools', token: tok, data: { last: 2 } }),
+            signal: controller.signal,
+        })
+        assert.equal(res.status, 200)
+
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let text = ''
+        const deadline = Date.now() + 8000
+        while (Date.now() < deadline) {
+            const { value, done } = await reader.read()
+            if (done)
+                break
+            text += decoder.decode(value, { stream: true })
+            if ((text.match(/\n/g) || []).length >= 3)
+                break
+        }
+        controller.abort()
+        assert.ok((text.match(/\n/g) || []).length >= 3, `stream closed early: ${JSON.stringify(text)}`)
+    })
+
     test('upload кладёт файл в /storage/file', { timeout: 15000 }, async () => {
         const tok = await token('upload-test')
         const form = new FormData()
