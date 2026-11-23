@@ -146,6 +146,20 @@ required нет; можно вынести проверку в обработч�
   (`d4030fe`). Для Vue 2 патч к `BoolElement`:
   `patches/aurora-vue2-bool-scalar-values.patch`.
 
+## Испытательные схемы
+
+В `test-schemas/` добавлены намеренно неудобные схемы `/test/validation`,
+`/test/sections`, `/test/actions`, `/test/edge`. Они включаются только при
+`DEMO_TEST_SCHEMAS=1` и не входят в обычный список демо.
+
+Первый прогон (`e2e/09-adversarial-schemas.spec.mjs`) нашёл падение
+`validator.checkPattern` на невалидном `pattern` из схемы: `new RegExp('[')`
+бросал `SyntaxError` прямо из `check_valid`. Vue 3 исправлен (`5981744`), для
+Vue 2 — `patches/aurora-vue2-validator-bad-regexp.patch`.
+Остальные неудобные конструкции (пустой enum, битые `$ref`, массивы без
+items, отсутствующие условия modificator, cue-источники) обрабатываются без
+падений на обеих версиях.
+
 ## Проверка
 
 ```sh

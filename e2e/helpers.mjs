@@ -45,7 +45,7 @@ export async function apiGet(page, token, schemaPath) {
 }
 
 export async function closeWindow(page) {
-    const close = page.locator('.action-btn:has-text("close"), .action-btn:has-text("Close")').first()
+    const close = page.locator('.action-btn').filter({ hasText: /^\s*(close|cancel)\s*$/i }).first()
     if (await close.count())
         await close.click()
 }

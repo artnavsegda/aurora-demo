@@ -1,0 +1,246 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Adversarial validation",
+  "description": "Поля с разными правилами валидации и заведомо неудобными комбинациями",
+  "type": "object",
+  "properties": {
+    "text": {
+      "type": "string",
+      "title": "Text pattern",
+      "description": "Только строчные латинские буквы",
+      "pattern": "^[a-z]+$",
+      "patternDescription": "only lowercase latin",
+      "patternExample": [
+        "hello"
+      ]
+    },
+    "invertable": {
+      "type": "string",
+      "title": "Invertable",
+      "description": "Число, можно инвертировать через !",
+      "pattern": "^[0-9]+$",
+      "enableInvert": true
+    },
+    "number": {
+      "type": "number",
+      "title": "Number 10..20",
+      "minimum": 10,
+      "maximum": 20,
+      "default": 10
+    },
+    "integer": {
+      "type": "integer",
+      "title": "Integer 1..5",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "strict-enum": {
+      "type": "string",
+      "title": "Strict enum",
+      "enum": [
+        "a",
+        "b"
+      ],
+      "strictEnum": true,
+      "default": "a"
+    },
+    "loose-enum": {
+      "type": "string",
+      "title": "Loose enum",
+      "enum": [
+        "a",
+        "b"
+      ],
+      "strictEnum": false
+    },
+    "empty-enum": {
+      "type": "string",
+      "title": "Empty enum",
+      "enum": []
+    },
+    "password": {
+      "type": "password",
+      "title": "Password",
+      "minLength": 4
+    },
+    "custom-type": {
+      "type": "text",
+      "title": "Custom type"
+    },
+    "no-type": {
+      "title": "No type with enum",
+      "enum": [
+        "n1",
+        "n2"
+      ]
+    },
+    "array-no-items": {
+      "type": "array",
+      "title": "Array without items"
+    },
+    "array-pair": {
+      "type": "array",
+      "title": "Pair array",
+      "uniqueItems": false,
+      "items": {
+        "type": "pair",
+        "enum": [
+          "k1",
+          "k2"
+        ],
+        "pattern": "^[a-z0-9]+=.+$",
+        "patternDescription": "key=value",
+        "patternExample": [
+          "k1=value"
+        ]
+      }
+    },
+    "array-text": {
+      "type": "array",
+      "title": "Text array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z]+$",
+        "patternDescription": "only lowercase latin"
+      }
+    },
+    "array-select": {
+      "type": "array",
+      "title": "Select array",
+      "items": {
+        "enum": [
+          "x",
+          "y"
+        ]
+      }
+    },
+    "boolean-unset": {
+      "type": "boolean",
+      "title": "Boolean not set"
+    },
+    "dependent": {
+      "type": "string",
+      "title": "Dependent",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "boolean-unset": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "missing-condition": {
+      "type": "string",
+      "title": "Missing condition",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "no-such-field": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "cue-literals": {
+      "type": "string",
+      "title": "Cue literals",
+      "cue": [
+        "+one",
+        "+two"
+      ]
+    },
+    "cue-self": {
+      "type": "string",
+      "title": "Cue self",
+      "cue": [
+        "$text"
+      ]
+    },
+    "cue-defaults": {
+      "type": "string",
+      "title": "Cue defaults",
+      "cue": [
+        "/defaults/server"
+      ]
+    },
+    "cue-missing": {
+      "type": "string",
+      "title": "Cue missing source",
+      "cue": [
+        "/test/no-such-schema"
+      ]
+    },
+    "ref-broken": {
+      "type": "string",
+      "title": "Broken ref",
+      "$ref": "/defaults#/definitions/__nope__"
+    },
+    "ref-external": {
+      "$ref": "/defaults#/definitions/port",
+      "title": "External ref"
+    },
+    "ref-local": {
+      "$ref": "#/definitions/local",
+      "title": "Local ref"
+    },
+    "readonly": {
+      "type": "string",
+      "title": "Readonly",
+      "readOnly": true,
+      "default": "fixed"
+    },
+    "default-mismatch": {
+      "type": "string",
+      "title": "Default mismatch",
+      "pattern": "^x$",
+      "default": "y"
+    },
+    "min-greater": {
+      "type": "number",
+      "title": "Min greater than max",
+      "minimum": 10,
+      "maximum": 5
+    },
+    "bad-regexp": {
+      "type": "string",
+      "title": "Bad regexp",
+      "pattern": "["
+    }
+  },
+  "required": [
+    "text",
+    "missing-required"
+  ],
+  "definitions": {
+    "local": {
+      "type": "string",
+      "pattern": "^L[0-9]+$",
+      "patternDescription": "local ref value"
+    }
+  },
+  "acquire": {
+    "exec": "handler",
+    "args": [
+      "get",
+      "test/validation"
+    ]
+  },
+  "set": {
+    "exec": "handler",
+    "args": [
+      "set",
+      "test/validation"
+    ]
+  }
+}

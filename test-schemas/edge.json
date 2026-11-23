@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Adversarial edge names",
+  "description": "Странные имена полей, default/hidden, условие через /defaults",
+  "type": "object",
+  "properties": {
+    "_private": {
+      "type": "string",
+      "title": "Private field"
+    },
+    "dollar$field": {
+      "type": "string",
+      "title": "Dollar field"
+    },
+    "leading-dash": {
+      "type": "number",
+      "title": "Leading dash",
+      "minimum": 0,
+      "default": 0
+    },
+    "number_1": {
+      "type": "boolean",
+      "title": "Underscore boolean"
+    },
+    "default-hidden": {
+      "type": "string",
+      "title": "Hidden with default",
+      "hidden": true,
+      "default": "hidden-default"
+    },
+    "control-default": {
+      "type": "boolean",
+      "title": "Control default",
+      "default": true
+    },
+    "dependent-default": {
+      "type": "string",
+      "title": "Dependent default",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "control-default": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "external-condition": {
+      "type": "string",
+      "title": "External condition",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "/defaults/ipsec_installed": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "array-pair-bad": {
+      "type": "array",
+      "title": "Pair array bad example",
+      "items": {
+        "type": "pair",
+        "enum": [
+          "a"
+        ],
+        "pattern": "^a=.+$",
+        "patternDescription": "a=value"
+      }
+    }
+  },
+  "acquire": {
+    "exec": "handler",
+    "args": [
+      "get",
+      "test/edge"
+    ]
+  },
+  "set": {
+    "exec": "handler",
+    "args": [
+      "set",
+      "test/edge"
+    ]
+  }
+}

@@ -9,6 +9,21 @@ export const fixture = JSON.parse(
     fs.readFileSync(path.join(root, 'fixtures', 'fixtures.json'), 'utf8'),
 )
 
+// Испытательные схемы (/test/...): подключаются только для тестового прогона,
+// чтобы не появляться в обычном демо.
+const testFixtureFile = path.join(root, 'fixtures', 'test-schemas.json')
+const testFixture = process.env.DEMO_TEST_SCHEMAS === '1' && fs.existsSync(testFixtureFile)
+    ? JSON.parse(fs.readFileSync(testFixtureFile, 'utf8'))
+    : null
+
+if (testFixture) {
+    fixture.list = [...(fixture.list || []), ...(testFixture.list || [])]
+    fixture.hidden = [...(fixture.hidden || []), ...(testFixture.hidden || [])]
+    fixture.data = { ...(fixture.data || {}), ...(testFixture.data || {}) }
+}
+
+export const TEST_SCHEMAS_ENABLED = Boolean(testFixture)
+
 export const HOSTNAME = fixture.hostname || 'R50-DEMO'
 export const MODEL = fixture.model || 'R50'
 export const SCHEMA_LIST = Array.isArray(fixture.list) ? fixture.list : []
@@ -56,6 +71,7 @@ export function fixtureStatus(pathname, section) {
 
 // ленивая загрузка схемы для метаданных (namesake, actions)
 const schemaCache = new Map()
+const testSchemasRoot = path.join(root, 'test-schemas')
 
 export function schemaFor(pathname) {
     if (schemaCache.has(pathname))
@@ -63,7 +79,9 @@ export function schemaFor(pathname) {
 
     let schema = null
     try {
-        const file = path.join(root, 'schemas', pathname.replace(/^\//, '') + '.json')
+        const file = pathname.startsWith('/test/')
+            ? path.join(testSchemasRoot, pathname.slice('/test/'.length) + '.json')
+            : path.join(root, 'schemas', pathname.replace(/^\//, '') + '.json')
         schema = JSON.parse(fs.readFileSync(file, 'utf8'))
     } catch (e) {
         schema = null

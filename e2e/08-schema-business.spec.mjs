@@ -21,7 +21,7 @@ test('бизнес-проход по схемам: ошибки полей и к
         data: { type: '@schemas', path: '/', token, data: {} },
     })
     expect(res.ok()).toBeTruthy()
-    const paths = (await res.json()).list
+    const paths = (await res.json()).list.filter((p) => !p.startsWith('/test/'))
     expect(paths.length).toBeGreaterThan(50)
 
     const found = new Map()

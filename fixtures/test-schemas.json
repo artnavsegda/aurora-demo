@@ -1,0 +1,83 @@
+{
+  "list": [
+    "/test/validation",
+    "/test/sections",
+    "/test/actions",
+    "/test/edge"
+  ],
+  "hidden": [],
+  "data": {
+    "/test/validation": {
+      "get": {
+        "text": "hello",
+        "invertable": "123",
+        "number": 15,
+        "integer": 3,
+        "strict-enum": "a",
+        "loose-enum": "custom",
+        "password": "pass",
+        "custom-type": "text-value",
+        "no-type": "n1",
+        "array-text": ["abc", "def"],
+        "array-select": ["x"],
+        "array-pair": ["k1=value"],
+        "boolean-unset": false,
+        "cue-literals": "one",
+        "cue-self": "hello",
+        "cue-defaults": "ovpnserver",
+        "cue-missing": "",
+        "ref-broken": "raw",
+        "ref-external": "22",
+        "ref-local": "L42",
+        "readonly": "fixed",
+        "default-mismatch": "y"
+      },
+      "status": null,
+      "records": {}
+    },
+    "/test/sections": {
+      "get": {
+        "row-1": {
+          "name": "row-1",
+          "kind": "good",
+          "control": "1",
+          "dependent": "visible",
+          "array-no-items": [],
+          "cue-values": "first"
+        },
+        "row-2": {
+          "name": "bad name",
+          "kind": "weird",
+          "control": "0"
+        }
+      },
+      "status": [
+        { "name": "row-1", "state": 5, "kind": "good" },
+        { "name": "row-2", "state": 5, "kind": "weird" }
+      ],
+      "records": {
+        "row-1": { "state": "running" },
+        "row-2": { "state": "running" }
+      }
+    },
+    "/test/actions": {
+      "get": {},
+      "status": null,
+      "records": {}
+    },
+    "/test/edge": {
+      "get": {
+        "_private": "private",
+        "dollar$field": "dollar",
+        "leading-dash": 0,
+        "number_1": false,
+        "control-default": true,
+        "dependent-default": "shown",
+        "external-condition": "shown",
+        "array-pair-bad": ["a=value"]
+      },
+      "status": null,
+      "records": {}
+    }
+  }
+}

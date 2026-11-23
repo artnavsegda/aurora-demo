@@ -1,0 +1,16 @@
+diff --git a/src/utils/validator.js b/src/utils/validator.js
+--- a/src/utils/validator.js
++++ b/src/utils/validator.js
+@@ -1,5 +1,11 @@
+ function checkPattern(value, pattern) {
+-  var r = new RegExp(pattern)
++  var r
++  try {
++    r = new RegExp(pattern)
++  } catch(e) {
++    // битый pattern в схеме не должен ронять валидацию всей формы
++    return false
++  }
+   if(value[0] == '!')
+     return r.test(value.substring(1,))
+   return r.test(value)

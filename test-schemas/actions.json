@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Adversarial actions",
+  "description": "Действия с формой, подтверждением, потоком, blob и без схемы",
+  "type": "object",
+  "actions": {
+    "simple": {
+      "exec": "handler",
+      "args": [
+        "run",
+        "test/simple"
+      ],
+      "description": "Simple action with form",
+      "schema": {
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "pattern": "^[a-z]+$",
+            "patternDescription": "only lowercase latin",
+            "patternExample": [
+              "hello"
+            ]
+          },
+          "count": {
+            "type": "number",
+            "title": "Count",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 1
+          }
+        }
+      }
+    },
+    "confirm": {
+      "exec": "handler",
+      "args": [
+        "run",
+        "test/confirm"
+      ],
+      "description": "Confirm only",
+      "confirm": true
+    },
+    "stream": {
+      "exec": "handler",
+      "args": [
+        "run",
+        "test/stream"
+      ],
+      "description": "Streamed output",
+      "wait": true,
+      "schema": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "default": "stream"
+          }
+        }
+      }
+    },
+    "blob": {
+      "exec": "handler",
+      "args": [
+        "run",
+        "test/blob"
+      ],
+      "description": "Blob response",
+      "responseType": "blob"
+    },
+    "no-schema": {
+      "exec": "handler",
+      "args": [
+        "run",
+        "test/no-schema"
+      ],
+      "description": "Immediate action without schema"
+    }
+  },
+  "apply": {
+    "exec": "handler",
+    "args": [
+      "apply",
+      "test/actions"
+    ]
+  },
+  "set": {
+    "exec": "handler",
+    "args": [
+      "set",
+      "test/actions"
+    ]
+  },
+  "acquire": {
+    "exec": "handler",
+    "args": [
+      "get",
+      "test/actions"
+    ]
+  }
+}

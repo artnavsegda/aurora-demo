@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Adversarial sections",
+  "description": "Секции, required на отсутствующих/скрытых полях, modificator и действия",
+  "type": "object",
+  "namesake": "name",
+  "showParams": [
+    "state",
+    "name",
+    "kind",
+    "not-in-properties"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Record",
+      "required": [
+        "name",
+        "missing-required",
+        "hidden-required"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "pattern": "^[a-z0-9-]+$",
+          "patternDescription": "lowercase, digits and dash",
+          "patternExample": [
+            "row-1"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "title": "Kind",
+          "enum": [
+            "good",
+            "bad"
+          ]
+        },
+        "control": {
+          "type": "boolean",
+          "title": "Control"
+        },
+        "dependent": {
+          "type": "string",
+          "title": "Dependent",
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "control": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ]
+        },
+        "hidden-required": {
+          "type": "string",
+          "title": "Hidden required",
+          "hidden": true
+        },
+        "missing-required": {
+          "type": "string",
+          "title": "Required but missing in data"
+        },
+        "array-no-items": {
+          "type": "array",
+          "title": "Array without items"
+        },
+        "ref-broken": {
+          "$ref": "/defaults#/definitions/__nope__",
+          "title": "Broken ref"
+        },
+        "cue-values": {
+          "type": "string",
+          "title": "Cue values",
+          "cue": [
+            "+first",
+            "+second"
+          ]
+        }
+      }
+    },
+    "actions": {
+      "section-call": {
+        "exec": "handler",
+        "args": [
+          "run",
+          "test/section-call"
+        ],
+        "description": "Section action",
+        "schema": {
+          "required": [
+            "text"
+          ],
+          "properties": {
+            "text": {
+              "type": "string",
+              "title": "Text",
+              "pattern": "^[a-z]+$",
+              "patternDescription": "only lowercase latin"
+            }
+          }
+        }
+      }
+    }
+  },
+  "add": {
+    "exec": "handler",
+    "args": [
+      "add",
+      "test/sections"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Name",
+          "pattern": "^[a-z0-9-]+$",
+          "patternDescription": "lowercase, digits and dash",
+          "patternExample": [
+            "new-row"
+          ]
+        }
+      }
+    }
+  },
+  "apply": {
+    "exec": "handler",
+    "args": [
+      "apply",
+      "test/sections"
+    ]
+  },
+  "delete": {
+    "exec": "handler",
+    "args": [
+      "delete",
+      "test/sections"
+    ]
+  },
+  "status": {
+    "exec": "handler",
+    "args": [
+      "status",
+      "test/sections"
+    ]
+  },
+  "acquire": {
+    "exec": "handler",
+    "args": [
+      "get",
+      "test/sections"
+    ]
+  },
+  "set": {
+    "exec": "handler",
+    "args": [
+      "set",
+      "test/sections"
+    ]
+  }
+}

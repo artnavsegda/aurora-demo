@@ -14,6 +14,7 @@ import { board, dashboard } from './dashboard.mjs'
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '..')
 const schemaRoot = path.join(root, 'schemas')
+const testSchemaRoot = path.join(root, 'test-schemas')
 const publicRoot = path.join(root, 'public')
 
 const MIME = {
@@ -160,7 +161,9 @@ export async function buildApp(options = {}) {
             reply.code(404).type('text/plain; charset=utf-8').send('Not Found')
             return
         }
-        const file = safeJoin(schemaRoot, rel)
+        const file = rel.startsWith('test/')
+            ? safeJoin(testSchemaRoot, rel.slice('test/'.length))
+            : safeJoin(schemaRoot, rel)
         if (!file) {
             reply.code(403).type('text/plain; charset=utf-8').send('Access Denied')
             return

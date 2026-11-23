@@ -16,6 +16,7 @@ function server(port, dist) {
             PORT: String(port),
             FRONTEND_DIST: dist,
             LOG_LEVEL: 'warn',
+            DEMO_TEST_SCHEMAS: '1',
         },
         url: `http://127.0.0.1:${port}/healthz`,
         reuseExistingServer: false,

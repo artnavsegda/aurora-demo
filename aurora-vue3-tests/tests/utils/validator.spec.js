@@ -25,6 +25,10 @@ describe('utils/validator', () => {
         }, 'abc')).toEqual([false, 'only digits'])
         expect(validate({ type: 'string', pattern: '^\\d+$' }, '!123')).toEqual([true, undefined])
 
+        // битый pattern не должен бросать исключение
+        expect(() => validate({ type: 'string', pattern: '[' }, 'x')).not.toThrow()
+        expect(validate({ type: 'string', pattern: '[' }, 'x')).toEqual([false, "'x' - not allowed value"])
+
         expect(validate({ type: 'string', maxLength: 3 }, 'abcd')).toEqual([false, 'maximum length is 3'])
         expect(validate({ type: 'string', minLength: 3 }, 'ab')).toEqual([false, 'minimum length is 3'])
     })

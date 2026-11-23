@@ -52,6 +52,7 @@ npx playwright install chromium
 npm run test:e2e          # оба проекта
 npm run test:e2e:vue2     # только Vue 2
 npm run test:e2e:vue3     # только Vue 3
+npm run test:e2e:adversarial  # только испытательные схемы /test/*
 ```
 
 Playwright сам поднимает два демо-бэкенда: `8102` (Vue 2) и `8103` (Vue 3)
@@ -68,7 +69,12 @@ Playwright сам поднимает два демо-бэкенда: `8102` (Vue
 - `06-journal` — поток журнала показывает строки и дописывает новые;
 - `07-stream` — потоковый ping выводит результат в окно действия;
 - `08-schema-business` — проход по всем схемам: видимые ошибки полей и ошибки
-  консоли; три известных расхождения схема/данные перечислены явно.
+  консоли; три известных расхождения схема/данные перечислены явно;
+- `09-adversarial-schemas` — испытательные схемы `/test/*`: битый regexp,
+  массивы без `items`, битые `$ref`, пустой `enum`, `modificator` на
+  несуществующем поле, `cue`, actions (форма, confirm, поток, blob, без схемы).
+  Схемы и данные — в `test-schemas/` и `fixtures/test-schemas.json`; включаются
+  через `DEMO_TEST_SCHEMAS=1` (Playwright выставляет флаг сам).
 
 ## Известные баги Vue 2
 
@@ -117,6 +123,10 @@ Vue 2 `Schema.errorUpdate()` пишет новый ключ в `this.errors` н�
 
 Для Vue 2 в последнем случае дополнительно воспроизводится
 `BoolElement.beforeMount` на строке; Vue 3 уже защищён.
+
+Испытательная схема `bad-regexp` нашла ещё одну проблему: `validator` бросал
+`SyntaxError` на невалидном `pattern` из схемы. Vue 3 исправлен (`5981744`),
+для Vue 2 — `patches/aurora-vue2-validator-bad-regexp.patch`.
 
 ## Правки демо-бэкенда
 

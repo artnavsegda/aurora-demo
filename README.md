@@ -209,7 +209,8 @@ AURORA_VUE3_DIST=/path/to/vue3/dist \
 npm run test:e2e
 ```
 
-Отдельно: `npm run test:e2e:vue2`, `npm run test:e2e:vue3`.
+Отдельно: `npm run test:e2e:vue2`, `npm run test:e2e:vue3`,
+`npm run test:e2e:adversarial`.
 Подробности, список сценариев и известные баги Vue 2 (ожидаемые падения) —
 в `e2e/README.md`; найденные ошибки самих схем — в `e2e/SCHEMA-ISSUES.md`.
 
