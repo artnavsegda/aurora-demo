@@ -11,7 +11,8 @@
     "test:watch": "node --test --watch test/*.test.mjs",
     "fixtures": "python3 scripts/build-fixtures.py",
     "test:aurora": "npm --prefix aurora-vue2-tests test",
-    "coverage:aurora": "npm --prefix aurora-vue2-tests run coverage"
+    "coverage:aurora": "npm --prefix aurora-vue2-tests run coverage",
+    "test:aurora3": "npm --prefix aurora-vue3-tests test"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",

@@ -137,6 +137,26 @@ Node-тесты без дополнительных зависимостей (`n
 
 `npm run test:watch` — то же в watch-режиме.
 
+## Тесты Aurora Vue 3
+
+Отдельный пакет `aurora-vue3-tests/` — юнит-тесты для ветки `vue3`
+(Vitest + `@vue/test-utils` + jsdom). Тесты так же импортируют `src/` из
+соседнего репозитория и не попадают в корпоративный git.
+
+```sh
+cd aurora-vue3-tests
+npm install
+AURORA_SRC=/Users/artnavsegda/Desktop/aurora/src npm test
+```
+
+Из корня демо-репозитория:
+
+```sh
+npm run test:aurora3
+```
+
+Подробности — в `aurora-vue3-tests/README.md`.
+
 ## Тесты прод-Авроры Vue 2
 
 Отдельный пакет `aurora-vue2-tests/` — юнит-тесты для прод-Авроры (ветка
