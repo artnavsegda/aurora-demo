@@ -67,6 +67,11 @@ describe('components/SectionOption', () => {
         }
     })
 
+    test('type: массив без items не роняет выбор компонента', () => {
+        const wrapper = mountOption({ schema: { type: 'array' }, values: {} })
+        expect(wrapper.vm.type).toBe(MultipleTextElement)
+    })
+
     test('rSchema: title, readOnly, isRequired', () => {
         const wrapper = mountOption({
             schema: { type: 'string' },

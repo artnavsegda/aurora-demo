@@ -66,7 +66,9 @@ Playwright сам поднимает два демо-бэкенда: `8102` (Vue
 - `04-modificator` — новая секция видит `modificator` (`type=static` → IP Address);
 - `05-cue` — `@cue` заполняет список source;
 - `06-journal` — поток журнала показывает строки и дописывает новые;
-- `07-stream` — потоковый ping выводит результат в окно действия.
+- `07-stream` — потоковый ping выводит результат в окно действия;
+- `08-schema-business` — проход по всем схемам: видимые ошибки полей и ошибки
+  консоли; три известных расхождения схема/данные перечислены явно.
 
 ## Известные баги Vue 2
 
@@ -96,6 +98,25 @@ Vue 2 `Schema.errorUpdate()` пишет новый ключ в `this.errors` н�
 
 Карточка: Kaiten `#75512469`. Патч:
 `patches/aurora-vue2-schema-haserrors.patch`.
+
+## Ошибки самих схем
+
+Статический разбор: `node scripts/check-schemas.mjs --all` (или
+`npm run check:schemas`). Юнит-тесты на реальных схемах лежат в
+`aurora-vue2-tests/tests/schemas` и `aurora-vue3-tests/tests/schemas`:
+валидаторы, `Sch`, рендер каждого поля, данные фикстур.
+
+Найденные ошибки и предложения по исправлению: `e2e/SCHEMA-ISSUES.md`,
+карточка Kaiten `#75557467`.
+
+`08-schema-business` знает о трёх подтверждённых расхождениях:
+
+- `/network/device` — VLAN-схема на всех L2-устройствах;
+- `/service/openvpn-server` — required на отсутствующих в данных полях;
+- `/tunnel/wireguard/interface` — схема-список на плоских данных.
+
+Для Vue 2 в последнем случае дополнительно воспроизводится
+`BoolElement.beforeMount` на строке; Vue 3 уже защищён.
 
 ## Правки демо-бэкенда
 

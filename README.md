@@ -137,6 +137,15 @@ Node-тесты без дополнительных зависимостей (`n
 
 `npm run test:watch` — то же в watch-режиме.
 
+Статическая проверка схем и отчёт по ошибкам:
+
+```sh
+npm run check:schemas          # ошибки, предупреждения и заметки
+npm run check:schemas:errors   # только ошибки, код возврата 1 при находках
+```
+
+Подробнее — в `e2e/SCHEMA-ISSUES.md` и карточке Kaiten `#75557467`.
+
 ## Тесты Aurora Vue 3
 
 Отдельный пакет `aurora-vue3-tests/` — юнит-тесты для ветки `vue3`
@@ -202,7 +211,7 @@ npm run test:e2e
 
 Отдельно: `npm run test:e2e:vue2`, `npm run test:e2e:vue3`.
 Подробности, список сценариев и известные баги Vue 2 (ожидаемые падения) —
-в `e2e/README.md`.
+в `e2e/README.md`; найденные ошибки самих схем — в `e2e/SCHEMA-ISSUES.md`.
 
 ## Что проверено
 

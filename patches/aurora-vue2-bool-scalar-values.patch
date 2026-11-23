@@ -1,0 +1,15 @@
+diff --git a/src/components/elements/BoolElement.vue b/src/components/elements/BoolElement.vue
+--- a/src/components/elements/BoolElement.vue
++++ b/src/components/elements/BoolElement.vue
+@@ -46,7 +46,10 @@
+ 
+   beforeMount() {
+     this.value = [1, "1", "true", true].indexOf(this.values[this.property_name]) !== -1
+-    if(this.value !== this.values[this.property_name]) {
++    // values может быть не объектом, если данные раздела пришли не той формы;
++    // запись в строку/массив роняет beforeMount
++    if(this.values && typeof this.values === 'object' && !Array.isArray(this.values) &&
++       this.value !== this.values[this.property_name]) {
+       this.values[this.property_name] = this.value // ???
+     }
+ 

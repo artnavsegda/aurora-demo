@@ -15,7 +15,9 @@
     "test:aurora3": "npm --prefix aurora-vue3-tests test",
     "test:e2e": "playwright test",
     "test:e2e:vue2": "playwright test --project=vue2",
-    "test:e2e:vue3": "playwright test --project=vue3"
+    "test:e2e:vue3": "playwright test --project=vue3",
+    "check:schemas": "node scripts/check-schemas.mjs --all",
+    "check:schemas:errors": "node scripts/check-schemas.mjs"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",

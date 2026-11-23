@@ -71,3 +71,12 @@ describe('защита от undefined в update()', () => {
         expect(() => select.vm.update(undefined)).not.toThrow()
     })
 })
+
+
+describe('защита от не-объекта в values', () => {
+    test('BoolElement не падает, если values — строка', () => {
+        expect(() => shallowMount(BoolElement, {
+            props: { schema: {}, values: '1', property_name: 'disabled' },
+        })).not.toThrow()
+    })
+})
