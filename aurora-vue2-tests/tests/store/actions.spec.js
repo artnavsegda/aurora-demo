@@ -447,6 +447,20 @@ describe('store/actions', () => {
             expect(store.state.commited).toBe(true)
         })
 
+        test.failing('commitAll: ошибка сохраняет changes и commited=false', async () => {
+            const store = makeStore()
+            store.state.changes = { '/qa/draft': true }
+            store.state.commited = false
+            axios.post.mockRejectedValue({ response: { status: 500, data: 'boom' } })
+
+            actions.commitAll(store)
+            for (let i = 0; i < 10; i++) await Promise.resolve()
+
+            expect(store.state.changes).toEqual({ '/qa/draft': true })
+            expect(store.state.commited).toBe(false)
+            expect(store.dispatch).toHaveBeenCalledWith('pushInform', expect.objectContaining({ type: 'error' }))
+        })
+
         test('makeReqDashboard обновляет board info', async () => {
             const store = makeStore()
             axios.post.mockResolvedValue({
