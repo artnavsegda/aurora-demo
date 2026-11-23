@@ -1,0 +1,30 @@
+import { test } from '@playwright/test'
+import { login, open } from './helpers.mjs'
+
+test('patched hasErrors check', async ({ page }) => {
+    await login(page, 'patchedcheck')
+    await open(page, '/firewall/filter')
+    const row = page.locator('.patternProperties .property').nth(1)
+    await row.waitFor({ state: 'visible', timeout: 15000 })
+    await row.click()
+    const input = page.locator('.schema-element.extra input')
+    await input.waitFor({ state: 'visible', timeout: 10000 })
+    const apply = page.locator('.action-btn').filter({ hasText: /^\s*apply\s*$/i })
+    const reqs = []
+    page.on('request', r => { if (r.url().includes('apply,/firewall/filter')) reqs.push(r.url()) })
+    console.log('before', await apply.getAttribute('disabled'), await apply.getAttribute('class'))
+    await input.fill('bad<>')
+    await input.press('Tab')
+    await page.waitForTimeout(1000)
+    console.log('after invalid', await apply.getAttribute('disabled'), await apply.getAttribute('class'), 'errors', await page.locator('.element-error-description').allTextContents())
+    await apply.click()
+    await page.waitForTimeout(400)
+    console.log('reqs after invalid click', reqs.length)
+    await input.fill('-m comment --comment ok')
+    await input.press('Tab')
+    await page.waitForTimeout(1000)
+    console.log('after valid', await apply.getAttribute('disabled'), await apply.getAttribute('class'), 'errors', await page.locator('.element-error-description').allTextContents())
+    await apply.click()
+    await page.waitForTimeout(500)
+    console.log('reqs after valid click', reqs.length)
+})
