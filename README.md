@@ -133,7 +133,7 @@ Node-тесты без дополнительных зависимостей (`n
 - фикстуры: клонирование, статус, очистка секретов;
 - dashboard/board;
 - HTTP-слой: `healthz`, статика схем (в том числе `/schema//...`), ping-поток,
-  upload.
+  journal-поток (не закрывается сразу и дописывает строки), upload.
 
 `npm run test:watch` — то же в watch-режиме.
 
@@ -178,6 +178,31 @@ npm run coverage:aurora
 ```
 
 Подробности — в `aurora-vue2-tests/README.md`.
+
+## Композитные e2e (Vue 2 + Vue 3)
+
+`e2e/` — Playwright-тесты, которые гоняют один сценарий на двух сборках
+прод-Авроры: Vue 2 (`compressed`) и Vue 3 (`vue3`). Обе обслуживает этот же
+демо-бэкенд.
+
+```sh
+npm install
+npx playwright install chromium
+scripts/prepare-e2e-frontends.sh /path/to/vue2/dist /path/to/vue3/dist
+npm run test:e2e
+```
+
+Можно без копирования:
+
+```sh
+AURORA_VUE2_DIST=/path/to/vue2/dist \
+AURORA_VUE3_DIST=/path/to/vue3/dist \
+npm run test:e2e
+```
+
+Отдельно: `npm run test:e2e:vue2`, `npm run test:e2e:vue3`.
+Подробности, список сценариев и известные баги Vue 2 (ожидаемые падения) —
+в `e2e/README.md`.
 
 ## Что проверено
 

@@ -1,0 +1,45 @@
+diff --git a/src/components/elements/TextElement.vue b/src/components/elements/TextElement.vue
+--- a/src/components/elements/TextElement.vue
++++ b/src/components/elements/TextElement.vue
+@@ -101,18 +101,24 @@
+       this.setValue(this.value)
+     },
+ 
++    // trim — только по завершении ввода (blur/enter). Дебаунс ввода отдаёт
++    // значение как есть: иначе пробел, набранный перед паузой, удалялся и
++    // следующее слово приклеивалось (68552895).
++    emitValue(val, trim) {
++      if(trim)
++        val = (val||'').trim()
++
++      if(!val)
++        this.$emit('input', undefined)
++      else
++        this.$emit('input', (this.inverted ? '!' + val : val) )
++    },
++
+     setValue(val) {
+       if(this.debonceTimer)
+         this.debonceTimer = clearTimeout(this.debonceTimer)
+ 
+-      val = (val||'').trim()
+-
+-      if(!val) {
+-        val = undefined
+-        this.$emit('input', val)
+-      } else {
+-        this.$emit('input', (this.inverted ? '!' + val : val) )
+-      }
++      this.emitValue(val, true)
+ 
+       this.elementFocused = false
+     },
+@@ -136,7 +142,7 @@
+           this.value = ""
+         }
+ 
+-        this.setValue(this.value)
++        this.emitValue(this.value, false)
+         this.debonceTimer = clearTimeout(this.debonceTimer)
+       }, this.debonce)
+     },

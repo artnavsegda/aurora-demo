@@ -63,4 +63,37 @@ describe('HTTP: потоковые действия и upload', () => {
         assert.equal(files['hello.txt']['file-size'], '5B')
         assert.equal(files['hello.txt']['file-type'], 'text/plain')
     })
+
+    test('journal остаётся открытым и присылает новые строки', { timeout: 15000 }, async () => {
+        const tok = await token('journal-test')
+        const controller = new AbortController()
+        const res = await fetch(`${base}/script/wrapper?journal`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: 'journal', path: '/tools', token: tok, data: { last: 2 } }),
+            signal: controller.signal,
+        })
+        assert.equal(res.status, 200)
+        assert.match(res.headers.get('content-type') || '', /text\/html/)
+
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let text = ''
+        const deadline = Date.now() + 8000
+
+        // 2 строки истории + минимум одна новая: если поток закрывается сразу
+        // после тела запроса, третьей строки не будет
+        while (Date.now() < deadline) {
+            const { value, done } = await reader.read()
+            if (done)
+                break
+            text += decoder.decode(value, { stream: true })
+            if ((text.match(/\n/g) || []).length >= 3)
+                break
+        }
+        controller.abort()
+
+        assert.ok((text.match(/\n/g) || []).length >= 3, `stream closed early: ${JSON.stringify(text)}`)
+        assert.match(text, /R50-DEMO/)
+    })
 })

@@ -42,7 +42,7 @@ export function history(count) {
     return out
 }
 
-export function journalStream(request, last) {
+export function journalStream(reply, last) {
     const stream = new Readable({
         read() {},
     })
@@ -61,7 +61,9 @@ export function journalStream(request, last) {
         clearInterval(timer)
         stream.push(null)
     }
-    request.raw.on('close', stop)
+    // request.raw 'close' срабатывает сразу после чтения тела запроса,
+    // а не при отключении клиента: журнал закрывался через 1 мс
+    reply.raw.on('close', stop)
     stream.on('close', stop)
     stream.on('error', stop)
 

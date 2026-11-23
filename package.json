@@ -12,10 +12,16 @@
     "fixtures": "python3 scripts/build-fixtures.py",
     "test:aurora": "npm --prefix aurora-vue2-tests test",
     "coverage:aurora": "npm --prefix aurora-vue2-tests run coverage",
-    "test:aurora3": "npm --prefix aurora-vue3-tests test"
+    "test:aurora3": "npm --prefix aurora-vue3-tests test",
+    "test:e2e": "playwright test",
+    "test:e2e:vue2": "playwright test --project=vue2",
+    "test:e2e:vue3": "playwright test --project=vue3"
   },
   "dependencies": {
     "@fastify/multipart": "^9.0.3",
     "fastify": "^5.2.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
   }
 }

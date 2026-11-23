@@ -465,7 +465,7 @@ async function handleAction(request, reply, session, type, path, body) {
         if (type === 'journal') {
             const last = Math.min(Number(values.last) || 0, MAX_LAST)
             reply.type('text/html; charset=utf-8')
-            reply.send(journalStream(request, last))
+            reply.send(journalStream(reply, last))
             return
         }
 
@@ -553,7 +553,7 @@ export async function wrapper(request, reply, sessions) {
     case 'journal': {
         const last = Math.min(Number(bodyData.last) || 0, MAX_LAST)
         reply.type('text/html; charset=utf-8')
-        reply.send(journalStream(request, last))
+        reply.send(journalStream(reply, last))
         return
     }
 

@@ -18,9 +18,11 @@ tmp/
 .eslintcache
 .stylelintcache
 
-# собранные фронтенды (кладутся make prepare)
+# собранные фронтенды (make prepare / prepare-e2e-frontends.sh)
 frontend/aurora/
 frontend/halo/
+frontend/vue2/
+frontend/vue3/
 
 # env
 .env
