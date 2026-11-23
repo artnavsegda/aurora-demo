@@ -1,0 +1,185 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "OSPF interface",
+  "type": "object",
+
+  "namesake": "interface",
+	"patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Interface entity",
+      "required": ["interface"],
+      "properties": {
+        "interface": {
+          "$ref": "/defaults#/definitions/interface",
+          "hidden": true
+        },
+        "cost": {
+          "type": "number",
+          "description": "Interface cost",
+          "title": "Interface cost",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 10
+        },
+        "hello": {
+          "type": "number",
+          "description": "Hello interval (sec)",
+          "title": "Hello interval",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 10
+        },
+        "wait": {
+          "type": "number",
+          "description": "Wait interval (sec), default = 4*hello",
+          "title": "Wait interval",
+          "minimum": 2,
+          "maximum": 4294967295
+        },
+        "dead": {
+          "type": "number",
+          "description": "Router dead interval (sec), default = 5*hello",
+          "title": "Dead interval",
+          "minimum": 2,
+          "maximum": 4294967295
+        },
+        "bfd": {
+          "type": "boolean",
+          "title": "Use BFD",
+          "description": "Use BFD protocol as an advisory mechanism for neighbor liveness and failure detection"
+        },
+        "priority": {
+          "type": "number",
+          "description": "Interface priority (0 — interface will never become DR/BDR)",
+          "title": "Interface priority",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 255
+        },
+        "authentication": {
+          "type": "string",
+          "description": "Authentication type",
+          "title": "Authentication type",
+          "enum": ["none", "cryptographic", "simple"]
+        },
+        "password": {
+          "$ref": "/routing/common#/definitions/bird-password",
+          "maxLength": 8,
+          "modificator":[
+            {"if": [{"authentication":"none"}], "then": {"hidden": true}},
+            {"if": [{"authentication":"cryptographic"}], "then": {"maxLength": 16}}
+          ]
+        },
+        "type": {
+          "type": "string",
+          "description": "Network type",
+          "title": "Network type",
+          "enum": ["broadcast", "auto", "nonbroadcast", "pointopoint", "pointomultipoint"]
+        },
+        "neighbor": {
+          "type": "array",
+          "description": "A neighbor to which Hello messages on NBMA or PtMP networks are to be sent",
+          "hidden": true,
+          "items": {
+            "$ref": "/defaults#/definitions/ipaddr-strict"
+          },
+          "modificator": [
+            {"if": [{"type": "nonbroadcast"}], "then": {"hidden": false}},
+            {"if": [{"type": "pointomultipoint"}], "then": {"hidden": false}}
+          ]
+        },
+        "strict": {
+          "type": "boolean",
+          "description": "Accept Hello only from addresses listed in 'neighbor'; without it, Hello from any address on this segment is accepted",
+          "title": "Strict NBMA",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "nonbroadcast"}], "then": {"hidden": false}},
+            {"if": [{"type": "pointomultipoint"}], "then": {"hidden": false}}
+          ]
+        },
+        "stub": {
+          "type": "boolean",
+          "description": "Passive mode",
+          "title": "Passive mode"
+        },
+        "retransmit": {
+          "type": "number",
+          "description": "Retransmit interval (sec)",
+          "title": "Retransmit interval",
+          "minimum": 2,
+          "maximum": 4294967295,
+          "default": 5
+        },
+        "transmit-delay": {
+          "type": "number",
+          "description": "Transmit delay (sec)",
+          "title": "Transmit delay",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 1
+        }
+      }
+    },
+
+    "actions": {
+      "neighbors": {
+        "exec": "./subscript/routing/ospf/interface.uc",
+        "args": ["neighbors"],
+        "wait": true,
+        "title": "Neighbors",
+        "description": "OSPF neighbors on this interface as a table"
+      }
+    }
+	},
+
+	"delete": {
+    "exec": "./subscript/routing/ospf/interface.uc",
+    "args": ["delete"],
+    "reload": true
+	},
+
+	"add": {
+		"exec": "./subscript/routing/ospf/interface.uc",
+    "args": ["add"],
+    "merge": true,
+    "description": "add new entry (params: <interface>)",
+    "schema": {
+    	"required": ["interface"],
+    	"properties": {
+    		"interface": {"$ref": "/defaults#/definitions/interface"},
+        "area": {"cue": ["/routing/ospf/area"]}
+    	}
+    }
+	},
+  
+  "apply": {
+    "exec": "./subscript/routing/ospf/interface.uc",
+    "args": ["apply"]
+  },
+  
+  "clean": {
+    "exec": "./subscript/routing/ospf/interface.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+  
+	"set": {
+		"exec": "./subscript/routing/ospf/interface.uc",
+		"args": ["set"]
+	},
+
+	"acquire": {
+		"exec": "./subscript/routing/ospf/interface.uc",
+		"args": ["get"]
+  },
+
+  "status": {
+    "exec": "./subscript/routing/ospf/interface.uc",
+    "args": ["status"]
+  }
+  
+}

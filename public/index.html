@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aurora demo backend</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 3rem auto; max-width: 42rem; line-height: 1.5; color: #222; }
+  code { background: #f2f2f2; padding: .1rem .3rem; border-radius: 3px; }
+  .muted { color: #777; }
+  ul { padding-left: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Aurora demo backend</h1>
+<p>Это эмулятор прод-протокола horizont для Aurora и Halo. Фронтенд не найден:
+    задайте <code>AURORA_DIST=/путь/к/dist</code> (и, при необходимости,
+    <code>HALO_DIST=/путь/к/halo/dist</code>).</p>
+<p>Проверка API:</p>
+<ul>
+    <li><code>POST /script/auth</code> — любой непустой username;</li>
+    <li><code>POST /script/wrapper?schemas</code> — список схем;</li>
+    <li><code>POST /script/dashboard</code> — сводка;</li>
+    <li><code>GET /healthz</code> — здоровье.</li>
+</ul>
+<p class="muted">Схемы: <span id="schemas">?</span> · сессии: <span id="sessions">?</span></p>
+<script>
+fetch('/healthz').then(r => r.json()).then(d => {
+  document.getElementById('sessions').textContent = d.sessions
+})
+</script>
+</body>
+</html>

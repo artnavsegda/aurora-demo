@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "ntp",
+  "description": "NTP configuration",
+  "type": "object",
+
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+
+    "pool": {
+      "type": "array",
+      "title": "Pool",
+      "description": "Network Time Protocol (NTP) server pool for clock synchronization",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "/defaults#/definitions/host"
+      }
+    },
+    "server": {
+      "type": "boolean",
+      "description": "Enable Network Time Protocol (NTP) server mode"
+    },
+    "sync-with-gps": {
+      "type": "boolean",
+      "title": "Synchronize with GPS",
+      "description": "Enable GPS time synchronization"
+    },
+    "sync-with-modem": {
+      "type": "boolean",
+      "title": "Synchronize with modem",
+      "description": "Enable cellular network time synchronization"
+    }
+  },
+
+  "actions": {
+    "info": {
+      "exec": "subscript/service/ntp.uc",
+      "args": ["status", "info"],
+      "wait": true,
+      "description": "NTP client status information"
+    },
+    "get-modem-time": {
+      "exec": "handler",
+      "title": "Get modem time",
+      "args": ["run", "service/get-modem-time"],
+      "wait": true,
+      "description": "Show time the modem gets from the cellular network"
+    }
+  },
+
+  "status": {
+    "exec": "subscript/service/ntp.uc",
+    "args": ["status"]
+  },
+
+  "apply": {
+    "exec": "subscript/service/ntp.uc",
+    "merge": true,
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/service/ntp.uc",
+    "args": ["set"]
+  },
+  
+  "acquire": {
+    "exec": "subscript/service/ntp.uc",
+    "args": ["get"]
+  }
+}

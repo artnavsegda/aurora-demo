@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "NHRP",
+  "description": "NHRP Interface",
+  "type": "object",
+  "showParams": ["map", "multicast"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "NHRP Interface",
+      "required": ["multicast"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+
+        "interface": {
+          "type": "string",
+          "hidden": true,
+          "noExport": true,
+          "readOnly": true
+        },
+
+        "map": {
+          "type": "array",
+          "title": "Map",
+          "description": "Static peer mapping of NHRP-address to NBMA-address",
+          "items": {
+            "type": "string",
+            "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}@([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
+            "patternDescription": "Pair of peer NHRP and NBMA addresses",
+            "patternExample": ["172.16.0.1@231.67.55.29", "10.0.1.101@133.94.75.36.14"]
+          }
+        },
+
+        "multicast": {
+          "type": "string",
+          "title": "Multicast",
+          "description": "Repeat NHRP packets only to hubs or to all peers",
+          "enum": ["nhs", "dynamic"]
+        },
+
+        "holding-time": {
+          "type": "number",
+          "title": "Holding Time",
+          "description": "Time (sec) during which an expires NHRP mapping peer is deleted",
+          "default": 600
+        },
+
+        "flag": {
+          "type": "array",
+          "title": "Option flags",
+          "description": "NHRP interface options",
+          "items": {
+            "type": "string",
+            "enum": [
+              "registration",
+              "cisco",
+              "no-unique",
+              "non-caching",
+              "shortcut",
+              "redirect",
+              "debug"
+            ]
+          }
+        },
+
+
+        "secret": {
+          "type": "string",
+          "description": "Embeds the plaintext secret to the outgoing NHRP packets",
+          "title": "Auth secret",
+          "minLength": 1,
+          "maxLength": 8
+        }
+
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "subscript/network/nhrp.uc",
+    "description": "Add NHRP interface for multipoint GRE tunnel",
+    "args": ["add"],
+    "schema": {
+      "required": ["interface"],
+      "properties": {
+        "interface": {
+          "type": "string",
+          "title": "GRE Tunnel",
+          "description": "Multipoint GRE tunnel interface",
+          "cue": ["/tunnel[proto:gre]"]
+        }
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["apply"]
+  },
+
+  "clean": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["clean"],
+    "reload": true,
+    "confirm": true
+  },
+
+  "status": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["status"]
+  },
+  
+  "set": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/network/nhrp.uc",
+    "args": ["get"]
+  }
+}

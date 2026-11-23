@@ -1,0 +1,213 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Filter Rules",
+    "description": "Filter table for basic packet processing",
+    "type": "object",
+    "namesake": "_index",
+    "showParams": ["chain", "src", "src-addr", "dst", "dst-addr", "protocol", "mark", "action"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Rule entity",
+            "properties": {
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled",
+                    "description": "Disable firewall rule"
+                },
+
+                "_index": {
+                    "type": "string",
+                    "hidden": true
+                },
+
+                "chain": {
+                    "$ref": "#/definitions/chain"
+                },
+
+                "src": {
+                    "type": "string",
+                    "description": "Traffic source zone or interface",
+                    "title": "source",
+                    "modificator": [
+                        {"if": [{"chain": "output"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "src-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "title": "Source address",
+                    "description": "Source IP address range or host",
+                    "enableInvert": true
+                },
+
+                "dst": {
+                    "type": "string",
+                    "title": "destination",
+                    "description": "Traffic destination (interface or zone)",
+                    "modificator": [
+                        {"if": [{"chain": "input"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "dst-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "title": "destination address",
+                    "description": "Destination IP address range or host",
+                    "enableInvert": true
+                },
+
+                "protocol": {
+                    "$ref": "/defaults#/definitions/fw-protocol",
+                    "default": "all"
+                },
+
+                "icmp-type": {
+                    "hidden": true,
+                    "title": "ICMP Type",
+                    "description": "match icmp packet type",
+                    "$ref": "/defaults#/definitions/fw-icmp-type",
+                    "modificator": [
+                        {"if": [{"protocol": "icmp"}], "then": {"hidden": false}}
+                    ],
+                    "default": "any"
+                },
+
+                "mark": {
+                    "$ref": "/defaults#/definitions/fw-mark",
+                    "title": "Firewall mark",
+                    "description": "Packet mark matching for firewall rule processing",
+                    "enableInvert": true
+                },
+
+                "action": {
+                    "type": "string",
+                    "description": "Rule action",
+                    "enum": ["accept", "reject", "drop"]
+                },
+
+                "policy": {
+                    "type": "array",
+                    "title": "IPSec Policy",
+                    "description": "IPsec policy matching criteria",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "pair",
+                      "enum": ["dir", "pol", "strict", "reqid", "spi", "proto", "mode", "tunnel-src", "tunnel-dst"]
+                    }
+                  },
+
+                "extra": {
+                    "type": "string",
+                    "title": "Extra params",
+                    "description": "iptables-compatible rule extensions",
+                    "pattern": "^([a-zA-Z0-9-_+*:.,!?\/ ])+$",
+                    "patternDescription": "Arguments using iptables syntax",
+                    "patternExample": ["-m mac --mac-source FE:FF:FF:FF:FF:FF"]
+                }
+            }
+        },
+
+        "actions": {
+            "reset-counters": {
+                "title": "Reset Counters",
+                "description": "Reset traffic counters for this rule",
+                "exec": "subscript/firewall/connections.uc",
+                "args": ["reset_filter"]
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["delete", "filter"],
+        "reload": true
+    },
+
+    "apply": {
+        "exec": "subscript/firewall/rules.uc",
+        "reload": true,
+        "args": ["apply", "filter"]
+    },
+
+    "add": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["add", "filter"],
+        "merge": true,
+        "schema": {
+            "required": ["chain"],
+            "properties": {
+                "chain": {"$ref": "#/definitions/chain"}
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["clean", "filter"],
+        "confirm": true,
+        "reload": true
+    },
+
+    "status": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["status", "filter"],
+        "isTable": true
+    },
+
+    "set": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["set", "filter"]
+    },
+
+    "reorder": {
+        "exec": "subscript/firewall/rules.uc",
+        "description": "Change the position of an object",
+        "args": ["reorder", "filter"]
+    },
+
+    "acquire": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["get", "filter"]
+    },
+
+    "definitions": {
+        "chain": {
+            "type": "string",
+            "description": "Firewall chain name for rule grouping",
+            "enum": ["input", "forward", "output"]
+        }
+    },
+
+    "actions": {
+        "reset-counters": {
+            "title": "Reset Counters",
+            "exec": "subscript/firewall/connections.uc",
+            "description": "Reset all firewall traffic counters",
+            "args": ["reset_filter"]
+        }
+    }
+
+}

@@ -1,0 +1,112 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "SSH server",
+    "description": "Secure Shell (SSH) server access configuration",
+    "type": "object",
+    "required": ["port"],
+    "properties": {
+        "disabled": {
+            "$ref": "/defaults#/definitions/disabled"
+        },
+    
+        "port": {
+            "$ref": "/defaults#/definitions/port-strict",
+            "description": "Secure Shell (SSH) service listening port"
+        },
+
+        "cipher": {
+            "type": "array",
+            "title": "Cipher",
+            "description": "Secure Shell (SSH) encryption cipher selection",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "chacha20-poly1305@openssh.com",
+                    "aes128-ctr",
+                    "aes192-ctr",
+                    "aes256-ctr",
+                    "aes128-gcm@openssh.com",
+                    "aes256-gcm@openssh.com"
+                ]
+            }
+        },
+
+        "host-key-alg": {
+            "title": "Host Key Algorithms",
+            "description": "Secure Shell (SSH) Message Authentication Code (MAC) algorithm selection",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "rsa-sha2-512",
+                    "rsa-sha2-256",
+                    "ssh-rsa",
+                    "ssh-ed25519"
+                ]
+            }
+        },
+
+        "kex-alg": {
+            "title": "KEX Algorithms",
+            "description": "Secure Shell (SSH) key exchange method selection",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "curve25519-sha256",
+                    "curve25519-sha256@libssh.org",
+                    "ecdh-sha2-nistp256",
+                    "ecdh-sha2-nistp384",
+                    "ecdh-sha2-nistp521",
+                    "diffie-hellman-group-exchange-sha256",
+                    "diffie-hellman-group16-sha512",
+                    "diffie-hellman-group18-sha512",
+                    "diffie-hellman-group14-sha256"
+                ]
+            }
+        },
+
+        "mac-alg": {
+            "title": "MAC Algorithms",
+            "description": "Secure Shell (SSH) host key algorithm selection",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "enum": [
+                    "umac-64-etm@openssh.com",
+                    "umac-128-etm@openssh.com",
+                    "hmac-sha2-256-etm@openssh.com",
+                    "hmac-sha2-512-etm@openssh.com",
+                    "hmac-sha1-etm@openssh.com",
+                    "umac-64@openssh.com",
+                    "umac-128@openssh.com",
+                    "hmac-sha2-256",
+                    "hmac-sha2-512",
+                    "hmac-sha1"
+                ]
+            }
+        }
+
+    },    
+
+    "apply": {
+        "exec": "subscript/system/access-ssh.uc",
+        "args": ["apply"]
+    },
+
+    "status": {
+        "exec": "subscript/system/access-ssh.uc",
+        "args": ["status"]
+    },
+
+    "set": {
+        "exec": "subscript/system/access-ssh.uc",
+        "args": ["set"]
+    },
+    
+    "acquire": {
+        "exec": "subscript/system/access-ssh.uc",
+        "args": ["get"]
+    }
+}

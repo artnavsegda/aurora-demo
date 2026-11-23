@@ -1,0 +1,194 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Raw Rules",
+    "description": "Raw table for connection tracking bypass",
+    "type": "object",
+    "namesake": "_index",
+    "showParams": ["chain", "src", "src-addr", "dst", "dst-addr", "protocol", "action"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "RAW entity",
+            "properties": {
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled",
+                    "description": "Disable firewall rule"
+                },
+
+                "_index": {
+                    "type": "string",
+                    "hidden": true
+                },
+
+                "chain": {
+                    "$ref": "#/definitions/chain"
+                },
+
+                "src": {
+                    "type": "string",
+                    "title": "source",
+                    "description": "Traffic source zone or interface",
+                    "modificator": [
+                        {"if": [{"chain": "output"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "src-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "title": "source address",
+                    "description": "Source IP address range or host",
+                    "enableInvert": true
+                },
+
+                "dst": {
+                    "type": "string",
+                    "title": "destination",
+                    "description": "Traffic destination (interface or zone)",
+                    "modificator": [
+                        {"if": [{"chain": "prerouting"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "dst-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "title": "destination address",
+                    "description": "Destination IP address range or host",
+                    "enableInvert": true
+                },
+
+                "protocol": {
+                    "$ref": "/defaults#/definitions/fw-protocol",
+                    "default": "all"
+                },
+
+                "icmp-type": {
+                    "hidden": true,
+                    "title": "ICMP Type",
+                    "$ref": "/defaults#/definitions/fw-icmp-type",
+                    "modificator": [
+                        {"if": [{"protocol": "icmp"}], "then": {"hidden": false}}
+                    ],
+                    "default": "any"
+                },
+
+                "action": {
+                    "type": "string",
+                    "description": "Rule action",
+                    "enum": ["accept", "drop", "notrack"]
+                },
+
+                "extra": {
+                    "type": "string",
+                    "title": "Extra params",
+                    "description": "Custom iptables parameters",
+                    "pattern": "^([a-zA-Z0-9-_+*:.,!?\/ ])+$",
+                    "patternDescription": "Arguments using iptables syntax",
+                    "patternExample": ["-m mac --mac-source FE:FF:FF:FF:FF:FF"]
+                }
+            }
+        },
+
+        "actions": {
+            "reset-counters": {
+                "title": "Reset Counters",
+                "description": "Reset traffic counters for this rule",
+                "exec": "subscript/firewall/connections.uc",
+                "args": ["reset_raw"]
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["delete", "raw"],
+        "reload": true
+    },
+
+    "apply": {
+        "exec": "subscript/firewall/rules.uc",
+        "reload": true,
+        "args": ["apply", "raw"]
+    },
+
+    "add": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["add", "raw"],
+        "merge": true,
+        "schema": {
+            "required": ["chain"],
+            "properties": {
+                "chain": {"$ref": "#/definitions/chain"}
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["clean", "raw"],
+        "confirm": true,
+        "reload": true
+    },
+
+    "status": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["status", "raw"],
+        "isTable": true
+    },
+
+    "set": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["set", "raw"]
+    },
+
+    "reorder": {
+        "exec": "subscript/firewall/rules.uc",
+        "description": "Change the position of an object",
+        "args": ["reorder", "raw"]
+    },
+
+    "acquire": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["get", "raw"]
+    },
+
+    "definitions": {
+        "chain": {
+            "type": "string",
+            "description": "Firewall chain name for rule grouping",
+            "enum": ["output", "prerouting"]
+        }
+    },
+
+    "actions": {
+        "reset-counters": {
+            "title": "Reset Counters",
+            "description": "Reset all firewall traffic counters",
+            "exec": "subscript/firewall/connections.uc",
+            "args": ["reset_raw"]
+        }
+    }
+
+}

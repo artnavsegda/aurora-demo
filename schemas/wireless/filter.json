@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Filter",
+  "description": "WiFi ACL",
+  "type": "object",
+
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "WiFi devices",
+      "properties": {
+        "mac": {
+          "type": "array",
+          "description": "Wi-Fi device MAC address",
+          "title": "MAC address",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "/defaults#/definitions/macaddr"
+          }
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["add"],
+    "merge": true,
+    "schema": {
+      "required": ["name"],
+      "properties": {
+        "name": {"$ref": "/defaults#/definitions/name-ext"}
+      }
+    }
+  },
+
+  "clean": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+
+  "apply": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/wireless/filter.uc",
+    "args": ["get"]
+  }
+}

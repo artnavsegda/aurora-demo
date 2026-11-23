@@ -1,0 +1,149 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "rule",
+    "description": "Policy-based routing (PBR) rules for traffic steering",
+    "type": "object",
+    "definitions": {
+        "action": {
+            "type": "string",
+            "title": "Rule Action",
+            "description": "The type of action",
+            "strictEnum": false,
+            "enum": ["prohibit", "unreachable", "blackhole", "throw"]
+        },
+        "interface": {
+            "$ref": "/defaults#/definitions/interface",
+            "title": "Incoming Interface",
+            "description": "Ingress interface matching for packet filtering",
+            "default": "any"
+        },
+
+        "src-addr": {
+            "$ref": "/defaults#/definitions/ipaddr",
+            "title": "Source Address",
+            "description": "Source IP address range or host matching",
+            "default": "0.0.0.0/0"
+        },
+
+        "dst-addr": {
+            "$ref": "/defaults#/definitions/ipaddr",
+            "title": "Destination Address",
+            "description": "Destination IP address range or host matching",
+            "default": "0.0.0.0/0"
+        },
+        "lookup": {
+            "type": "string",
+            "title": "Table",
+            "description": "Routing table lookup for matched packets",
+            "cue": ["/ip/route/table"]
+        }
+    },
+
+    "namesake": "_index",
+    "showParams": ["state", "interface", "src-addr", "dst-addr", "table"],
+
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "PBR Rule",
+            "required": ["table"],
+            "properties": {
+
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled"
+                },
+
+                "interface": {
+                    "$ref": "#/definitions/interface"
+                },
+
+                "src-addr": {
+                    "$ref": "#/definitions/src-addr"
+                },
+
+                "dst-addr": {
+                    "$ref": "#/definitions/dst-addr"
+                },
+
+                "mark": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 4294967295,
+                    "description": "Connection tracking (conntrack) mark matching"
+                },
+
+                "table": {
+                    "$ref": "#/definitions/lookup"
+                },
+
+                "action": {
+                    "$ref": "#/definitions/action"
+                },
+
+                "priority": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 9999999,
+                    "description": "Rule priority (lower values processed first)",
+                    "default": "dynamic"
+                }
+
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["delete"],
+        "reload": true
+    },
+
+    "add": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["add"],
+        "merge": true,
+        "schema": {
+            "required": ["table"],
+            "properties": {
+                "interface": {
+                    "$ref": "#/definitions/interface"
+                },
+
+                "src-addr": {
+                    "$ref": "#/definitions/src-addr"
+                },
+
+                "dst-addr": {
+                    "$ref": "#/definitions/dst-addr"
+                },
+                "table": {
+                    "$ref": "#/definitions/lookup"                    
+                }
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["clean"],
+        "reload": true,
+        "confirm": true
+    },
+
+    "apply": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["apply"],
+        "reload": true
+    },
+
+    "set": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["set"]
+    },
+
+    "acquire": {
+        "exec": "subscript/route/rule.uc",
+        "args": ["get"]
+    }
+}

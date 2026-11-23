@@ -1,0 +1,135 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"documentation": ["local", "global"],
+	"title": "static",
+	"description": "Static routing table for manual route configuration",
+	"type": "object",
+	"namesake": "_index",
+	"showParams": ["state", "dst-addr", "interface", "gateway", "metric", "table", "src-addr", "type"],
+	"patternProperties": {
+		".*": {
+			"type": "object",
+			"title": "Route",
+			"required": ["interface", "dst-addr"],
+			"properties": {
+				"disabled": {
+					"$ref": "/defaults#/definitions/disabled"
+				},
+
+				"dst-addr": {
+					"$ref": "/defaults#/definitions/ipaddr",
+					"title": "Target",
+					"description": "Destination IP address for static route"
+				},
+				
+				"gateway": {
+					"$ref": "/defaults#/definitions/ipaddr-strict",
+					"title": "Gateway",
+					"description": "Next-hop gateway IP address for route forwarding",
+					"hidden": true,
+					"modificator": [
+						{"if":[{"type": "unicast"}],   "then": {"hidden": false}}
+					]
+				},
+				
+				"metric": {
+					"$ref": "/defaults#/definitions/metric",
+					"description": "Route metric value for path prioritization"
+				},
+
+				"table": {
+					"type": "string",
+					"description": "Routing table selection",
+					"default": "main",
+					"cue": ["/ip/route/table"]
+				},
+
+				"src-addr": {
+					"$ref": "/defaults#/definitions/ipaddr",
+					"title": "Source Address",
+					"description": "Source IP address for static route"
+				},
+
+				"type": {
+					"type": "string",
+					"description": "Route type",
+					"enum": ["unicast", "unreachable", "prohibit", "blackhole"]
+				},
+
+				"interface": {
+					"$ref": "/defaults#/definitions/interface",
+					"title": "Source interface",
+					"description": "Egress interface for routed traffic",
+					"hidden": true,
+					"strictEnum": false,
+					"modificator": [
+						{"if":[{"type": "unicast"}],   "then": {"hidden": false}}
+					]
+				}
+
+			}
+		}
+	},
+
+	"delete": {
+		"exec": "subscript/route/list.uc",
+		"args": ["delete"],
+		"reload": ["/ip/route/rule", "/ip/route/list"]
+	},
+
+	"add": {
+		"exec": "subscript/route/list.uc",
+		"args": ["add"],
+		"reload": ["/ip/route/rule"],
+		"schema": {
+			"required": ["dst-addr", "interface"],
+			"properties": {
+				"dst-addr": {
+					"$ref": "/defaults#/definitions/ipaddr",
+					"title": "Target",
+					"description": "Destination network or host IP address for static route"
+				},
+
+				"interface": {
+					"$ref": "/defaults#/definitions/interface",
+					"title": "Source interface",
+					"description": "Egress interface for routed traffic"
+				},
+				
+				"gateway": {
+					"$ref": "/defaults#/definitions/ipaddr",
+					"title": "Gateway",
+					"description": "Next-hop gateway IP address for route forwarding"
+				},
+				
+				"metric": {
+					"$ref": "/defaults#/definitions/metric",
+					"description": "Route metric value for path prioritization"
+				}
+			}
+		}
+	},
+
+	"apply": {
+		"exec": "subscript/route/list.uc",
+		"args": ["apply"],
+		"reload": true
+	},
+
+	"clean": {
+		"exec": "subscript/route/list.uc",
+		"args": ["clean"],
+		"confirm": true,
+		"reload": ["/ip/route/rule", "/ip/route/list"]
+	},
+
+	"set": {
+		"exec": "subscript/route/list.uc",
+		"args": ["set"]
+	},
+
+	"acquire": {
+		"exec": "subscript/route/list.uc",
+		"args": ["get"]
+	}
+}

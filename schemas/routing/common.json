@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "routing",
+    "type": "object",
+    "description": "Common properties of dynamic routing",
+
+    "definitions": {
+        "bird-password": {
+            "type": "password",
+            "description": "Authentication key embedded as a quoted string literal into a BIRD config (RFC 2385 MD5 key, OSPF auth, etc.)",
+            "pattern": "^[^\"`\\r\\n]*$",
+            "patternDescription": "not allowed '\"', '`' symbols or line breaks"
+        }
+    },
+
+    "properties": {
+        "disabled": {
+            "$ref": "/defaults#/definitions/disabled"
+        },
+        "router-id": { 
+            "$ref": "/defaults#/definitions/num-or-ipaddr",
+            "title": "Router ID"
+        },
+        "scan-time": {
+            "type": "number",
+            "title": "Routes scan time",
+            "description": "Time in seconds between two scans of the network interface list. 0 means scan on startup only, no periodic rescan",
+            "minimum": 0,
+            "maximum": 4294967295,
+            "default": 20
+        },
+        "include-config": {
+            "type": "array",
+            "title": "config files",
+            "hidden": true,
+            "noExport": true,
+            "description": "Config files in bird syntax",
+            "items": {
+                "type": "string",
+                "cue": ["/storage/file[file-type:!temporary]"]
+            }
+        },
+        "exclude": {
+            "type": "array",
+            "title": "Routing Excludes",
+            "description": "Exclude interfaces from announcement",
+            "items": {
+                "$ref": "/defaults#/definitions/interface"
+            }
+        }
+    },
+
+    "set" : {
+        "exec": "./subscript/routing/common.uc",
+        "args": ["set", "routing/common"]
+    },
+
+    "acquire": {
+		"exec": "./subscript/routing/common.uc",
+		"args": ["get", "routing/common"]
+    },
+    
+    "apply": {
+        "exec": "./subscript/routing/common.uc",
+        "args": ["apply", "routing/common"]
+    }
+}

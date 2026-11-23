@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "BFD interfaces",
+  "type": "object",
+  "description": "Per-interface BFD settings - each entry becomes a separate interface {} block inside the single BFD protocol",
+
+  "namesake": "interface",
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "properties": {
+        "interface": {
+          "$ref": "/defaults#/definitions/interface",
+          "hidden": true
+        },
+        "min-rx-interval": {
+          "type": "number",
+          "title": "Min Rx Interval",
+          "description": "The minimum receive interval (msec) advertised to a neighbor is used to limit the rate at which the neighbor generates BFD control packets",
+          "minimum": 1,
+          "maximum": 4294967,
+          "default": 10
+        },
+        "min-tx-interval": {
+          "type": "number",
+          "title": "Min Tx Interval",
+          "description": "The desired transmit interval (msec) for generating BFD control packets (with Min Rx Interval advertised by the neighbor",
+          "minimum": 1,
+          "maximum": 4294967,
+          "default": 100
+        },
+        "multiplier": {
+          "type": "number",
+          "description": "A number of missed (min-rx/tx-interval) packets after which the session is declared down",
+          "minimum": 1,
+          "maximum": 255,
+          "default": 5
+        },
+        "passive": {
+          "type": "boolean",
+          "description": "Don't send BFD packets until the router receive a BFD packet from the other side"
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["add"],
+    "merge": true,
+    "description": "add new entry (params: <interface>)",
+    "schema": {
+      "required": ["interface"],
+      "properties": {
+        "interface": {"$ref": "/defaults#/definitions/interface"}
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["apply"]
+  },
+
+  "clean": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+
+  "set": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "./subscript/routing/bfd/interface.uc",
+    "args": ["get"]
+  }
+}

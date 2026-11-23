@@ -1,0 +1,361 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "network",
+  "description": "WiFi Networks",
+  "type": "object",
+  "definitions": {
+    "adapter": {
+      "type": "string",
+      "description": "Wireless PHY (physical layer) adapter",
+      "cue": ["/wireless/adapter"]
+    }
+  },
+
+  "showParams": ["mode", "ssid", "encryption", "mtu"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Wireless network",
+      "description": "Wireless network configuration setup",
+      "required": ["adapter", "auth-server", "auth-secret", "eap-username", "eap-password"],
+      "properties": {
+        "_board": {
+          "type": "string",
+          "description": "hidden option for macaddr",
+          "hidden": true
+        },
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+
+        "adapter": {
+          "$ref": "#/definitions/adapter"
+        },
+
+        "mode": {
+          "type": "string",
+          "description": "Wireless network operation mode",
+          "enum": ["ap", "sta", "mesh"],
+          "modificator": [
+            {"if": [{"_board": "mt00"}],    "then": {"enum": ["ap", "sta"]}},
+            {"if": [{"_board": "mt02"}],    "then": {"enum": ["ap", "sta"]}},
+            {"if": [{"_board": "mt02_v2"}], "then": {"enum": ["ap", "sta"]}}
+          ]
+        },
+
+        "encryption": {
+          "type": "string",
+          "description": "Wireless network encryption type",
+          "enum": ["none", "psk-mixed+ccmp", "psk2+ccmp", "wpa-mixed+ccmp", "wpa2+ccmp", "sae"],
+          "modificator": [
+            {"if": [{"_board": "mt00"}],    "then": {"enum": ["none", "psk-mixed+ccmp", "psk2+ccmp", "wpa-mixed+ccmp", "wpa2+ccmp"]}},
+            {"if": [{"_board": "mt02"}],    "then": {"enum": ["none", "psk-mixed+ccmp", "psk2+ccmp", "wpa-mixed+ccmp", "wpa2+ccmp"]}},
+            {"if": [{"_board": "mt02_v2"}], "then": {"enum": ["none", "psk-mixed+ccmp", "psk2+ccmp", "wpa-mixed+ccmp", "wpa2+ccmp"]}},
+            {"if": [{"mode": "mesh"}], "then": {"enum": ["none", "sae"]}}
+          ]
+        },
+
+        "ssid": {
+          "type": "string",
+          "title": "SSID",
+          "description": "Wireless network SSID (Service Set Identifier)"
+        },
+
+        "key": {
+          "$ref": "/defaults#/definitions/password",
+          "description": "Wireless network authentication password",
+          "minLength": 8,
+          "hidden": true,
+          "modificator": [
+            {"if": [{"encryption" :"psk-mixed+ccmp"}], "then": {"hidden": false}},
+            {"if": [{"encryption" :"psk2+ccmp"}], "then": {"hidden": false}},
+            {"if": [{"encryption" :"sae"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "wds": {
+          "type": "boolean",
+          "title": "WDS",
+          "description": "Use 4-address mode to allow transparent ethernet bridging",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"mode": "!mesh"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "wmm": {
+          "type": "boolean",
+          "title": "WMM",
+          "description": "Enable Wireless Multimedia (WMM) QoS for multimedia traffic"
+        },
+
+        "mesh-forward": {
+          "type": "boolean",
+          "title": "Mesh Forwarding",
+          "description": "Enable forwarding of packets not destined for this mesh station",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"mode" :"mesh"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "mesh-ttl": {
+          "type": "number",
+          "title": "Mesh TTL",
+          "description": "Maximum hop count for mesh network packets",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"mode" :"mesh"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "mesh-rssi-threshold": {
+          "type": "number",
+          "title": "Mesh RSSI limit",
+          "description": "Minimum RSSI threshold for mesh network connectivity",
+          "hidden": true,
+          "minimum": -100,
+          "maximum": 1,
+          "modificator": [
+            {"if": [{"mode" :"mesh"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "hidden": {
+          "type": "boolean",
+          "hidden": true,
+          "title": "Hide SSID",
+          "description": "Disable beacon frame transmission",
+          "modificator": [
+            {"if": [{"mode" :"ap"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "macaddr": {
+          "$ref": "/defaults#/definitions/macaddr",
+          "hidden": true,
+          "noExport": true,
+          "readOnly": false,
+          "default": "auto",
+          "modificator": [
+            {"if": [{"_board": "mt00"}], "then": {"readOnly": true}},
+            {"if": [{"_board": "mt02"}], "then": {"readOnly": true}},
+            {"if": [{"_board": "mt02_v2"}], "then": {"readOnly": true}}
+          ]
+        },
+
+        "mtu": {
+          "$ref": "/defaults#/definitions/mtu",
+          "default": 1500,
+          "maximum": 2304,
+          "minimum": 256
+        },
+
+        "isolate": {
+          "type": "boolean",
+          "title": "Isolate Clients",
+          "description": "Enable client-to-client communication blocking",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"mode": "ap"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "mac-filter": {
+          "type": "string",
+          "hidden": true,
+          "title": "MAC filter",
+          "description": "Wireless Access Control List (ACL) policy",
+          "enum": ["deny", "allow", "disable"],
+          "modificator": [
+            {"if": [{"mode": "ap"}, {"encryption": "!wpa-mixed+ccmp"}, {"encryption": "!wpa2+ccmp"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "mac-list": {
+          "type": "array",
+          "hidden": true,
+          "description": "Wireless devices ACL",
+          "modificator": [
+            {"if": [{"mode": "ap"},{"mac-filter": "!disable"},{"encryption": "!wpa-mixed+ccmp"},{"encryption": "!wpa2+ccmp"}], "then": {"hidden": false}}
+          ],
+          "items": {
+            "cue": ["/wireless/filter"]
+          }
+
+        },
+
+        "auth-server": {
+          "$ref": "/defaults#/definitions/host-port",
+          "title": "Authentication server",
+          "hidden": true,
+          "description": "Authentication server address",
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "auth-secret": {
+          "type": "string",
+          "title": "Authentication secret",
+          "hidden": true,
+          "description": "Authentication server shared key",
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+
+        "acct-server": {
+          "$ref": "/defaults#/definitions/host-port",
+          "title": "Accounting server",
+          "hidden": true,
+          "description": "Accounting server address",
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "acct-secret": {
+          "type": "string",
+          "title": "Accounting secret",
+          "hidden": true,
+          "description": "Accounting server shared key",
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "!sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "eap-method": {
+          "type": "string",
+          "hidden": true,
+          "title": "EAP method",
+          "description": "EAP authentication method",
+          "enum": ["peap", "tls", "ttls"],
+          "modificator": [
+            {"if": [{"mode": "sta"}, {"encryption": "wpa-mixed+ccmp"}], "then": {"hidden": false}},
+            {"if": [{"mode": "sta"}, {"encryption": "wpa2+ccmp"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "eap-auth-method": {
+          "type": "string",
+          "hidden": true,
+          "title": "Authentication method",
+          "description": "WPA/WPA2 enterprise authentication method",
+          "enum": ["pap", "mschap-v2"],
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "sta"}, {"eap-method": "ttls"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "sta"}, {"eap-method": "ttls"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa-mixed+ccmp"}, {"mode": "sta"}, {"eap-method": "peap"}], "then": {"hidden": false, "enum": ["mschap-v2"]}},
+            {"if": [{"encryption": "wpa2+ccmp"}, {"mode": "sta"}, {"eap-method": "peap"}], "then": {"hidden": false, "enum": ["mschap-v2"]}}
+          ]
+        },
+
+        "eap-username": {
+          "title": "Username",
+          "$ref": "/defaults#/definitions/name-ext",
+          "description": "WPA/WPA2 enterprise authentication username",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"encryption": "wpa-mixed+ccmp", "mode": "sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption": "wpa2+ccmp", "mode": "sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "eap-password": {
+          "title": "Password",
+          "$ref": "/defaults#/definitions/password",
+          "description": "WPA/WPA2 enterprise authentication password",
+          "hidden": true,
+          "modificator": [
+              {"if": [{"encryption": "wpa-mixed+ccmp", "mode": "sta", "eap-method": "peap"}], "then": {"hidden": false}},
+              {"if": [{"encryption": "wpa2+ccmp", "mode": "sta", "eap-method": "peap"}], "then": {"hidden": false}},
+              {"if": [{"encryption": "wpa-mixed+ccmp", "mode": "sta", "eap-method": "ttls"}], "then": {"hidden": false}},
+              {"if": [{"encryption": "wpa2+ccmp", "mode": "sta", "eap-method": "ttls"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "ca": {
+          "type": "string",
+          "hidden": true,
+          "title": "CA certificate",
+          "description": "CA certificate",
+          "cue": ["/storage/certificate"],
+          "modificator": [
+            {"if": [{"encryption" :"wpa-mixed+ccmp"}, {"mode" : "sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption" :"wpa2+ccmp"}, {"mode" : "sta"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "cert": {
+          "type": "string",
+          "hidden": true,
+          "title": "Certificate",
+          "description": "Client authentication certificate",
+          "cue": ["/storage/certificate"],
+          "modificator": [
+            {"if": [{"encryption" :"wpa-mixed+ccmp"}, {"mode" : "sta"}], "then": {"hidden": false}},
+            {"if": [{"encryption" :"wpa2+ccmp"}, {"mode" : "sta"}], "then": {"hidden": false}}
+          ]
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/wireless/network.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "subscript/wireless/network.uc",
+    "args": ["add", "wireless/network"],
+    "merge": true,
+    "schema": {
+      "required": ["name", "adapter"],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "description": "Wireless interface name",
+          "maxLength": 15
+        },
+        "adapter": {"$ref": "#/definitions/adapter"}
+      }
+    }
+  },
+
+  "clean": {
+      "exec": "subscript/wireless/network.uc",
+      "args": ["clean"],
+      "confirm": true,
+      "reload": true
+  },
+
+  "apply": {
+      "exec": "subscript/wireless/network.uc",
+      "args": ["apply"]
+  },
+
+  "status": {
+    "exec": "subscript/wireless/network.uc",
+    "args": ["status"]
+  },
+
+  "set": {
+    "exec": "subscript/wireless/network.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/wireless/network.uc",
+    "args": ["get"]
+  }
+}

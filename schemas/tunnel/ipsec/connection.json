@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "IPSec tunnel connections",
+  "description": "IKE Phase 1 configuration",
+  "type": "object",
+  "definitions": {
+  },
+  "showParams": ["leftid", "left", "right", "rightid", "keyexchange"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Tunnel entity",
+      "required": ["psk","ca", "cert"],
+      "properties": {
+        "left": {
+          "type": "string",
+          "title": "Local IP",
+          "description": "Local endpoint address or source interface",
+          "cue": ["/ip/interface", "/mobile/modem"],
+          "default": "auto"
+        },
+        "right": {
+          "$ref": "/defaults#/definitions/host",
+          "title": "Remote IP",
+          "description": "Remote endpoint (FQDN or IP address)"
+        },
+        "keyexchange": {
+          "type":"string",
+          "title": "IKE version",
+          "description": "IKE protocol version selection",
+          "enum": ["ikev2", "ikev1"]
+        },
+        "profile": {
+          "type": "string",
+          "title": "IKE Profile",
+          "description": "IKE/ISAKMP encryption and authentication proposal",
+          "cue": ["/tunnel/ipsec/profile"]
+        },
+        "leftid": {
+          "type": "string",
+          "readOnly": false,
+          "title": "Local ID",
+          "description": "Local IKE identity for authentication",
+          "default": "auto",
+          "modificator": [
+            {"if": [{"auth": "pubkey"}], "then": {"readOnly": true}}
+          ]
+        },
+        "rightid": {
+          "type": "string",
+          "title": "Remote ID",
+          "description": "Remote IKE identity for verification",
+          "default": "auto"
+        },
+        "auth": {
+          "type": "string",
+          "title": "Auth method",
+          "description": "IKE authentication method",
+          "enum": ["psk", "pubkey"]
+        },
+        "psk": {
+          "$ref": "/defaults#/definitions/psk",
+          "title": "Pre-shared key",
+          "description": "IKE pre-shared key (PSK)",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"auth": "psk"}], "then": {"hidden":false}}
+          ]
+        },
+        "cert": {
+          "$ref": "/defaults#/definitions/cert",
+          "title": "Certificate",
+          "description": "Local certificate (including private key)",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"auth": "pubkey"}], "then": {"hidden":false}}
+          ]
+        },
+        "leftsourceip": {
+          "type": "string",
+          "title": "Virtual IP",
+          "description": "Virtual IP address for tunnel origination",
+          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
+          "patternDescription": "IP address (without prefix) or requeste an address from the peer (%config)",
+          "patternExample": ["192.168.1.1", "%config"]
+        },
+        "rightsourceip": {
+          "type": "string",
+          "title": "Remote Virtual IP",
+          "description": "Assign virtual IP to remote peer",
+          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
+          "patternDescription": "Single IP address or range specified with a '-' symbol or initiator must propose an address which is then echoed back (%config)",
+          "patternExample": ["192.168.1.1/24", "192.168.1.1-192.168.1.100", "%config"]
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "handler",
+    "args": ["delete", "ipsec/connection"],
+    "reload": true
+  },
+
+  "add": {
+      "exec": "handler",
+      "args": ["add", "ipsec/connection"],
+      "merge": true,
+      "schema": {
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "$ref": "/defaults#/definitions/name",
+            "description": "IKE connection profile name"
+          }
+        }
+      }
+  },
+
+  "apply": {
+      "exec": "handler",
+      "args": ["apply", "ipsec/connection"]
+  },
+  
+  "clean": {
+      "exec": "handler",
+      "args": ["clean", "ipsec/connection"],
+      "confirm": true,
+      "reload": true
+  },
+  
+  "set": {
+    "exec": "handler",
+    "args": ["set", "ipsec/connection"]
+  },
+
+  "acquire": {
+    "exec": "handler",
+    "args": ["get", "ipsec/connection"]
+  }
+}

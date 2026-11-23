@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local"],
+  "title": "Zabbix agent",
+  "description": "Zabbix monitoring service agent",
+  "type": "object",
+  "required": ["tls-accept", "tls-connect", "psk", "ca", "cert", "identity"],
+
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+
+    "hostname": {
+      "type": "string",
+      "description": "Unique device name for identification on the server"
+    },
+
+    "port": {
+      "type": "number",
+      "description": "Zabbix passive checks listening port",
+      "minimum": 1024,
+      "maximum": 32767,
+      "default": 10050
+    },
+
+    "server": {
+      "type": "array",
+      "description": "Zabbix server address for incoming connections",
+      "items": {
+        "$ref": "/defaults#/definitions/ipaddr",
+        "title": "IP address"
+      }
+    },
+
+    "server-active": {
+      "type": "array",
+      "title": "Server active",
+      "description": "Zabbix active checks server address (default port 10051)",
+      "items": {
+        "$ref": "/defaults#/definitions/host-port",
+        "title": "Server address"
+      }
+    },
+
+    "buffer-send": {
+      "type": "number",
+      "title": "Buffer Send",
+      "description": "Do not keep data longer than Buffer Send (sec) in buffer",
+      "minimum": 1,
+      "maximum": 3600,
+      "default": 5,
+      "hidden": true,
+      "modificator": [{"if": [{"server-active": "!"}], "then": {"hidden": false}}]
+    },
+
+    "buffer-size": {
+      "type": "number",
+      "title": "Buffer Size",
+      "description": "The size of the buffer (bytes) used to collected data before sending",
+      "minimum": 2,
+      "maximum": 65535,
+      "default": 1000,
+      "hidden": true,
+      "modificator": [{"if": [{"server-active": "!"}], "then": {"hidden": false}}]
+    },
+
+    "tls-accept": {
+      "type": "string",
+      "description": "The encryption type with which the agent can accept connections",
+      "title": "TLSAccept",
+      "enum": ["unencrypted", "psk", "cert"]
+    },
+
+    "tls-connect": {
+      "type": "string",
+      "description": "The encryption type with which the agent will establish the connection",
+      "title": "TLSConnect",
+      "enum": ["unencrypted", "psk", "cert"]
+    },
+
+    "ca": {
+      "title": "CA certificate",
+      "description": "Public key of the certification authority (CA)",
+      "cue": ["/storage/certificate"],
+      "hidden": true,
+      "modificator": [
+        {"if": [{"tls-connect": "cert"}], "then": {"hidden": false}},
+        {"if": [{"tls-accept": "cert"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "cert": {
+      "title": "Certificate",
+      "description": "Certificate for authentication and encryption",
+      "cue": ["/storage/certificate"],
+      "hidden": true,
+      "modificator": [
+        {"if": [{"tls-connect": "cert"}], "then": {"hidden": false}},
+        {"if": [{"tls-accept": "cert"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "psk": {
+      "$ref": "/defaults#/definitions/password",
+      "title": "Pre-shared Key",
+      "description": "Pre-shared Key for encrypting connections",
+      "pattern": "^[a-f0-9]+$",
+      "patternDescription": "A string containing Pre-shared Key presented as hexadecimal",
+      "patternExample": ["001d6bbe06dc9ad18824a4a78b699805", "e560cb0d918d26d31b4f642181f5f570ad89a390931102e5391d08327ba434e9"],
+      "hidden": true,
+      "modificator": [
+        {"if": [{"tls-connect": "psk"}], "then": {"hidden": false}},
+        {"if": [{"tls-accept": "psk"}], "then": {"hidden": false}}
+      ],
+      "minLength": 32,
+      "maxLength": 128
+    },
+
+    "identity": {
+      "type": "string",
+      "title": "PSK identity",
+      "description": "PSK identity string",
+      "hidden": true,
+      "modificator": [
+        {"if": [{"tls-connect": "psk"}], "then": {"hidden": false}},
+        {"if": [{"tls-accept": "psk"}], "then": {"hidden": false}}
+      ]
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/service/zabbix.uc",
+    "args": ["apply"]
+  },
+
+  "status": {
+    "exec": "subscript/service/zabbix.uc",
+    "args": ["status"]
+  },
+
+  "set": {
+    "exec": "subscript/service/zabbix.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/service/zabbix.uc",
+    "args": ["get"]
+  }
+}

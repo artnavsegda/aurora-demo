@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Config",
+  "description": "Running configuration management",
+  "type": "object",
+  "noExport": true,
+
+  "actions": {
+
+    "revert": {
+      "title": "Revert config",
+      "exec": "subscript/system/config.uc",
+      "args": ["revert"],
+      "description": "Revert all uncommitted configuration changes",
+      "confirm": "Confirm that you want to revert all changes"
+    },
+
+    "commit": {
+      "title": "Сommit config",
+      "exec": "subscript/system/config.uc",
+      "args": ["commit"],
+      "description": "Commit the current running configuration"
+    },
+
+    "export": {
+      "title": "Export config",
+      "exec": "subscript/system/config.uc",
+      "args": ["export"],
+      "description": "Export the current running configuration",
+      "responseType": "blob",
+      "schema": {
+        "properties": {
+          "include-files": {
+            "type": "boolean",
+            "title": "Include storage file",
+            "description": "Include files imported to /storage/file in the exported configuration"
+          }
+        }
+      }
+    },
+
+    "rollback": {
+      "title": "Rollback config",
+      "exec": "subscript/system/config.uc",
+      "args": ["rollback"],
+      "hidden": true,
+      "description": "Rollback uncommitted configuration",
+      "schema": {
+        "required": ["after"],
+        "properties": {
+          "after": {
+            "type": "number",
+            "minimum": 60,
+            "description": "Rollback configuration after seconds"
+          }
+        }
+      }
+    },
+
+    "import": {
+      "title": "Import config",
+      "exec": "subscript/system/config.uc",
+      "args": ["import"],
+      "description": "Import configuration from file",
+      
+      "checkConnection": {
+        "timeout": 360,
+        "delay": 10,
+        "text": "Importing configuration. Please wait"
+      },
+
+      "schema": {
+        "required": ["file"],
+        "properties": {
+          "file": {
+            "type": "string",
+            "strictEnum": true,
+            "description": "Configuration file to import",
+            "cue": ["/storage/file"]
+          }
+        }
+      }
+    },
+
+    "default": {
+      "title": "Default config",
+      "exec": "subscript/system/config.uc",
+      "args": ["reset"],
+      "description": "Reset to default settings",
+      "checkConnection": {
+        "timeout": 360,
+        "delay": 10,
+        "text": "Resetting to default settings. Please wait."
+      },
+      "schema": {
+        "properties": {
+          "reset-storage": {
+            "type": "boolean",
+            "title": "Reset storage",
+            "description": "Clear all /storage partitions"
+          },
+
+          "file": {
+            "title": "Import after reset",
+            "type": "string",
+            "strictEnum": true,
+            "description": "File to import after resetting to default settings",
+            "cue": ["/storage/file"]
+          }
+        }
+      }
+    }
+  }
+}

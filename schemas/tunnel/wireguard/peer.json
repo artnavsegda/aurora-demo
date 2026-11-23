@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Peer",
+  "description": "WireGuard tunnel peers",
+  "type": "object",
+
+  "definitions": {
+    "interface": {
+      "type": "string",
+      "description": "WireGuard network interface",
+      "cue": ["/tunnel/wireguard/interface"]
+    },
+    "base64-256": {
+      "type": "string",
+      "description": "256-bit key (32 bytes) encoded using base64 algorithm",
+      "pattern": "^[0-9a-zA-Z+/=]{43}=$",
+      "patternDescription": "l2lUlZdvBpzfRiyK6ekHWvnBC3yFXNJcmx6bd+ANAws="
+    }
+  },
+  "namesake": "name",
+  "showParams": ["interface", "remote-ip", "allowed-ip", "keepalive"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Wireguard peer",
+      "required": ["interface", "pub-key", "allowed-ip"],
+      "description": "Remote side in a peer-to-peer tunnel",
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name-ext",
+          "hidden": true,
+          "readOnly": true,
+          "noExport": true
+        },
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled",
+          "description": "Disable wireguard interface"
+        },
+        "interface": {
+          "$ref": "#/definitions/interface"
+        },
+        "remote-ip": {
+          "$ref": "/defaults#/definitions/ipaddr-port",
+          "description": "Remote peer IP address and port (51820) combination",
+          "title": "Remote IP"
+        },
+        "allowed-ip": {
+          "$ref": "/defaults#/definitions/ipaddr-list",
+          "title": "Allowed IP",
+          "description": "Address associated with this peer to provide routing"
+        },
+        "install-route": {
+          "hidden": true,
+          "type": "boolean",
+          "title": "Install routes",
+          "description": "Automatically add route to allowed IP"
+        },
+        "pub-key": {
+          "type": "string",
+          "title": "Public key",
+          "description": "Public key for authentication and traffic encryption",
+          "pattern": "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{2}={2})$",
+          "patternDescription": "Base64-encoded key",
+          "patternExample": ["ABC123abc456ABC789abc123ABC456abc789Abc123A="]
+        },
+        "psk": {
+          "$ref": "#/definitions/base64-256",
+          "type": "string",
+          "title": "Pre-shared key",
+          "description": "Additional key for increased security",
+          "pattern": "^[0-9a-zA-Z+/=]{43}=$",
+          "patternDescription": "Base64-encoded 32-byte Preshared Key",
+          "patternExample": ["ABC123abc456ABC789abc123ABC456abc789Abc123A="]
+        },
+        "keepalive": {
+          "type": "number",
+          "description": "Keepalive packet transmission interval (sec)",
+          "minimum": 0,
+          "maximum": 65535
+        }
+      }
+    },
+
+    "actions": {
+      "generate-psk": {
+          "title": "Generate Preshared Key",
+          "description": "Generate and apply PSK key",
+          "exec": "subscript/tunnel/wireguard/peer.uc",
+          "args": ["genkey"],
+          "reload": true
+      }
+    }
+  },
+
+  "status": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "args": ["status"]
+  },
+
+  "apply": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "args": ["set"]
+  },
+
+  "add": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "args": ["add"],
+    "merge": true,
+    "schema": {
+      "required": ["interface", "name"],
+      "properties": {
+        "interface": {
+          "$ref": "#/definitions/interface"
+        },
+        "name": {
+          "$ref": "/defaults#/definitions/name-ext"
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "reload": true,
+    "args": ["delete"]
+  },
+
+  "clean": {
+    "exec": "subscript/tunnel/wireguard/peer.uc",
+    "reload": true,
+    "confirm": true,
+    "args": ["clean"]
+  },
+
+  "acquire": {
+     "exec": "subscript/tunnel/wireguard/peer.uc",
+     "args": ["get"]
+   }
+}

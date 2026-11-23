@@ -1,0 +1,93 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"documentation": ["local", "global"],
+	"title": "Packages",
+	"description": "List of installed software packages",
+	"type": "object",
+	"noExport": true,
+	
+	"showParams": ["version", "size", "short-description"],
+	"patternProperties": {
+		".*": {
+			"type": "object",
+			"properties": {
+				"version": {
+					"type": "string",
+					"description": "Version of the installed package",
+					"readOnly": true
+				},
+
+				"depends": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"enum": []
+					},
+					"description": "Package dependencies",
+					"readOnly": true
+				},
+
+				"size": {
+					"type": "string",
+					"description": "Disk space usage by the package",
+					"readOnly": true
+				},
+
+				"description": {
+					"type": "string",
+					"description": "Package description from maintainer",
+					"readOnly": true
+				},
+
+				"short-description": {
+					"type": "string",
+					"hidden": true,
+					"description": "First line of the package description, for list display",
+					"readOnly": true
+				}
+			}
+		}
+	},
+
+	"actions": {
+		"install": {
+			"exec": "subscript/system/package.uc",
+			"args": ["install"],
+			"description": "Install software package",
+			"reload": true,
+			"reset": true,
+			"wait": true,
+			"schema": {
+				"required": ["file"],
+				"properties": {
+					"file": {
+						"type": "string",
+						"strictEnum": true,
+						"description": "File in temporary storage",
+						"cue": ["/storage/file"]
+					}
+				}
+			}
+		}
+	},
+
+	"delete": {
+		"exec": "subscript/system/package.uc",
+		"args": ["delete"],
+		"reload": true,
+		"reset": true,
+		"wait": true
+	},
+	"clean": {
+		"exec": "subscript/system/package.uc",
+		"args": ["clean"],
+		"wait": true,
+		"confirm": true,
+		"reload": true,
+		"reset": true
+	},
+	"acquire": {
+		"exec": "subscript/system/package.uc",
+		"args": ["get"]
+	}
+}

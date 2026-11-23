@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "OSPF instance",
+  "type": "object",
+  "definitions": {
+    "filter": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "cue": ["/routing/filter"]
+      }
+    }
+  },
+
+  "namesake": "name",
+  "showParams": ["area"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Instance entity",
+      "required": ["name", "area"],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "description": "Instance name",
+          "hidden": true
+        },
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "router-id": {
+          "$ref": "/defaults#/definitions/ipaddr-strict",
+          "title": "Router ID",
+          "description": "Router ID which overwrite the global option"
+        },
+        "use-filter-file": {
+          "type": "boolean",
+          "title": "Use filter file",
+          "description": "Using filter configuration from file instead of options"
+        },
+        "export-filter-file": {
+          "title": "Export Filter File",
+          "type": "string",
+          "description": "Filter config file in bird syntax",
+          "cue": ["/storage/file[file-type:!temporary]"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+          ]
+        },
+        "import-filter-file": {
+          "title": "Import Filter File",
+          "type": "string",
+          "description": "Filter config file in bird syntax",
+          "cue": ["/storage/file[file-type:!temporary]"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+          ]
+        },
+        "default-export": {
+          "type": "string",
+          "description": "Default export action",
+          "title": "Default export",
+          "enum": ["accept", "reject"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "default-import": {
+          "type": "string",
+          "description": "Default import action",
+          "title": "Default import",
+          "enum": ["accept", "reject"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "export-filter": {
+          "$ref": "#/definitions/filter",
+          "description": "Export filter",
+          "title": "Export filter",
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "import-filter": {
+          "$ref": "#/definitions/filter",
+          "description": "Import filter",
+          "title": "Import filter",
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "area": {
+          "type": "array",
+          "description": "Areas included in this OSPF instance",
+          "items": {
+            "type": "string",
+            "cue": ["/routing/ospf/area"]
+          }
+        }
+      }
+    },
+
+    "actions": {
+      "route-stats": {
+        "exec": "./subscript/routing/ospf/instance.uc",
+        "args": ["route_stats"],
+        "wait": true,
+        "title": "Route stats",
+        "description": "Route change statistics as a table"
+      },
+      "neighbors": {
+        "exec": "./subscript/routing/ospf/instance.uc",
+        "args": ["neighbors"],
+        "wait": true,
+        "title": "Neighbors",
+        "description": "Neighbors of this OSPF instance as a table"
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["add"],
+    "merge": true,
+    "description": "add new entry (params: <name>)",
+    "schema": {
+      "required": ["name"],
+      "properties": {
+       "name": {"$ref": "/defaults#/definitions/name"}
+      }
+    }
+  },
+  
+  "apply": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["apply"]
+  },
+  
+  "clean": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+  
+  "set": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["set"]
+  },
+
+  "status": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["status"]
+  },
+
+  "acquire": {
+    "exec": "./subscript/routing/ospf/instance.uc",
+    "args": ["get"]
+  }
+
+}

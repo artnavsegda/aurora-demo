@@ -1,0 +1,133 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "VRRP",
+  "description": "Virtual Router Redundancy Protocol",
+  "type": "object",
+  "definitions": {
+    "interface": {
+      "type": "string",
+      "description": "Interface for processing VRRP packets",
+      "cue": ["/ip/interface"]
+    }
+  },
+  "namesake": "interface",
+  "showParams": ["virtual-ip", "virtual-id"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "required": ["interface", "virtual-ip", "virtual-id"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "interface": {
+          "$ref": "#/definitions/interface",
+          "hidden": true
+        },
+        "virtual-ip": {
+          "description": "Virtual default gateway IP address",
+          "title": "Virtual IP",
+          "type":"array",
+          "items": {
+            "type":"string",
+            "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict"
+          }
+        },
+        "virtual-mac": {
+          "type":"boolean",
+          "description": "Assign virtual MAC address to interface",
+          "title": "Virtual MAC"
+        },
+        "preemption-mode": {
+          "type": "boolean",
+          "title": "Preemption",
+          "description": "Enable VRRP master preemption"
+        },
+        "virtual-id": {
+          "type": "number",
+          "description": "VRRP virtual router ID",
+          "title": "Virtual ID",
+          "minimum": 1,
+          "maximum": 255
+        },
+        "priority":{
+          "type":"number",
+          "description": "VRRP router priority",
+          "minimum": 1,
+          "maximum": 255,
+          "default": 100
+        },
+        "delay": {
+          "type": "number",
+          "description": "Interval between sending VRRP-advertise messages (sec)",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 3600
+        },
+        "auth": {
+          "type": "string",
+          "title": "Authentication type",
+          "description": "VRRP authentication type",
+          "enum": ["none", "pw", "ah"]
+        },
+        "key": {
+          "type": "string",
+          "description": "Passphrase for VRRP packet authentication",
+          "hidden": true,
+          "minLength": 1,
+          "maxLength": 8,
+          "modificator": [
+            {"if": [{"auth": "ah"}], "then": {"maxLength": 16, "hidden": false}},
+            {"if": [{"auth": "pw"}], "then": {"hidden": false}}
+          ]
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["add"],
+    "merge": true,
+    "schema": {
+      "required": ["interface"],
+      "properties": {
+        "interface": { "$ref": "#/definitions/interface" }
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["apply"]
+  },
+
+  "status": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["status"]
+  },
+
+  "clean": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["clean"],
+    "reload": true,
+    "confirm": true
+  },
+
+  "set": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/service/vrrp.uc",
+    "args": ["get"]
+  }
+}

@@ -1,0 +1,126 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "device",
+    "description": "Layer 2 (L2) network devices",
+    "type": "object",
+    "namesake": "name",
+
+    "definitions": {
+        "type": {
+            "type": "string",
+            "description": "Device type",
+            "enum": ["vlan"]
+        }
+    },
+    "showParams": ["type", "mtu"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Device",
+            "required": ["name", "device", "vid"],
+            "properties": {
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled"
+                },
+
+                "name": {
+                    "$ref": "/defaults#/definitions/name",
+                    "description": "Network interface name",
+                    "hidden": true
+                },
+
+                "type": {
+                    "$ref": "#/definitions/type"
+                },
+
+                "macaddr": {
+                    "$ref": "/defaults#/definitions/macaddr",
+                    "description": "Hardware (MAC) address of the device",
+                    "noExport": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"type": "!vlan"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "mtu": {
+                    "$ref": "/defaults#/definitions/mtu",
+                    "default": 1500
+                },
+
+                "tx-queue-len": {
+                    "type": "number",
+                    "title": "TX Queue",
+                    "description": "Maximum interface queue packet capacity",
+                    "default": 1000
+                },
+
+                "device": {
+                    "$ref": "/defaults#/definitions/l2-device-for-vlans",
+                    "title": "Host device",
+                    "description": "Create a new device on top of an another device"
+                },
+
+                "vid": {
+                    "type": "number",
+                    "title": "VLAN ID",
+                    "description": "Virtual LAN (VLAN) tag identifier (802.1Q)",
+                    "minimum": 6,
+                    "maximum": 4094
+                }
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/network/device.uc",
+        "args": ["delete"],
+        "reload": true
+    },
+
+    "add": {
+        "exec": "subscript/network/device.uc",
+        "args": ["add"],
+        "merge": true,
+        "schema": {
+            "required": ["name", "type"],
+            "properties": {
+                "name": {
+                    "$ref": "/defaults#/definitions/name",
+                    "maxLength": 15
+                },
+                "type": {
+                    "$ref": "#/definitions/type"
+                }
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/network/device.uc",
+        "args": ["clean"],
+        "reload": true,
+        "confirm": true
+    },
+
+    "apply": {
+        "exec": "subscript/network/device.uc",
+        "args": ["apply"]
+    },
+
+    "status": {
+        "exec": "subscript/network/device.uc",
+        "args": ["status"]
+    },
+
+    "set": {
+        "exec": "subscript/network/device.uc",
+        "args": ["set"]
+    },
+
+    "acquire": {
+        "exec": "subscript/network/device.uc",
+        "args": ["get"]
+    }
+}

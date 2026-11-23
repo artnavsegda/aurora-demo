@@ -1,0 +1,96 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "SMS",
+    "description": "SMS list",
+    "type": "object",
+    "noCache": true,
+    "noExport": true,
+    "namesake": "_index",
+    "showParams": ["state", "from", "text", "sent", "received", "modem" ],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "SMS",
+
+            "properties": {
+                "from": {
+                    "type": "string",
+                    "description": "SMS sender name/number",
+                    "title": "sender",
+                    "readOnly": true
+                },
+
+                "text": {
+                    "type": "string",
+                    "title": "message",
+                    "description": "SMS message text",
+                    "readOnly": true
+                },
+
+                "sent": {
+                    "type": "string",
+                    "title": "timestamp",
+                    "description": "SMS sending timestamp",
+                    "readOnly": true
+                },
+
+                "received": {
+                    "type": "string",
+                    "title": "received",
+                    "description": "SMS receipt timestamp",
+                    "readOnly": true
+                }
+            }
+        }
+
+    },
+
+    "actions": {
+        "send-sms": {
+            "exec": "subscript/mobile/sms.uc",
+            "args": ["send_sms"],
+            "title": "Send SMS",
+            "description": "Send SMS to phone number",
+            "schema": {
+                "required": ["phone-number", "message"],
+                "properties": {
+                    "phone-number": {
+                        "type": "string",
+                        "title": "Phone number",
+                        "description": "SMS recipient's phone number",
+                        "pattern": "^\\+([0-9]{1,3})([0-9]{4,15})$",
+                        "patternDescription": "Phone number in international format",
+                        "patternExample": ["+91234567890", "+991234567890"]
+                    },
+                    "message": {
+                        "type": "text",
+                        "description": "SMS message text"
+                    },
+                    "modem": {
+                        "type": "string",
+                        "description": "Send SMS via specific modem",
+                        "cue": ["/mobile/modem"]
+                    }
+                } 
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/mobile/sms.uc",
+        "args": [ "clean" ],
+        "reload": true,
+        "confirm": true
+    },
+
+    "delete": {
+        "exec": "subscript/mobile/sms.uc",
+        "args": [ "delete", "mobile/sms" ]
+    },
+
+    "acquire": {
+        "exec": "subscript/mobile/sms.uc",
+        "args": ["get"]
+    }
+}

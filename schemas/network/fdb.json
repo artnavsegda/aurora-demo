@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "FDB",
+    "description": "Forwarding Database (FDB) entries for MAC learning",
+    "type": "object",
+    "noExport": true,
+    "noCache": true,
+    "readOnly": true,
+    "showParams": ["state", "mac", "device", "age", "type"],
+    "patternProperties": {
+      ".*": {
+        "type": "object",
+        "title": "fdb entity",
+        "properties": {
+          "mac": {
+            "$ref": "/defaults#/definitions/mac",
+            "title": "MAC",
+            "description": "MAC address of networked device"
+          },
+          "device": {
+            "type": "string",
+            "description": "Bridge port associated with MAC address"
+          },
+          "age": {
+            "type": "string",
+            "description": "Forwarding Database (FDB) entry age timestamp"
+          },
+          "type": {
+            "type": "string",
+            "description": "Device type (physical or virtual)"
+          }
+        }
+      }
+    },
+
+    "acquire": {
+      "exec": "subscript/network/fdb.uc",
+      "args": ["get"]
+    }
+  }

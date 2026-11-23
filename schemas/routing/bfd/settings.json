@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "BFD",
+  "type": "object",
+  "description": "Common BFD settings - BIRD always handles all BFD sessions with a single protocol instance, so this is not a list but one set of settings per router",
+
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+    "neighbor": {
+      "type": "array",
+      "description": "IP address of the neighbor",
+      "items": {
+        "$ref": "/defaults#/definitions/ipaddr-strict"
+      }
+    },
+    "interface": {
+      "type": "array",
+      "description": "Interfaces used by this protocol",
+      "items": {
+        "type": "string",
+        "cue": ["/routing/bfd/interface"]
+      }
+    },
+    "multihop": {
+      "type": "boolean",
+      "description": "Enable multihop neighbors (sessions with addresses not on a directly connected link)"
+    },
+    "multihop-neighbor": {
+      "type": "array",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [{"multihop": true}],
+          "then": {"hidden": false}
+        }
+      ],
+      "description": "Multihop neighbors: remote address and local sending address, colon-separated",
+      "items": {
+        "type": "string",
+        "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
+        "patternDescription": "Remote and local IP address, colon-separated",
+        "patternExample": ["192.168.1.1:192.168.1.2"]
+      }
+    },
+    "multihop-min-rx-interval": {
+      "type": "number",
+      "title": "Multihop Min Rx Interval",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [{"multihop": true}],
+          "then": {"hidden": false}
+        }
+      ],
+      "description": "The minimum receive interval (msec) for multihop sessions",
+      "minimum": 1,
+      "maximum": 4294967,
+      "default": 10
+    },
+    "multihop-min-tx-interval": {
+      "type": "number",
+      "title": "Multihop Min Tx Interval",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [{"multihop": true}],
+          "then": {"hidden": false}
+        }
+      ],
+      "description": "The desired transmit interval (msec) for multihop sessions",
+      "minimum": 1,
+      "maximum": 4294967,
+      "default": 100
+    },
+    "multihop-multiplier": {
+      "type": "number",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [{"multihop": true}],
+          "then": {"hidden": false}
+        }
+      ],
+      "description": "Multiplier for multihop sessions",
+      "minimum": 1,
+      "maximum": 255,
+      "default": 5
+    },
+    "multihop-passive": {
+      "type": "boolean",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [{"multihop": true}],
+          "then": {"hidden": false}
+        }
+      ],
+      "description": "Don't send BFD packets for multihop sessions until a packet is received from the other side"
+    }
+  },
+
+  "set": {
+    "exec": "./subscript/routing/bfd/settings.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "./subscript/routing/bfd/settings.uc",
+    "args": ["get"]
+  },
+
+  "apply": {
+    "exec": "./subscript/routing/bfd/settings.uc",
+    "args": ["apply"]
+  },
+
+  "status": {
+    "exec": "./subscript/routing/bfd/settings.uc",
+    "args": ["status"]
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "IPSec SA",
+  "description": "IPsec Security Association (SA) configuration",
+  "type": "object",
+  "definitions": {
+    "connection": {
+          "type": "string",
+          "title": "Connection",
+          "description": "IKE Phase 1 configuration for SA negotiation"
+        }
+  },
+  "showParams": ["reqid", "type", "leftsubnet", "rightsubnet"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Policy entity",
+      "required": ["reqid"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "reqid": {
+          "hidden": true
+        },
+        "connection": {
+          "$ref": "#/definitions/connection",
+          "readOnly": true
+        },
+        "proposal": {
+          "type": "string",
+          "title": "Proposal",
+          "description": "ESP encryption and authentication parameters",
+          "cue": ["/tunnel/ipsec/proposal"]
+        },
+        "auto": {
+          "type":"string",
+          "title": "Startup action",
+          "description": "Action to perform after applying the configuration",
+          "enum": ["route", "start"]
+        },
+        "type": {
+          "type": "string",
+          "title": "SA type",
+          "description": "IPSec Mode Negotiation for SA",
+          "enum": ["tunnel", "transport", "passthrough", "drop"]
+        },
+        "leftsubnet": {
+          "type": "array",
+          "title": "Local TS",
+          "description": "Traffic source for agreeing of traffic selectors permitted for the tunnel",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(%dynamic|(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?)(\\[(\\%?[a-z]+)?(\/(\\%any|\\d+))?\\])?$",
+            "patternDescription": "Network or host IP address and protocol with port number (optional)",
+            "patternExample": ["192.168.1.1", "192.168.1.0/24", "192.168.1.0/24[udp/1701]", "%dynamic[gre]"]
+          }
+        },
+        "rightsubnet": {
+          "type": "array",
+          "title": "Remote TS",
+          "description": "Traffic destination for agreeing of traffic selectors permitted for the tunnel",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(%dynamic|(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?)(\\[(\\%?[a-z]+)?(\/(\\%any|\\d+))?\\])?$",
+            "patternDescription": "Network or host IP address and protocol with port number (optional)",
+            "patternExample": ["192.168.1.1", "192.168.1.0/24", "192.168.1.0/24[udp/1701]", "%dynamic[gre]"]
+          }
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "handler",
+    "args": ["delete", "ipsec/association"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "handler",
+    "args": ["add", "ipsec/association"],
+    "merge": true,
+    "schema": {
+      "required": ["name", "connection"],
+      "properties": {
+        "name": {"$ref": "/defaults#/definitions/name"},
+        "connection": {
+          "$ref": "#/definitions/connection",
+          "cue": ["/tunnel/ipsec/connection"]
+        }
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "handler",
+    "args": ["apply", "ipsec/association"]
+  },
+
+  "clean": {
+    "exec": "handler",
+    "args": ["clean", "ipsec/association"],
+    "confirm": true,
+    "reload": true
+  },
+
+  "status": {
+    "exec": "subscript/ipsec/association.uc",
+    "args": ["status"]
+  },
+
+  "set": {
+    "exec": "handler",
+    "args": ["set", "ipsec/association"]
+  },
+
+  "acquire": {
+    "exec": "handler",
+    "args": ["get", "ipsec/association"]
+  }
+}

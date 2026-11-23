@@ -1,0 +1,195 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Routes",
+    "description": "Routes learned by BIRD",
+    "type": "object",
+    "namesake": "_index",
+    "noCache": true,
+    "noExport": true,
+
+    "showParams": ["state", "network", "protocol", "route-type", "proto-type", "selected", "gateway", "interface", "preference"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Route entry",
+            "properties": {
+                "_index": {
+                    "type": "string",
+                    "hidden": true
+                },
+                "state": {
+                    "type": "number",
+                    "hidden": true
+                },
+                "network": {
+                    "type": "string",
+                    "title": "Network",
+                    "description": "Destination network",
+                    "readOnly": true
+                },
+                "route-type": {
+                    "type": "string",
+                    "title": "Route type",
+                    "description": "Route type (unicast/blackhole/unreachable/prohibit)",
+                    "readOnly": true
+                },
+                "protocol": {
+                    "type": "string",
+                    "title": "Protocol instance",
+                    "description": "Name of the protocol instance this route was learned from",
+                    "readOnly": true
+                },
+                "selected": {
+                    "type": "boolean",
+                    "title": "Best path",
+                    "description": "Whether this path is currently selected as best (installed for forwarding)",
+                    "readOnly": true
+                },
+                "preference": {
+                    "type": "number",
+                    "title": "Preference",
+                    "description": "BIRD internal route preference",
+                    "readOnly": true
+                },
+                "since": {
+                    "type": "string",
+                    "title": "Since",
+                    "description": "Time since this route appeared",
+                    "readOnly": true
+                },
+                "gateway": {
+                    "type": "string",
+                    "title": "Gateway",
+                    "description": "Next-hop gateway address",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"gateway": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "interface": {
+                    "type": "string",
+                    "title": "Interface",
+                    "description": "Egress interface",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"interface": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "proto-type": {
+                    "type": "string",
+                    "title": "Source type",
+                    "description": "Protocol-level route source (e.g. for OSPF distinguishes internal routes — OSPF/OSPF-IA — from external, redistributed ones — OSPF-E1/OSPF-E2)",
+                    "readOnly": true
+                },
+                "origin": {
+                    "type": "string",
+                    "title": "BGP origin",
+                    "description": "BGP ORIGIN attribute",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"origin": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "as-path": {
+                    "type": "array",
+                    "items": {"type": "number"},
+                    "title": "BGP AS-path",
+                    "description": "BGP AS_PATH attribute",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"as-path": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "next-hop": {
+                    "type": "string",
+                    "title": "BGP next-hop",
+                    "description": "BGP NEXT_HOP attribute",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"next-hop": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "local-pref": {
+                    "type": "number",
+                    "title": "BGP local preference",
+                    "description": "BGP LOCAL_PREF attribute",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"local-pref": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "med": {
+                    "type": "number",
+                    "title": "BGP MED",
+                    "description": "BGP MULTI_EXIT_DISC attribute",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"med": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "tag": {
+                    "type": "number",
+                    "title": "OSPF route tag",
+                    "description": "OSPF route tag (e.g. used for loop protection during redistribution)",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"tag": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "ospf-metric1": {
+                    "type": "number",
+                    "title": "OSPF Metric 1",
+                    "description": "OSPF internal metric (Type 1)",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"ospf-metric1": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "ospf-metric2": {
+                    "type": "number",
+                    "title": "OSPF Metric 2",
+                    "description": "OSPF external metric (Type 2, for redistributed routes)",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"ospf-metric2": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "router-id": {
+                    "type": "string",
+                    "title": "OSPF router-id",
+                    "description": "Router-id of the route's originator (ASBR/ABR)",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"router-id": "!"}], "then": {"hidden": false}}
+                    ]
+                },
+                "attributes": {
+                    "type": "array",
+                    "title": "Other attributes",
+                    "description": "Any other protocol-specific route attributes not otherwise broken out",
+                    "readOnly": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"attributes": "!"}], "then": {"hidden": false}}
+                    ]
+                }
+            }
+        }
+    },
+    "acquire": {
+        "exec": "subscript/routing/status.uc",
+        "args": ["get"]
+    }
+}

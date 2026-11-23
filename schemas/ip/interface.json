@@ -1,0 +1,258 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "interface",
+  "description": "Layer 3 (L3) IP interfaces for network routing",
+  "type": "object",
+
+  "definitions": {
+    "type": {
+      "type": "string",
+      "description": "Interface type (e.g., VLAN, bridge, physical)",
+      "enum": ["static", "dhcp", "pppoe"]
+    }
+  },
+
+  "showParams": ["type", "metric", "ip-address"],
+
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Interface",
+      "properties": {
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+
+        "type": {
+          "$ref": "#/definitions/type",
+          "hidden": true,
+          "noExport": true
+        },
+
+        "device": {
+          "type": "string",
+          "description": "Base physical interface for virtual IP interface creation",
+          "hidden": true,
+          "noExport": true
+        },
+
+        "metric": {
+          "$ref": "/defaults#/definitions/metric"
+        },
+
+        "ip-address": {
+          "type": "array",
+          "title": "IP Address",
+          "description": "IP address assigned to the network interface",
+          "items": {
+            "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict"
+          },
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "static"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "defaultroute": {
+          "$ref": "/defaults#/definitions/defaultroute",
+          "title": "Default Route",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "!static"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "gateway": {
+          "$ref": "/defaults#/definitions/ipaddr-strict",
+          "description": "Default gateway IP address for outbound traffic",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "static"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "peer-dns": {
+          "$ref": "/defaults#/definitions/peerdns",
+          "title": "Peer DNS",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}},
+            {"if": [{"type": "dhcp"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "pppoe-username": {
+          "type": "string",
+          "hidden": true,
+          "title": "Username",
+          "description": "Point-to-Point Protocol over Ethernet (PPPoE) authentication username",
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "pppoe-password": {
+          "$ref": "/defaults#/definitions/password",
+          "hidden": true,
+          "title": "Password",
+          "description": "Point-to-Point Protocol over Ethernet (PPPoE) authentication password",
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "pppoe-ac": {
+          "type": "string",
+          "title": "Access Concentrator",
+          "hidden": true,
+          "description": "PPPoE Access Concentrator (AC) name for service identification",
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "pppoe-service": {
+          "type": "string",
+          "hidden": true,
+          "title": "PPPoE service",
+          "description": "PPPoE client service configuration",
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "pppoe-option": {
+          "type": "array",
+          "title": "PPPoE Options",
+          "hidden": true,
+          "uniqueItems": true,
+          "description": "PPP protocol advanced options" ,
+          "items": {
+            "type": "pair",
+            "pattern": "^([a-z\\-0-9]+[=][0-9]+)$",
+            "patternDescription": "Key and value separated by the '=' symbol",
+            "patternExample": ["mtu=1200"],
+            "strictEnum": false,
+            "enum": [
+              "lcp-echo-failure",
+              "lcp-echo-interval",
+              "lcp-max-configure",
+              "lcp-max-failure",
+              "lcp-max-terminate",
+              "lcp-restart",
+              "ipcp-accept-local",
+              "ipcp-accept-remote",
+              "ipcp-max-configure",
+              "ipcp-max-failure",
+              "ipcp-max-terminate",
+              "ipcp-restart",
+              "padi-attempts",
+              "padi-timeout",
+              "mru",
+              "mtu"
+            ]
+          },
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "debug": {
+          "$ref": "/defaults#/definitions/debug",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"type": "pppoe"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "hostname": {
+          "type": "string",
+          "hidden": true,
+          "noExport": true,
+          "description": "Dynamic Host Configuration Protocol (DHCP) client hostname override (optional)",
+          "modificator": [
+            {"if": [{"type": "dhcp"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "dhcp-clientid": {
+          "type": "string",
+          "title": "Client ID",
+          "hidden": true,
+          "description": "Dynamic Host Configuration Protocol (DHCP) client identifier (Option 61)",
+          "modificator": [
+            {"if": [{"type": "dhcp"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "dhcp-vendorid": {
+          "type": "string",
+          "title": "Vendor ID",
+          "hidden": true,
+          "description": "Dynamic Host Configuration Protocol (DHCP) vendor class identifier (Option 60)",
+          "modificator": [
+            {"if": [{"type": "dhcp"}], "then": {"hidden": false}}
+          ]
+        }
+
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["add"],
+    "merge": true,
+    "reload": true,
+    "schema": {
+      "required": ["device", "type"],
+      "properties": {
+        "device": {
+          "type": "string",
+          "maxLength": 15,
+          "description": "Base physical interface for virtual IP interface creation",
+          "cue": ["/network/device", "/network/bridge", "/network/ethernet", "/wireless/network"]
+        },
+        "type": {
+          "$ref": "#/definitions/type",
+          "description": "Interface creation type"
+        }
+      }
+    }
+  },
+
+  "clean": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+
+  "apply": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["apply"]
+  },
+
+  "status": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["status"]
+  },
+
+  "set": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/network/ip-interface.uc",
+    "args": ["get"]
+  }
+}

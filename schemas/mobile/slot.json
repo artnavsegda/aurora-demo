@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "sim",
+  "type": "object",
+  "hidden": true,
+  "noExport": true,
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Sim slot entity",
+      "required": ["master"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "master": {
+          "type": "string"
+        }
+      }
+    }
+  },
+
+  "acquire": {
+     "exec": "subscript/mobile/slot.uc",
+     "args": ["get"]
+   }
+}

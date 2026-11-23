@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "SNMP Server",
+  "description": "Monitoring a device via SNMP",
+  "type": "object",
+
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+    "version": {
+      "type": "string",
+      "description": "SNMP protocol version",
+      "title": "Protocol version",
+      "enum": ["v2c", "v3"]
+    },
+    
+    "port": {
+      "$ref": "/defaults#/definitions/port",
+      "description": "Listening port number for incoming SNMP requests",
+      "title": "Service port",
+      "default": "161"
+    },
+
+    "community": {
+      "$ref": "/defaults#/definitions/name-ext",
+      "description": "SNMP community string for authentication",
+      "default": "public"
+    },
+
+    "sys-name": {
+      "$ref": "/defaults#/definitions/name",
+      "description": "Device name for identification in the monitoring system",
+      "title": "Name"
+    },
+    "sys-contact": {
+      "type": "string",
+      "description": "Device contact details for identification in the monitoring system",
+      "title": "Contact"
+    },
+
+    "sys-location": {
+      "type": "string",
+      "description": "Device location for identification in the monitoring system",
+      "title": "Location"
+    },
+
+    "sys-description": {
+      "type": "string",
+      "description": "Description of the device for identification in the monitoring system",
+      "title": "Description"
+    },
+
+    "username": {
+      "$ref": "/defaults#/definitions/username",
+      "hidden": true,
+      "modificator": [
+        {"if":[{"version":"v3"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "auth-passphrase": {
+      "$ref": "/defaults#/definitions/password",
+      "description": "Passphrase (SHA) for authentication",
+      "title": "Auth passphrase",
+      "minLength": 8,
+      "hidden": true,
+      "modificator": [
+        {"if":[{"version":"v3"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "priv-passphrase": {
+      "$ref": "/defaults#/definitions/password",
+      "description": "Passphrase (SHA) for traffic encryption",
+      "title": "Priv passphrase",
+      "minLength": 8,
+      "hidden": true,
+      "modificator": [
+        {"if":[{"version":"v3"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "security-level": {
+      "type": "string",
+      "description": "The level of security used for communication",
+      "title": "Security level",
+      "enum": ["noauth", "auth", "priv"],
+      "hidden": true,
+      "modificator": [
+        {"if":[{"version":"v3"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "writable": {
+      "type": "boolean",
+      "title": "Writable",
+      "description": "Enable read-write access"
+    }
+    
+  },
+
+  "apply": {
+      "exec": "subscript/service/snmp.uc",
+      "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/service/snmp.uc",
+    "args": ["set"]
+  },    
+
+  "acquire": {
+    "exec": "subscript/service/snmp.uc",
+    "args": ["get"]
+  },
+
+  "status": {
+    "exec": "subscript/service/snmp.uc",
+    "args": ["status"]
+  }
+}

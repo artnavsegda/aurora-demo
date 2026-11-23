@@ -1,0 +1,273 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Mangle Rules",
+    "description": "Mangle table for packet alteration",
+    "type": "object",
+    "namesake": "_index",
+    "showParams": ["chain", "src", "src-addr", "dst", "dst-addr", "protocol", "action"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Rule entity",
+            "required": ["action"],
+            "properties": {
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled",
+                    "description": "Disable firewall rule"
+                },
+
+                "_index": {
+                    "type": "string",
+                    "hidden": true
+                },
+
+                "chain": {
+                    "$ref": "#/definitions/chain"
+                },
+
+                "src": {
+                    "type": "string",
+                    "title": "source",
+                    "description": "Traffic source zone or interface",
+                    "modificator": [
+                        {"if": [{"chain": "output"}], "then": {"cue": ["/firewall/zone[type:address]"]}},
+                        {"if": [{"chain": "postrouting"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "src-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "description": "Source IP address range or host",
+                    "enableInvert": true,
+                    "title": "source address"
+                },
+
+                "dst": {
+                    "type": "string",
+                    "title": "destination",
+                    "description": "Traffic destination (interface or zone)",
+                    "modificator": [
+                        {"if": [{"chain": "input"}], "then": {"cue": ["/firewall/zone[type:address]"]}},
+                        {"if": [{"chain": "prerouting"}], "then": {"cue": ["/firewall/zone[type:address]"]}}
+                    ],
+                    "cue": [
+                        "/network/device", 
+                        "/network/ethernet", 
+                        "/wireless/network", 
+                        "/ip/interface", 
+                        "/mobile/modem", 
+                        "/tunnel[proto:!]", 
+                        "/tunnel/atunnel",
+                        "/defaults/server",
+                        "/firewall/zone"
+                    ]
+                },
+
+                "dst-addr": {
+                    "$ref": "/defaults#/definitions/fw-ipaddr-port",
+                    "title": "destination address",
+                    "description": "Destination IP address range or host",
+                    "enableInvert": true
+                },
+
+                "protocol": {
+                    "$ref": "/defaults#/definitions/fw-protocol",
+                    "default": "all"
+                },
+
+                "icmp-type": {
+                    "hidden": true,
+                    "$ref": "/defaults#/definitions/fw-icmp-type",
+                    "title": "ICMP Type",
+                    "modificator": [
+                        {"if": [{"protocol": "icmp"}], "then": {"hidden": false}}
+                    ],
+                    "default": "any"
+                },
+
+                "mark": {
+                    "$ref": "/defaults#/definitions/fw-mark",
+                    "title": "Firewall mark",
+                    "description": "Packet mark matching for firewall rule processing",
+                    "enableInvert": true
+                },
+
+                "action": {
+                    "type": "string",
+                    "description": "Rule action",
+                    "enum": ["accept", "dscp", "mark", "tcpmss", "ttl"],
+                    "modificator": [
+                        {"if": [{"chain": "input"}], "then": {"enum": ["accept", "mark"]}}
+                    ]
+                },
+
+                "set-mark": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 4294967295,
+                    "title": "Set mark",
+                    "description": "Packet mark value for QoS/routing",
+                    "required": true,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"action": "mark"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "set-dscp": {
+                    "type": "string",
+                    "enum": ["cs0", "cs1", "cs2", "cs3", "cs4", "cs5", "cs6", "cs7",
+                             "be", "af11", "af12", "af13", "af21", "af22", "af23",
+                             "af31", "af32", "af33", "af41", "af42", "af43", "ef"],
+                    "title": "DSCP Class",
+                    "description": "Set DSCP value for traffic prioritization",
+                    "hidden": true,
+                    "required": true,
+                    "modificator": [
+                        {"if":[{"action": "dscp"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "set-mss" : {
+                    "type": "string",
+                    "enum": ["clamp-mss-to-pmtu"],
+                    "title": "MSS value",
+                    "description": "TCP MSS clamping for path MTU discovery",
+                    "required": true,
+                    "strictEnum": false,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"action": "tcpmss"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "set-ttl" : {
+                    "type": "string",
+                    "required": true,
+                    "hidden": true,
+                    "title": "Set TTL",
+                    "description": "Change packet time-to-live value",
+                    "modificator": [
+                        {"if":[{"action": "ttl"}], "then": {"hidden": false}}
+                    ],
+                    "pattern": "^((?:([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5]))|(?:\\+([1-9]|[1-9][0-9]|1[0-8][0-9]|19[0-1]))|(?:\\-([1-9]|[1-5][0-9]|6[0-3])))$",
+                    "patternDescription": "New TTL value or offset with '+' or '-' ",
+                    "patternExample": ["1", "255", "+1", "-1"]
+                },
+
+                "policy": {
+                    "type": "array",
+                    "title": "IPSec Policy",
+                    "description": "IPsec policy matching criteria",
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "pair",
+                      "enum": ["dir", "pol", "strict", "reqid", "spi", "proto", "mode", "tunnel-src", "tunnel-dst"]
+                    }
+                },
+
+                "extra": {
+                    "type": "string",
+                    "title": "Extra params",
+                    "description": "Custom iptables parameters",
+                    "pattern": "^([a-zA-Z0-9-_+*:.,!?\/ ])+$",
+                    "patternDescription": "Arguments using iptables syntax",
+                    "patternExample": ["-m mac --mac-source FE:FF:FF:FF:FF:FF"]
+                }
+
+            }
+        },
+
+        "actions": {
+            "reset-counters": {
+                "title": "Reset Counters",
+                "description": "Reset traffic counters for this rule",
+                "exec": "subscript/firewall/connections.uc",
+                "args": ["reset_mangle"]
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["delete", "mangle"],
+        "reload": true
+    },
+
+    "apply": {
+        "exec": "subscript/firewall/rules.uc",
+        "reload": true,
+        "args": ["apply", "mangle"]
+    },
+
+    "add": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["add", "mangle"],
+        "merge": true,
+        "schema": {
+            "required": ["chain"],
+            "properties": {
+                "chain": {"$ref": "#/definitions/chain"}
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["clean", "mangle"],
+        "confirm": true,
+        "reload": true
+    },
+
+    "status": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["status", "mangle"],
+        "isTable": true
+    },
+
+    "set": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["set", "mangle"]
+    },
+
+    "reorder": {
+        "exec": "subscript/firewall/rules.uc",
+        "description": "Change the position of an object",
+        "args": ["reorder", "mangle"]
+    },
+
+    "acquire": {
+        "exec": "subscript/firewall/rules.uc",
+        "args": ["get", "mangle"]
+    },
+
+    "definitions": {
+        "chain": {
+            "type": "string",
+            "description": "Firewall chain name for rule grouping",
+            "enum": ["prerouting", "input", "forward", "output", "postrouting"]
+        }
+    },
+
+    "actions": {
+        "reset-counters": {
+            "title": "Reset Counters",
+            "description": "Reset all firewall traffic counters",
+            "exec": "subscript/firewall/connections.uc",
+            "args": ["reset_mangle"]
+        }
+    }
+
+}

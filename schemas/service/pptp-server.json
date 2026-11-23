@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "PPTP server",
+  "description": "PPTP server configuration",
+  "type": "object",
+  "required": ["psk"],
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+
+    "ip-addr": {
+      "type": "array",
+      "title": "IP address",
+      "description": "Local tunnel IP address",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "/defaults#/definitions/ipaddr-strict-pool"
+      }
+    },
+
+    "ip-pool": {
+      "type": "array",
+      "title": "IP pool",
+      "description": "Client IP address assignment range",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "/defaults#/definitions/ipaddr-strict-pool"
+      }
+    },
+
+    "auth": {
+      "$ref": "/defaults#/definitions/ppp-auth",
+      "modificator": [
+        {"if":[{"encryption": "mppe"}], "then": {"enum": ["mschap-v2"]}}
+      ]
+    },
+
+    "encryption": {
+      "$ref": "/defaults#/definitions/encryption",
+      "modificator": [
+        {"if": [{"/defaults/ipsec_installed": "true"}], "then":{"enum": ["none", "mppe", "ipsec"]}}
+      ]
+    },
+
+    "psk": {
+      "$ref": "/defaults#/definitions/psk",
+      "description": "IPsec pre-shared key for tunnel authentication",
+      "modificator": [
+        {"if": [{"encryption": "ipsec"}], "then": {"hidden": false}}
+      ]
+    },
+
+    "ppp-option": {
+      "$ref": "/defaults#/definitions/ppp-option"
+    },
+
+    "debug": {
+      "$ref": "/defaults#/definitions/debug"
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/service/pptp-server.uc",
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/service/pptp-server.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/service/pptp-server.uc",
+    "args": ["get"]
+  },
+  
+  "status": {
+    "exec": "subscript/service/pptp-server.uc",
+    "args": ["status"]
+  }
+}

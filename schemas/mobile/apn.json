@@ -1,0 +1,133 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"documentation": ["local", "global"],
+	"title": "APN",
+	"description": "Access Point Name (APN) profiles",
+	"type": "object",
+	"namesake": "name",
+	"showParams": ["apn", "mccmnc", "mode", "roaming", "auth", "slot"],
+	"patternProperties": {
+		".*": {
+			"type": "object",
+			"title": "APN profile",
+			"description": "SIM card profile configuration",
+			"required": ["name"],
+			"properties": {
+				"disabled": {
+					"$ref": "/defaults#/definitions/disabled"
+				},
+
+				"name": {
+					"title": "Profile name",
+					"description": "Profile name",
+					"$ref": "/defaults#/definitions/name-ext",
+					"hidden": true
+				},
+
+				"mccmnc": {
+					"type": "string",
+					"description": "PLMN code (MCC+MNC)",
+					"title": "MCC/MNC code",
+					"pattern": "^[0-9]{3}[0-9]{2,3}$",
+					"patternDescription": "Five-digit operator code",
+					"patternExample": ["46000"]
+				},
+
+				"apn": {
+					"type": "string",
+					"description": "APN or VPDN name",
+					"title": "APN/VPDN",
+					"$ref": "/defaults#/definitions/name-ext"
+				},
+
+				"username": {
+					"$ref": "/defaults#/definitions/name-ext",
+					"description": "Client authentication username",
+					"maxLength": 39
+				},
+
+				"password": {
+					"$ref": "/defaults#/definitions/password",
+					"description": "Client authentication password"
+				},
+
+				"auth": {
+					"type": "string",
+					"title": "Authentication",
+					"description": "Authentication protocol",
+					"enum": ["any", "pap", "chap"]
+				},
+
+				"mode": {
+					"type": "string",
+					"description": "Data transmission technology",
+					"strictEnum": true,
+					"cue": ["+auto", "/defaults/modem_modes"]
+				}, 
+
+				"roaming": {
+					"type": "string",
+					"description": "Roaming network policy",
+					"enum": ["allowed", "discard", "only"]
+				},
+
+				"slot": {
+					"type": "string",
+					"title": "SIM slot",
+					"strictEnum": true,
+					"description": "Assign profile to SIM card slot",
+					"cue": ["+any", "/mobile/slot"]
+				},
+
+				"pincode": {
+					"type": "password",
+					"description": "SIM card PIN code",
+					"hidden": true,
+					"pattern": "^[0-9]{4,6}$",
+					"patternDescription": "Four to six digit code",
+					"modificator": [{"if":[{"slot": "!any"}], "then": {"hidden": false}}]
+				}
+			}
+		}
+	},
+
+	"delete": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["delete"],
+		"reload": true
+	},
+
+	"clean": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["clean"],
+		"confirm": true,
+		"reload": true
+	},
+
+	"add": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["add"],
+		"merge": true,
+		"schema": {
+			"required": ["name"],
+			"properties": {
+				"name": {"$ref": "/defaults#/definitions/name-ext"}
+			}
+		}
+	},
+
+	"set": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["set"]
+	},
+
+	"acquire": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["get"]
+	},
+
+	"status": {
+		"exec": "subscript/mobile/apn.uc",
+		"args": ["status"]
+	}
+}

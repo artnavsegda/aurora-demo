@@ -1,0 +1,97 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"documentation": ["local", "global"],
+	"title": "ARP table",
+	"description": "Address Resolution Protocol (ARP) cache table showing MAC-to-IP mappings",
+	"type": "object",
+	"namesake": "_index",
+	"showParams": ["state", "ip-address", "interface", "macaddr", "age", "type"],
+	"noCache": true,
+	"patternProperties": {
+		".*": {
+			"type": "object",
+			"title": "ARP record",
+			"description": "ARP table entry for MAC address resolution",
+			"required": ["interface", "ip-address", "macaddr"],
+			"properties": {
+				"age": {
+					"hidden": true,
+					"noExport": true
+				},
+				"type": {
+					"hidden": true,
+					"noExport": true
+				},
+
+				"ip-address": {
+					"$ref": "/defaults#/definitions/ipaddr",
+					"readOnly": true
+				},
+				"macaddr": {
+					"$ref": "/defaults#/definitions/macaddr"
+				},
+				"interface": {
+					"$ref": "/defaults#/definitions/interface",
+					"readOnly": true
+				}
+			}
+		}
+	},
+	"actions": {
+		"flush": {
+			"exec": "subscript/network/arp.uc",
+			"args": ["flush"],
+			"description": "Clear Address Resolution Protocol (ARP) cache entries",
+			"reload": true
+		}
+	},
+
+	"delete": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["delete"],
+		"reload": true
+	},
+
+	"apply": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["apply"],
+		"reload": true
+	},
+
+	"add": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["add"],
+		"merge": true,
+		"schema": {
+			"required": ["interface", "ip-address", "macaddr"],
+			"properties": {
+				"interface": {
+					"$ref": "/defaults#/definitions/interface"
+				},
+				"ip-address": {
+					"$ref": "/defaults#/definitions/ipaddr-strict"
+				},
+				"macaddr": {
+					"$ref": "/defaults#/definitions/macaddr"
+				}
+			}
+		}
+	},
+
+	"clean": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["clean"],
+		"confirm": true,
+		"reload": true
+	},
+
+	"set": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["set"]
+	},
+
+	"acquire": {
+		"exec": "subscript/network/arp.uc",
+		"args": ["get"]
+	}
+}

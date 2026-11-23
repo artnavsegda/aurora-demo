@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Routing filter",
+  "type": "object",
+  "definitions": {
+    "network": {
+      "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict",
+      "description": "Network prefix",
+      "title": "Rule prefix",
+      "patternDescription": "Network address (with prefix)",
+      "patternExample": ["192.168.1.0/24"]
+    }
+  },
+
+  "namesake": "name",
+	"patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Interface entity",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name-ext",
+          "hidden": true
+        },
+        "action": {
+          "type": "string",
+          "description": "Rule action",
+          "title": "Rule action",
+          "enum": ["accept", "reject"]
+        },
+        "match": {
+          "type": "boolean",
+          "title": "Rule match",
+          "description": "Matching prefix or not"
+        },
+        "prefix": {
+          "$ref": "#/definitions/network"
+        },
+        "source": {
+          "type": "string",
+          "description": "Route source",
+          "title": "Route source",
+          "enum": ["any", "static", "connected", "ospf", "bgp"]
+        },
+        "min-length": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 32,
+          "description": "Minimum route prefix length",
+          "title": "Minimum prefix length"
+        },
+        "max-length": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 32,
+          "description": "Maximum route prefix length",
+          "title": "Maximum prefix length"
+        },
+        "ospf-metric-1": {
+          "type": "number",
+          "description": "Set OSPF metric type 1 for routes matched by this rule. Only for OSPF",
+          "title": "OSPF Metric type 1",
+          "minimum": 0,
+          "maximum": 16777214,
+          "default": 0
+        },
+        "ospf-metric-2": {
+          "type": "number",
+          "description": "Set OSPF metric type 2 for routes matched by this rule. Only for OSPF",
+          "title": "OSPF Metric type 2",
+          "minimum": 1,
+          "maximum": 16777214,
+          "default": 10000
+        }
+      }
+    }
+	},
+
+	"delete": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": ["delete"],
+    "reload": true
+	},
+
+	"add": {
+		"exec": "./subscript/routing/filter.uc",
+    "args": ["add"],
+    "merge": true,
+    "description": "add new entry (params: <name>)",
+    "schema": {
+    	"required": ["name"],
+    	"properties": {
+        "name": {"$ref": "/defaults#/definitions/name"}
+    	}
+    }
+	},
+
+  "apply": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": ["apply"]
+  },
+
+  "clean": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+
+	"set": {
+		"exec": "./subscript/routing/filter.uc",
+		"args": ["set"]
+	},
+
+	"acquire": {
+		"exec": "./subscript/routing/filter.uc",
+		"args": ["get"]
+  }
+  
+}

@@ -1,0 +1,286 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Bridge",
+    "description": "Bridge interfaces for Layer 2 (L2) switching",
+    "type": "object",
+    "namesake": "name",
+    "showParams": ["port", "stp-version"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Bridge",
+            "required": ["name"],
+            "properties": {
+                "disabled": {
+                    "$ref": "/defaults#/definitions/disabled"
+                },
+
+                "name": {
+                    "$ref": "/defaults#/definitions/name",
+                    "noExport": true,
+                    "hidden": true
+                },
+
+                "macaddr": {
+                  "$ref": "/defaults#/definitions/macaddr",
+                  "default": "auto",
+                  "noExport": true
+                },
+
+                "tx-queue-len": {
+                    "type": "number",
+                    "title": "TX Queue",
+                    "description": "Maximum interface queue packet capacity",
+                    "default": 1000
+                },
+
+                "port": {
+                    "type": "array",
+                    "description": "Bridge port members",
+                    "uniqueItems": true,
+                    "strictEnum": false,
+                    "items": {
+                        "$ref": "/defaults#/definitions/l2-device"
+                    }
+                },
+
+                "vlan-filtering": {
+                    "type": "boolean",
+                    "title": "Vlan Filtering",
+                    "hidden": true,
+                    "noExport": true
+                },
+
+                "vlan-default-pvid": {
+                    "type": "number",
+                    "title": "Vlan Default Pvid",
+                    "description": "Native Virtual LAN (VLAN) ID for untagged frames",
+                    "minimum": 1,
+                    "maximum": 4095,
+                    "hidden": true,
+                    "noExport": true,
+                    "modificator": [
+                        {"if": [{"vlan-filtering": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "igmp-snooping": {
+                    "type": "boolean",
+                    "title": "IGMP snooping",
+                    "description": "Internet Group Management Protocol (IGMP) snooping for multicast filtering"
+                },
+
+                "igmp-mc-querier": {
+                    "type": "boolean",
+                    "title": "IGMP Querier",
+                    "description": "Multicast router suppression to avoid duplicate streams",
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"igmp-snooping": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "igmp-query-interval": {
+                    "type": "number",
+                    "title": "IGMP Query",
+                    "description": "Internet Group Management Protocol (IGMP) query interval (sec)",
+                    "default": 12500,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"igmp-snooping": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "igmp-query-resp-interval": {
+                    "type": "number",
+                    "title": "IGMP Response",
+                    "description": "Internet Group Management Protocol (IGMP) host response timeout",
+                    "default": 1000,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"igmp-snooping": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "igmp-hash-max": {
+                    "type": "number",
+                    "title": "IGMP Hash",
+                    "description": "Internet Group Management Protocol (IGMP) group table hash size",
+                    "default": 512,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"igmp-snooping": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "igmp-robustness": {
+                    "type": "number",
+                    "title": "IGMP Robustness",
+                    "description": "Internet Group Management Protocol (IGMP) max unanswered queries",
+                    "default": 2,
+                    "hidden": true,
+                    "modificator": [
+                        {"if": [{"igmp-snooping": "true"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "stp-version": {
+                    "type": "string",
+                    "title": "STP Version",
+                    "description": "Spanning Tree Protocol (STP) version selection",
+                    "strictEnum": true,
+                    "enum": ["none", "rstp", "stp"]
+                },
+
+                "stp-bpdu-guard": {
+                    "type": "array",
+                    "title": "STP BPDU Guard",
+                    "description": "Enable Bridge Protocol Data Unit (BPDU) guard to disable port on unauthorized BPDU reception",
+                    "items": {
+                      "type": "string",
+                      "cue": ["$port"]
+                    },
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-treeprio": {
+                    "type": "number",
+                    "title": "STP Treeprio",
+                    "description": "Spanning Tree Protocol (STP) bridge priority value",
+                    "minimum": 1,
+                    "maximum": 15,
+                    "default": 8,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+
+                "stp-maxage": {
+                    "type": "integer",
+                    "title": "STP Maxage",
+                    "description": "Spanning Tree Protocol (STP) max age timer for root bridge connectivity loss",
+                    "default": 20,
+                    "minimum": 6,
+                    "maximum": 40,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-fdelay": {
+                    "type": "integer",
+                    "title": "STP Forward",
+                    "description": "Spanning Tree Protocol (STP) port state transition delay",
+                    "default": 15,
+                    "minimum": 6,
+                    "maximum": 40,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-maxhops": {
+                    "type": "integer",
+                    "title": "STP Hops",
+                    "description": "Spanning Tree Protocol (STP) maximum hop count to restrict network diameter",
+                    "default": 20,
+                    "minimum": 6,
+                    "maximum": 40,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-hello": {
+                    "type": "integer",
+                    "title": "STP Hello",
+                    "description": "Spanning Tree Protocol (STP) hello interval for root bridge BPDU transmissions",
+                    "default": 2,
+                    "minimum": 1,
+                    "maximum": 10,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-ageing": {
+                    "type": "integer",
+                    "title": "STP Ageing",
+                    "description": "Forwarding Database (FDB) MAC address aging timeout",
+                    "default": 20,
+                    "minimum": 10,
+                    "maximum": 1000000,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                },
+                "stp-txholdcount": {
+                    "type": "integer",
+                    "title": "STP TX Hold Count",
+                    "description": "Bridge Protocol Data Unit (BPDU) transmission rate limit",
+                    "default": 6,
+                    "minimum": 1,
+                    "maximum": 10,
+                    "hidden": true,
+                    "modificator": [
+                        {"if":[{"stp-version": "!none"}], "then": {"hidden": false}}
+                    ]
+                }
+            }
+        }
+    },
+
+    "delete": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["delete"],
+        "reload": true
+    },
+
+    "add": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["add"],
+        "merge": true,
+        "schema": {
+            "required": ["name"],
+            "properties": {
+                "name": {
+                    "$ref": "/defaults#/definitions/name",
+                    "maxLength": 15
+                }
+            }
+        }
+    },
+
+    "clean": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["clean"],
+        "reload": true,
+        "confirm": true
+    },
+
+    "apply": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["apply"],
+        "_reload": ["/network/device", "/network/ethernet", "/wireless/network"]
+    },
+
+    "status": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["status"]
+    },
+
+    "set": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["set"]
+    },
+
+    "acquire": {
+        "exec": "subscript/network/bridge.uc",
+        "args": ["get"]
+    }
+}

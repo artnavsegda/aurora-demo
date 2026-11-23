@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Device",
+  "description": "Cellular modem internet access",
+  "type": "object",
+  "showParams": ["module"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Modem",
+      "description": "Cellular modem internet access",
+      "required": ["_available-sim-slots", "modem-primary-sim"],
+
+      "properties": {
+        "_sim-switch": {
+          "type": "boolean",
+          "noExport": true,
+          "hidden": true
+        },
+
+        "_available-sim-slots": {
+          "type": "array",
+          "hidden": true,
+          "noExport": true,
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "_available-bands": {
+          "type": "array",
+          "hidden": true,
+          "noExport": true,
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled",
+          "description": "Disable cellular modem"
+        },
+
+        "modem-sim-slot": {
+          "type": "array",
+          "description": "Available SIM card slots for modem",
+          "title": "SIM slots",
+          "readOnly": true,
+          "uniqueItems": true,
+          "items":{
+            "type": "string",
+            "cue": ["$_available-sim-slots"]
+          },
+          "modificator": [
+            { "if": [{"_sim-switch": "true"}], "then": {"readOnly": false } }
+          ]
+        },
+
+        "modem-primary-sim": {
+          "type": "string",
+          "title": "Primary SIM",
+          "description": "Primary SIM card slot preference",
+          "hidden": true,
+          "strictEnum": true,
+          "cue":["$modem-sim-slot"],
+          "modificator": [
+            { "if": [{"_sim-switch": "true"}], "then": {"hidden": false} }
+          ]
+        },
+
+        "modem-primary-sim-timeout": {
+          "type": "number",
+          "default": 3600,
+          "title": "Primary Timeout",
+          "description": "The time (sec) after which the modem will switch to the primary SIM card",
+          "hidden": true,
+          "modificator": [
+            { "if": [{"_sim-switch": "true"}], "then": {"hidden": false} },
+            { "if": [{"_sim-switch": "true"}], "then": {"hidden": false} }
+          ]
+        },
+
+        "modem-connect-timeout": {
+          "type": "number",
+          "title": "Connect Timeout",
+          "description": "SIM connection attempt timeout (sec)",
+          "default": 360,
+          "minimum": 300
+        },
+
+        "modem-band": {
+          "type": "array",
+          "title": "Specific bands",
+          "description": "Preferred modem frequency bands",
+          "hidden": true,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "cue": ["$_available-bands"]
+          },
+          "modificator": [
+            {"if": [{"_available-bands": "!"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "protocol": {
+          "type": "string",
+          "description": "Modem dial-up protocol",
+          "enum": ["auto", "ppp"],
+          "strictEnum": false,
+          "cliOnly": true
+        },
+
+        "metric": {
+          "$ref": "/defaults#/definitions/metric",
+          "description": "Modem interface metric",
+          "minimum": 101,
+          "maximum": 900,
+          "default": 200
+        },
+
+        "defaultroute": {
+          "$ref": "/defaults#/definitions/defaultroute",
+          "title": "Default route"
+        },
+
+        "peerdns": {
+          "$ref": "/defaults#/definitions/peerdns",
+          "title": "Peer DNS"
+        },
+
+        "mtu": {
+          "$ref": "/defaults#/definitions/mtu",
+          "default": 1500,
+          "maximum": 1500,
+          "minimum": 400
+        },
+
+        "debug": {
+          "type": "boolean",
+          "description": "enable debug messages. restart modem needed"
+        }
+      }
+    },
+
+    "actions": {
+      "reset": {
+        "exec": "subscript/mobile/modem.uc",
+        "description": "Restarting the modem using a power reset",
+        "args": ["reset"]
+      }
+    }
+  },
+
+  "actions": {
+  },
+
+  "status": {
+    "exec": "subscript/mobile/modem.uc",
+    "args": ["status"]
+  },
+
+  "apply": {
+    "exec": "subscript/mobile/modem.uc",  
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/mobile/modem.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+     "exec": "subscript/mobile/modem.uc",
+     "args": ["get"]
+   }
+}

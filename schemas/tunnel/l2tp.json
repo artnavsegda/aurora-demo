@@ -1,0 +1,127 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "L2TPv2",
+  "description": "L2TPv2 tunnels over PPP",
+  "type": "object",
+  "showParams": ["local-ip", "remote-ip", "encryption"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "L2TPv2 tunnel",
+      "description": "L2TPv2 tunnel interface",
+      "required": ["remote-ip", "psk"],
+      "properties": {
+        "proto": {
+          "type": "string",
+          "hidden": true,
+          "noExport": true
+        },
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+
+        "local-ip": {
+          "$ref": "/defaults#/definitions/interface-ipaddr",
+          "title": "Local IP",
+          "description": "Local endpoint address or interface",
+          "default": "auto"
+        },
+
+        "remote-ip": {
+          "$ref": "/defaults#/definitions/host",
+          "title": "Remote IP",
+          "description": "Remote endpoint (FQDN or IP address)"
+        },
+
+        "username": {
+          "$ref": "/defaults#/definitions/username"
+        },
+
+        "password": {
+          "$ref": "/defaults#/definitions/password"
+        },
+
+        "auth": {
+          "$ref": "/defaults#/definitions/ppp-auth",
+          "enum": ["any", "chap", "mschap", "mschap-v2", "pap"],
+          "modificator": [
+            {"if":[{"encryption": "mppe"}], "then": {"enum": ["mschap-v2"]}}
+          ]
+        },
+
+        "encryption": {
+          "$ref": "/defaults#/definitions/encryption",
+          "modificator": [
+            {"if": [{"/defaults/ipsec_installed": true}], "then":{"enum": ["none", "mppe", "ipsec"]}}
+          ]
+        },
+
+        "psk": {
+          "$ref": "/defaults#/definitions/psk",
+          "description": "IPsec pre-shared key for tunnel authentication",
+          "modificator": [
+            {"if": [{"encryption": "ipsec"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "ppp-option": {
+          "$ref": "/defaults#/definitions/ppp-option"
+        },
+
+        "debug": {
+          "$ref": "/defaults#/definitions/debug"
+        }
+      }
+    }
+  },
+
+  "add": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["add", "l2tp"],
+    "merge": true,
+    "schema": {
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "maxLength": 15
+        }
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["delete", "l2tp"],
+    "reload": true
+  },
+
+  "status": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["status", "l2tp"]
+  },
+
+  "set": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["set", "l2tp"]
+  },
+
+  "acquire": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["get", "l2tp"]
+  },
+
+  "apply": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["apply", "l2tp"]
+  },
+
+  "clean": {
+    "exec": "subscript/tunnel/tunnel.uc",
+    "args": ["clean", "l2tp"],
+    "reload": true,
+    "confirm": true
+  }
+}

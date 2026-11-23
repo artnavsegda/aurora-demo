@@ -1,0 +1,86 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "documentation": ["local", "global"],
+    "title": "Connection tracker",
+    "description": "Connection tracking (conntrack) for session monitoring",
+    "type": "object",
+    "noCache": true,
+    "noExport": true,
+    "showParams": ["state", "source", "destination", "protocol", "timeout", "tcp-state", "mark", "pkts", "bytes"],
+    "patternProperties": {
+        ".*": {
+            "type": "object",
+            "title": "Active connections",
+            "properties": {
+                "source": {
+                    "type": "string",
+                    "title": "source",
+                    "description": "Source IP address for traffic filtering",
+                    "readOnly": true
+                },
+
+                "destination": {
+                    "type": "string",
+                    "title": "destination",
+                    "description": "Destination IP address for routing decisions",
+                    "readOnly": true
+                },
+
+                "protocol": {
+                    "type": "string",
+                    "title": "Protocol",
+                    "description": "IP protocol type selection",
+                    "readOnly": true
+                },
+
+                "timeout": {
+                    "type": "string",
+                    "title": "Timeout",
+                    "description": "Connection timeout duration for session cleanup",
+                    "readOnly": true
+                },
+
+                "tcp-state": {
+                    "type": "string",
+                    "title": "TCP State",
+                    "description": "TCP connection state tracking",
+                    "readOnly": true
+                },
+
+                "mark": {
+                    "type": "number",
+                    "title": "Packet mark",
+                    "description": "Packet mark for firewall rule matching",
+                    "readOnly": true
+                },
+
+                "pkts": {
+                    "type": "string",
+                    "title": "Orig/Repl Packets",
+                    "description": "Transmitted/received packet counters",
+                    "readOnly": true
+                },
+
+                "bytes": {
+                    "type": "string",
+                    "title": "Orig/Repl Bytes",
+                    "description": "Transmitted/received byte counters",
+                    "readOnly": true
+                }
+            }
+        }
+    },
+    "actions": {
+        "flush": {
+            "title": "flush",
+            "exec": "subscript/firewall/connections.uc",
+            "args": ["flush"],
+            "description": "Flush connection tracking table",
+            "reload": true
+        }
+    },
+    "acquire": {
+        "exec": "subscript/firewall/connections.uc",
+        "args": ["get"]
+    }
+}

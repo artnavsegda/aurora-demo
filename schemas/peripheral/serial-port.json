@@ -1,0 +1,363 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Serial Ports",
+  "description": "Serial ports binding",
+  "type": "object",
+  "showParams": ["local-baudrate", "mode", "remote-proto"],
+  "definitions": {
+    "flowcontrol": {
+      "type": "string",
+      "title": "Flow control",
+      "description": "Flow control type",
+      "enum": ["none", "soft", "hard"]
+    },
+
+    "baudrate": {
+      "type": "string",
+      "description": "Serial port baud rate",
+      "enum": [
+          "1200",  "2400",  "4800",  "9600",
+          "19200", "38400", "57600", "115200"
+      ]
+    },
+
+    "parity": {
+      "type": "string",
+      "description": "Parity bit",
+      "enum": ["none", "odd", "even"]
+    },
+
+    "stopbits": {
+      "type": "number",
+      "title": "Stop bits",
+      "description": "Stop bits per serial frame",
+      "enum": [1, 2]
+    },
+
+    "databits": {
+      "type": "number",
+      "description": "Data bits per serial frame",
+      "enum": [8, 7]
+    }
+  },
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Serial Port",
+      "required": ["port"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "device": {
+          "type": "string",
+          "title": "Device",
+          "readOnly": true,
+          "hidden": true,
+          "noExport": true
+        },
+        "mode": {
+          "type": "string",
+          "description": "Serial port mode",
+          "enum": ["client", "server", "modbustcp"],
+          "modificator": [
+            {"if": [{"/defaults/ntripclient_installed": true}], "then": {"enum": ["client", "server", "ntripclient", "modbustcp"]}}
+          ]
+        },
+        "host": {
+          "type": "array",
+          "description": "Remote host address",
+          "uniqueItems": true,
+          "items": {
+             "$ref": "/defaults#/definitions/host-port-strict"
+          },
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-mode": {
+          "type": "string",
+          "description": "Transport protocol selection",
+          "title": "NTRIP mode",
+          "enum": ["auto", "ntrip1", "http", "rtsp", "udp"],
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient"}, {"ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "local-baudrate": {
+          "$ref": "#/definitions/baudrate",
+          "title": "Baudrate"
+        },
+        "local-parity": {
+          "$ref": "#/definitions/parity",
+          "title": "Parity"
+        },
+        "local-stop-bits": {
+          "$ref": "#/definitions/stopbits",
+          "title": "Stop bits"
+        },
+        "local-data-bits": {
+          "$ref": "#/definitions/databits",
+          "title": "Data bits",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "client"}], "then": {"hidden": false}},
+            {"if":[{"mode": "server"}], "then": {"hidden": false}},
+            {"if":[{"mode": "ntripclient"}], "then": {"hidden": false}}
+          ]
+        },
+        "local-flowcontrol": {
+          "$ref": "#/definitions/flowcontrol",
+          "title": "Flowcontrol"
+        },
+        "remote-proto": {
+          "type": "string",
+          "description": "Remote side serial port protocol",
+          "title": "Remote Protocol",
+          "enum": ["raw", "rfc2217"],
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "client"}], "then": {"hidden": false}},
+            {"if":[{"mode": "server"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-baudrate": {
+          "$ref": "#/definitions/baudrate",
+          "title": "Remote baudrate",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-parity": {
+          "$ref": "#/definitions/parity",
+          "title": "Remote parity",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-stop-bits": {
+          "$ref": "#/definitions/stopbits",
+          "title": "Remote stop bits",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-data-bits": {
+          "$ref": "#/definitions/databits",
+          "title": "Remote data bits",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-flowcontrol": {
+          "$ref": "#/definitions/flowcontrol",
+          "title": "Remote flowcontrol",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-acknowledgement": {
+          "type": "boolean",
+          "title": "Remote acknowledgement",
+          "description": "Require remote configuration confirmation",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "remote-acknowledgement-timeout": {
+          "type": "number",
+          "title": "Acknowledgement timeout",
+          "description": "Require remote configuration confirmation",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "rfc2217"}, {"mode": "client"}], "then": {"hidden": false}}
+          ]
+        },
+        "banner": {
+          "type": "string",
+          "description": "Banner that will be sent upon connection",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"remote-proto": "raw"}, {"mode": "client"}], "then": {"hidden": false}},
+            {"if":[{"remote-proto": "raw"}, {"mode": "server"}], "then": {"hidden": false}}
+          ]
+        },
+        "local-accumulation-interval": {
+          "type": "number",
+          "title": "Accumulation interval",
+          "description": "Interval (msec) between reading data from the serial port into the buffer before sending the entire buffer",
+          "minimum": 1,
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "!modbustcp"}], "then": {"hidden": false}}
+          ]
+        },
+        "local-accumulation-attempts": {
+          "type": "number",
+          "title": "Accumulation attempts",
+          "description": "How many times to read data from serial port to accumulate buffer",
+          "default": 3,
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "!modbustcp"}], "then": {"hidden": false}}
+          ]
+        },
+        "reconnect-delay": {
+          "type": "number",
+          "title": "Reconnect delay",
+          "description": "Reconnection delay (sec)",
+          "minimum": 1
+        },
+        "peer-timeout": {
+          "type": "number",
+          "title": "Peer timeout",
+          "description": "Peer inactivity disconnect timeout (sec)",
+          "minimum": 0
+        },
+        "bind": {
+          "description": "Select interface/address for incoming connections",
+          "$ref": "/defaults#/definitions/interface",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "modbustcp"}], "then": {"hidden": false}},
+            {"if":[{"mode": "server"}], "then": {"hidden": false}}
+          ]
+        },
+        "port": {
+          "description": "Listening port number",
+          "$ref": "/defaults#/definitions/port",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "modbustcp"}], "then": {"hidden": false}},
+            {"if":[{"mode": "server"}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-mountpoint": {
+          "type": "string",
+          "description": "Mountpoint or other criterion for matching the data set",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-user": {
+          "$ref": "/defaults#/definitions/username",
+          "title": "NTRIP User",
+          "description": "Dataset authentication username",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-password": {
+          "$ref": "/defaults#/definitions/password",
+          "title": "NTRIP password",
+          "description": "Dataset authentication password",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-nmea": {
+          "type": "string",
+          "title": "NTRIP NMEA",
+          "description": "NMEA string for sending to server",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-bitrate": {
+          "type": "boolean",
+          "title": "NTRIP Bitrate",
+          "description": "Outgoing bitrate",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-initudp": {
+          "type": "boolean",
+          "title": "NTRIP Initudp",
+          "description": "Sending an initial UDP packet for firewall processing",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-udpport": {
+          "$ref": "/defaults#/definitions/port",
+          "title": "UDP Port",
+          "description": "Local UDP port selection",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-proxyhost": {
+          "$ref": "/defaults#/definitions/host-port",
+          "title": "NTRIP proxy host",
+          "description": "Proxy server address:port or hostname:port (port - optional, default 2101)",
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "ntrip-protocol": {
+          "type":"string",
+          "title": "NTRIP protocol",
+          "description": "Serial port flow control type",
+          "enum": ["none", "rts_cts", "xon_xoff"],
+          "hidden": true,
+          "modificator": [
+            {"if":[{"mode": "ntripclient", "ntripclient_installed": true}], "then": {"hidden": false}}
+          ]
+        },
+        "failopen-retries": {
+          "type": "number",
+          "title": "Failopen retries",
+          "description": "Number of failopen retries",
+          "hidden": true,
+          "minimum": 1
+        },
+        "failopen-timeout": {
+          "type": "number",
+          "title": "Failopen timeout",
+          "description": "Failopen retry timeout"
+        },
+        "debug": {
+          "$ref": "/defaults#/definitions/debug"
+        }
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/peripheral/serial.uc",
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/peripheral/serial.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/peripheral/serial.uc",
+    "args": ["get"]
+  },
+
+  "status": {
+    "exec": "subscript/peripheral/serial.uc",
+    "args": ["status"]
+  }
+}

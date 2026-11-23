@@ -1,0 +1,80 @@
+
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Logging",
+  "description": "Setting up logging",
+  "type": "object",
+
+  "properties": {
+    "remote-host": {
+        "$ref": "/defaults#/definitions/host-port",
+        "description": "Remote host for receiving log",
+        "title": "Remote"
+    },
+
+    "remote-proto": {
+      "type": "string",
+      "description": "Transport protocol for sending log",
+      "title": "Transport",
+      "enum": ["tcp", "udp"]
+    },
+
+    "remote-prefix": {
+      "type": "string",
+      "description": "Prefix for log entries",
+      "title": "Prefix"
+    },
+
+    "file-log": {
+      "$ref": "/defaults#/definitions/disabled",
+      "title": "Log to file",
+      "description": "Enable logging to local file"
+    },
+
+    "file-name": {
+      "type": "string",
+      "title": "File",
+      "description": "Log file name",
+      "default": "syslog",
+      "hidden": true,
+      "modificator": [
+          { "if": [ {"file-log": true} ], "then": { "hidden": false } }
+      ]
+    },
+
+    "file-size": {
+      "type": "number",
+      "default": 64,
+      "minimum": 1,
+      "maximum": 8192,
+      "title": "File size",
+      "description": "Maximum file size (Kbyte)",
+      "hidden": true,
+      "modificator": [
+          { "if": [ { "file-log": true} ], "then": { "hidden": false } }
+      ]
+    }
+  },
+
+  "apply": {
+    "exec": "subscript/system/logging.uc",
+    "args": ["apply"],
+    "reload": true
+  },
+
+  "status": {
+    "exec": "subscript/system/logging.uc",
+    "args": ["status"]
+  },
+
+  "set": {
+    "exec": "subscript/system/logging.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/system/logging.uc",
+    "args": ["get"]
+  }
+}

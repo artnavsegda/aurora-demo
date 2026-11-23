@@ -1,0 +1,225 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "Adapter",
+  "description": "Wi-Fi adapter settings",
+  "type": "object",
+  "showParams": ["band", "model"],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Radio PHY",
+      "properties": {
+
+        "_channels": {
+          "type":"array",
+          "hidden": true,
+          "readOnly": true,
+          "items": {
+            "type": "number"
+          }
+        },
+     
+        "_txpowers": {
+          "type":"array",
+          "hidden": true,
+          "readOnly": true,
+          "items": {
+            "type": "number"
+          }
+        },
+        
+        "_htmodes": {
+          "type":"array",
+          "hidden": true,
+          "readOnly": true,
+          "items": {
+            "type": "string"
+          }
+        },
+
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+
+        "country": {
+          "type": "string",
+          "description": "Selecting a country to apply regulatory restrictions",
+          "default": "default",
+          "enum": [
+            "AD","AE","AF","AI","AL","AM","AN","AR",
+            "AS","AT","AU","AW","AZ","BA","BB","BD",
+            "BE","BF","BG","BH","BL","BM","BN","BO",
+            "BR","BS","BT","BY","BZ","CA","CF","CH",
+            "CI","CL","CN","CO","CR","CU","CX","CY",
+            "CZ","DE","DK","DM","DO","DZ","EC","EE",
+            "EG","ES","ET","FI","FM","FR","GB","GD",
+            "GE","GF","GH","GL","GP","GR","GT","GU",
+            "GY","HK","HN","HR","HT","HU","ID","IE",
+            "IL","IN","IR","IS","IT","JM","JO","JP",
+            "KE","KH","KN","KP","KR","KW","KY","KZ",
+            "LB","LC","LI","LK","LS","LT","LU","LV",
+            "MA","MC","MD","ME","MF","MH","MK","MN",
+            "MO","MP","MQ","MR","MT","MU","MV","MW",
+            "MX","MY","NG","NI","NL","NO","NP","NZ",
+            "OM","PA","PE","PF","PG","PH","PK","PL",
+            "PM","PR","PT","PW","PY","QA","RE","RO",
+            "RS","RU","RW","SA","SE","SG","SI","SK",
+            "SN","SR","SV","SY","TC","TD","TG","TH",
+            "TN","TR","TT","TW","TZ","UA","UG","US",
+            "UY","UZ","VC","VE","VI","VN","VU","WF",
+            "WS","YE","YT","ZA","ZW"
+          ]
+        },
+
+        "band": {
+          "type": "string",
+          "description": "Wireless frequency range",
+          "strictEnum": true,
+          "hidden": true,
+          "noExport": true
+        },
+
+        "allow-legacy-rate": {
+          "type": "boolean",
+          "title": "Allow 802.11b",
+          "description": "Allow pairing with devices that only support 802.11b (11 Mbps)",
+          "hidden": true,
+          "noExport": true,
+          "____modificator": [
+            {"if": [{"band": "2.4GHz"}], "then": {"hidden": false}}
+          ]
+        },
+
+        "channels": {
+          "type": "array",
+          "description": "List of wireless adapter channels",
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "cue": ["$_channels"],
+            "strictEnum": true
+          }
+        },
+
+        "txpower": {
+          "type": "number",
+          "description": "Transmit power level",
+          "title": "Transmit power",
+          "strictEnum": true,
+          "default": "auto",
+          "cue": ["+auto", "$_txpowers"]
+        },
+
+        "htmode": {
+          "type": "string",
+          "title": "HT mode",
+          "description": "High Throughput (HT) mode",
+          "strictEnum": true,
+          "cue": ["+none", "$_htmodes"]
+        },
+        
+        "_board": {
+          "type": "string",
+          "description": "for frag-treshold",
+          "hidden": true,
+          "noExport": true
+        },
+
+        "frag-threshold": {
+          "title": "Fragment threshold",
+          "type": "number",
+          "minimum": 256,
+          "maximum": 2346,
+          "default": 2346,
+          "description": "The size (bytes) of a packet, above which it is fragmented. Even number",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"_board": "mt00"}],    "then": {"hidden": false}},
+            {"if": [{"_board": "mt02"}],    "then": {"hidden": false}},
+            {"if": [{"_board": "mt02_v2"}], "then": {"hidden": false}},
+            {"if": [{"_board": "mt10"}],    "then": {"hidden": false}},
+            {"if": [{"_board": "kw04"}],    "then": {"hidden": false}}
+          ]
+        },
+
+        "rts-threshold": {
+          "title": "RTS threshold",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2347,
+          "default": 2347,
+          "description": "The size (bytes) of a packet, above which the RTS/CTS mechanism is activated"
+        },
+
+        "beacon" : {
+          "type": "number",
+          "description": "AP beacon transmission interval (msec)",
+          "minimum": 15,
+          "maximum": 65535,
+          "default": 100
+        },
+
+        "capabilities": {
+          "hidden": true,
+          "noExport": true,
+          "type": "array",
+          "description": "Fine-tuning high performance mode",
+          "items": {
+            "type": "string",
+            "enum": [
+              "LDPC",                 "GF", 
+              "SHORT-GI-20",          "SHORT-GI-40",          "TX-STBC",              "RX-STBC1",
+              "RX-STBC12",            "RX-STBC123",           "DELAYED-BA",           "MAX-AMSDU-7935",
+              "DSSS_CCK-40",          "40-INTOLERANT",        "LSIG-TXOP-PROT",       "MAX-MPDU-7991",
+              "MAX-MPDU-11454",       "VHT160",               "VHT160-80PLUS80",      "RXLDPC",
+              "SHORT-GI-80",          "SHORT-GI-160",         "TX-STBC-2BY1",         "RX-STBC-1", 
+              "RX-STBC-12",           "RX-STBC-123",          "RX-STBC-1234",         "SU-BEAMFORMER", 
+              "VHT-TXOP-PS",          "HTC-VHT",
+              "MAX-A-MPDU-LEN-EXP0",  "MAX-A-MPDU-LEN-EXP1",  "MAX-A-MPDU-LEN-EXP2",  "MAX-A-MPDU-LEN-EXP3",  
+              "MAX-A-MPDU-LEN-EXP4",  "MAX-A-MPDU-LEN-EXP5",  "MAX-A-MPDU-LEN-EXP6",  "MAX-A-MPDU-LEN-EXP7", 
+              "VHT-LINK-ADAPT2",      "VHT-LINK-ADAPT3",      "RX-ANTENNA-PATTERN",   "TX-ANTENNA-PATTERN"
+            ]
+          }
+        },
+
+        "airtime-fairness": {
+          "type": "integer",
+          "hidden": true,
+          "noExport": true,
+          "description": "[Not added, needs driver support] Fair airtime distribution control",
+          "enum": [1, 2, 3, 7]
+        }
+      }
+    },
+
+      "actions": {
+          "scan": {
+              "exec": "subscript/wireless/adapter.uc",
+              "description": "Search for WiFi networks",
+              "args": [ "scan" ],
+              "wait": true
+          }
+      }
+  },
+
+  "status" : {
+    "exec": "subscript/wireless/adapter.uc",
+    "args": ["status"]
+  },
+
+  "apply": {
+    "exec": "subscript/wireless/adapter.uc",
+    "args": ["apply"]
+  },
+
+  "set": {
+    "exec": "subscript/wireless/adapter.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "subscript/wireless/adapter.uc",
+    "args": ["get"]
+  }  
+}

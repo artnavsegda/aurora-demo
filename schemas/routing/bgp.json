@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": ["local", "global"],
+  "title": "BGP instances",
+  "type": "object",
+  "definitions": {
+    "as": {
+      "type": "number",
+      "title": "AS",
+      "description": "Identifier of autonomous system",
+      "minimum": 1,
+      "maximum": 4294967295
+    },
+    "filter": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "cue": ["/routing/filter"]
+      }
+    }
+  },
+
+  "showParams": ["local-as", "local-addr", "neighbor-as", "neighbor-addr"],
+
+  "namesake": "name",
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "required": ["local-as", "neighbor-addr", "neighbor-as"],
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "hidden": true
+        },
+        "router-id": {
+          "$ref": "/defaults#/definitions/ipaddr-strict",
+          "title": "Router ID",
+          "description": "Router ID which overwrite the global option"
+        },
+        "local-as": {
+          "$ref": "#/definitions/as",
+          "title": "Local AS"
+        },
+        "local-addr": {
+          "$ref": "/defaults#/definitions/ipaddr-port",
+          "title": "Local address",
+          "description": "Local IP address. Default port 179"
+        },
+        "neighbor-as": {
+          "$ref": "#/definitions/as",
+          "title": "Neighbor AS"
+        },
+        "neighbor-addr": {
+          "$ref": "/defaults#/definitions/ipaddr-port",
+          "description": "The neighbor this instance will be talking to. Default port 179",
+          "title": "Neighbor address"
+        },
+        "multihop": {
+          "type": "boolean",
+          "description": "Use it if the configured neighbor IP address does not match with any local network subnets"
+        },
+        "ttl": {
+          "type": "number",
+          "description": "The number of hops",
+          "minimum": 1,
+          "maximum": 255,
+          "default": 64,
+          "hidden": true,
+          "modificator": [
+            {"if": [{"multihop": true}], "then": {"hidden": false}}
+          ]
+        },
+
+        "hold-time": {
+          "type": "string",
+          "title": "Hold Time",
+          "description": "Time in seconds to wait for a Keepalive message from the other side before considering the connection stale. Zero means, signifying that no keepalives are used",
+          "default": "240",
+          "pattern": "^(0|[3-9]|[1-9]\\d{1,3}|[1-5]\\d{4}|6[0-4]\\d{3}|65[0-4]\\d{2}|655[0-2]\\d|6553[0-5])$",
+          "patternDescription": "0 (disable keepalives) or a number 3-65535"
+        },
+        "keepalive-time": {
+          "type": "number",
+          "title": "Keepalive Time",
+          "description": "Delay in seconds between sending of two consecutive Keepalive messages. Default = hold-time/3",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "password": {
+          "$ref": "/routing/common#/definitions/bird-password",
+          "maxLength": 80
+        },
+        "bfd": {
+          "type": "boolean",
+          "title": "Use BFD",
+          "description": "Use BFD protocol as an advisory mechanism for neighbor liveness and failure detection"
+        },
+        "next-hop-self": {
+          "type": "boolean",
+          "title": "Next Hop Self",
+          "description": "Force this router to advertise itself as the next hop for routes sent to this neighbor"
+        },
+        "reflection": {
+          "type": "boolean",
+          "description": "Be a route reflector and treat the neighbor as a route reflection client"
+        },
+        "cluster-id": {
+          "$ref": "/defaults#/definitions/num-or-ipaddr",
+          "title": "Cluster ID",
+          "description": "Option for avoid route reflection loops. Default: the same as router id",
+          "hidden": true,
+          "modificator": [
+            {"if": [{"reflection": true}], "then": {"hidden": false}}
+          ]
+        },
+        "extra": {
+          "type": "array",
+          "title": "Extra Options",
+          "uniqueItems": true,
+          "items": {
+            "type": "pair",
+            "pattern": "^([a-zA-Z0-9\\-_]+[=](on|off|yes|no|true|false|0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[0-1]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[0-1]\\d{2}|42949672[0-8]\\d|429496729[0-5]))$",
+            "patternDescription": "Key and value (integer, or on/off/yes/no/true/false for switches) separated by the '=' symbol",
+            "patternExample": ["default-bgp_med=0", "med-metric=on"],
+            "strictEnum": false,
+            "enum": [
+              "default-bgp_med",
+              "default-bgp_local_pref",
+              "med-metric",
+              "allow-bgp_med",
+              "allow-bgp_local_pref"
+            ]
+          }
+        },
+        "use-filter-file": {
+          "type": "boolean",
+          "title": "Use filter file",
+          "description": "Using filter configuration from file instead of options"
+        },
+        "export-filter-file": {
+          "title": "Export Filter File",
+          "type": "string",
+          "description": "Filter config file in bird syntax",
+          "cue": ["/storage/file[file-type:!temporary]"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+          ]
+        },
+        "import-filter-file": {
+          "title": "Import Filter File",
+          "type": "string",
+          "description": "Filter config file in bird syntax",
+          "cue": ["/storage/file[file-type:!temporary]"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+          ]
+        },
+        "default-export": {
+          "type": "string",
+          "title": "Default export",
+          "description": "Default export filter",
+          "enum": ["accept", "reject"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "default-import": {
+          "type": "string",
+          "title": "Default import",
+          "description": "Default import filter",
+          "enum": ["accept", "reject"],
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "export-filter": {
+          "$ref": "#/definitions/filter",
+          "title": "Export filter",
+          "description": "Export filter",
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        },
+        "import-filter": {
+          "$ref": "#/definitions/filter",
+          "title": "Import filter",
+          "description": "Import filter",
+          "hidden": true,
+          "modificator": [
+            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+          ]
+        }
+      }
+    },
+
+    "actions": {
+      "route-stats": {
+        "exec": "./subscript/routing/bgp.uc",
+        "args": ["route_stats"],
+        "wait": true,
+        "title": "Route stats",
+        "description": "Route change statistics as a table"
+      }
+    }
+  },
+
+  "delete": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["delete"],
+    "reload": true
+  },
+
+  "add": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["add"],
+    "merge": true,
+    "description": "add new entry (params: <name>)",
+    "schema": {
+      "required": ["name"],
+      "properties": {
+       "name": {"$ref": "/defaults#/definitions/name"}
+      }
+    }
+  },
+
+  "apply": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["apply"]
+  },
+
+  "clean": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["clean"],
+    "confirm": true,
+    "reload": true
+  },
+
+  "set": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["set"]
+  },
+
+  "acquire": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["get"]
+  },
+
+  "status": {
+    "exec": "./subscript/routing/bgp.uc",
+    "args": ["status"]
+  }
+}
