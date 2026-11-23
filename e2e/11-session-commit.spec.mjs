@@ -25,10 +25,7 @@ test('@cue 403 выводит на login с session token expired', async ({ pag
     expect(errors.filter((e) => !e.includes('403'))).toEqual([])
 })
 
-test('commit 500 сохраняет изменения и не сбрасывает commited', async ({ page }, testInfo) => {
-    test.fail(testInfo.project.name === 'vue2',
-        'Vue 2: commitAll очищает changes в finally даже при 500 (#70935951)')
-
+test('commit 500 сохраняет изменения и не сбрасывает commited', async ({ page }) => {
     const errors = collectErrors(page)
     await login(page, 'session-commit-500')
     await open(page, '/ip/interface')

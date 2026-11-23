@@ -71,7 +71,7 @@ Playwright сам поднимает два демо-бэкенда: `8102` (Vue
 - `08-schema-business` — проход по всем схемам: видимые ошибки полей и ошибки
   консоли; три известных расхождения схема/данные перечислены явно;
 - `11-session-commit` — @cue 403 выводит на login; неуспешный commit
-  не теряет changes/commited (для Vue 2 пока ожидаемое падение #70935951);
+  не теряет changes/commited;
 - `09-adversarial-schemas` — испытательные схемы `/test/*`: битый regexp,
   массивы без `items`, битые `$ref`, пустой `enum`, `modificator` на
   несуществующем поле, `cue`, actions (форма, confirm, поток, blob, без схемы).
@@ -95,17 +95,7 @@ Vue 2 `TextElement.update()` по таймеру вызывает `setValue()`, 
 
 Патч: `patches/aurora-vue2-text-debounce.patch`.
 
-### 2. Commit теряет черновик при ошибке
-
-`e2e/11-session-commit.spec.mjs`
-
-Vue 2 `commitAll` очищает `changes` и выставляет `commited=true` в `.finally`,
-даже если `/script/wrapper?commit` вернул 500. Тест проверяет, что после
-неуспешного commit кнопка остаётся `not-commited`.
-
-Карточка: Kaiten `#70935951`.
-
-### 3. Apply не видит ошибок формы
+### 2. Apply не видит ошибок формы
 
 `e2e/03-validation.spec.mjs`
 

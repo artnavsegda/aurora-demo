@@ -430,8 +430,7 @@ describe('store/actions', () => {
             axios.post.mockResolvedValue({})
 
             actions.revertAll(store)
-            await Promise.resolve()
-            await Promise.resolve()
+            for (let i = 0; i < 10; i++) await Promise.resolve()
             expect(axios.post).toHaveBeenCalledWith('/script/wrapper?revert', {
                 type: 'revert', path: '/system/config', token: null,
             })
@@ -439,15 +438,14 @@ describe('store/actions', () => {
 
             axios.post.mockClear()
             actions.commitAll(store)
-            await Promise.resolve()
-            await Promise.resolve()
+            for (let i = 0; i < 10; i++) await Promise.resolve()
             expect(axios.post).toHaveBeenCalledWith('/script/wrapper?commit', {
                 type: 'commit', path: '/system/config', token: null,
             })
             expect(store.state.commited).toBe(true)
         })
 
-        test.failing('commitAll: ошибка сохраняет changes и commited=false', async () => {
+        test('commitAll: ошибка сохраняет changes и commited=false', async () => {
             const store = makeStore()
             store.state.changes = { '/qa/draft': true }
             store.state.commited = false
