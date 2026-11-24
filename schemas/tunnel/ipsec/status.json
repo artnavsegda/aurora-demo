@@ -1,156 +1,161 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "documentation": ["local", "global"],
-    "title": "IPSec status",
-    "description": "IPSec status",
-    "type": "object",
-    "namesake": "_index",
-    "noCache": true,
-    "noExport": true,
-    "definitions": {
-    },
-    "showParams": ["local-id", "remote-id", "uptime", "association", "local-ts", "remote-ts", "rx-tx"],
-    "patternProperties": {
-        ".*": {
-            "type": "object",
-            "title": "Active entries",
-            "properties": {
-                "_index": {
-                    "type": "string",
-                    "hidden": true
-                },
-                "association": {
-                    "type": "string",
-                    "description": "IPSec association",
-                    "readOnly": true,
-                    "hidden": true,
-                    "modificator": [
-                        {"if": [{"association": "!"}], "then": {"hidden": false}}
-                    ]
-                },
-                "uniqueid": {
-                    "type": "string",
-                    "title": "SA unique ID",
-                    "description": "SA Security Parameter Index (SPI)",
-                    "readOnly": true
-                },
-                "status": {
-                    "type": "string",
-                    "title": "SA state",
-                    "description": "SA status",
-                    "readOnly": true
-                },
-                "local": {
-                    "type": "string",
-                    "title": "Local address",
-                    "description": "Tunnel source endpoint address",
-                    "readOnly": true
-                },
-                "local-id": {
-                    "type": "string",
-                    "title": "Local ID",
-                    "description": "Local IKE identity string",
-                    "readOnly": true
-                },
-                "remote": {
-                    "type": "string",
-                    "title": "Remote address",
-                    "description": "Tunnel destination endpoint address",
-                    "readOnly": true
-                },
-                "remote-id": {
-                    "type": "string",
-                    "title": "Remote ID",
-                    "description": "Remote IKE identity string",
-                    "readOnly": true
-                },
-                "uptime": {
-                    "type": "string",
-                    "title": "SA uptime",
-                    "description": "SA lifetime since establishment",
-                    "readOnly": true
-                },
-                "encryption": {
-                    "type": "string",
-                    "title": "Encryption algorithm",
-                    "description": "Negotiated encryption algorithm",
-                    "readOnly": true
-                },
-                "integrity": {
-                    "type": "string",
-                    "title": "Integrity algorithm",
-                    "description": "Negotiated integrity algorithm",
-                    "readOnly": true
-                },
-                "prf": {
-                    "type": "string",
-                    "title": "Pseudo-Random Function",
-                    "description": "Negotiated pseudorandom function",
-                    "readOnly": true
-                },
-                "dh": {
-                    "type": "string",
-                    "title": "Diffie Hellman Group",
-                    "description": "Negotiated Diffie-Hellman group",
-                    "readOnly": true
-                },
-                "local-ts": {
-                    "type": "array",
-                    "title": "Local TS",
-                    "description": "Local traffic selector subnet",
-                    "readOnly": true
-                },
-                "remote-ts": {
-                    "type": "array",
-                    "title": "Remote TS",
-                    "description": "Remote traffic selector subnet",
-                    "readOnly": true
-                },
-                "expires": {
-                    "type": "string",
-                    "title": "rekey/reauth countdown",
-                    "description": "SA remaining lifetime before rekey",
-                    "readOnly": true
-                },
-                "reqid": {
-                    "readOnly": true,
-                    "type": "string",
-                    "description": "SA unique identifier (SPI)"
-                },
-                "rx-tx": {
-                    "readOnly": true,
-                    "title": "Rx/Tx counter",
-                    "type": "string",
-                    "description": "SA traffic counters (RX/TX)"
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "IPSec status",
+  "description": "IPSec status",
+  "type": "object",
+  "namesake": "_index",
+  "noCache": true,
+  "noExport": true,
+  "definitions": {},
+  "showParams": [
+    "local-id",
+    "remote-id",
+    "uptime",
+    "association",
+    "local-ts",
+    "remote-ts",
+    "rx-tx"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Active entries",
+      "properties": {
+        "_index": {
+          "type": "string",
+          "hidden": true
+        },
+        "association": {
+          "type": "string",
+          "description": "IPSec association",
+          "readOnly": true,
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "association": "!"
                 }
+              ],
+              "then": {
+                "hidden": false
+              }
             }
+          ]
+        },
+        "uniqueid": {
+          "type": "string",
+          "title": "SA unique ID",
+          "description": "SA Security Parameter Index (SPI)",
+          "readOnly": true
+        },
+        "status": {
+          "type": "string",
+          "title": "SA state",
+          "description": "SA status",
+          "readOnly": true
+        },
+        "local": {
+          "type": "string",
+          "title": "Local address",
+          "description": "Tunnel source endpoint address",
+          "readOnly": true
+        },
+        "local-id": {
+          "type": "string",
+          "title": "Local ID",
+          "description": "Local IKE identity string",
+          "readOnly": true
+        },
+        "remote": {
+          "type": "string",
+          "title": "Remote address",
+          "description": "Tunnel destination endpoint address",
+          "readOnly": true
+        },
+        "remote-id": {
+          "type": "string",
+          "title": "Remote ID",
+          "description": "Remote IKE identity string",
+          "readOnly": true
+        },
+        "uptime": {
+          "type": "string",
+          "title": "SA uptime",
+          "description": "SA lifetime since establishment",
+          "readOnly": true
+        },
+        "encryption": {
+          "type": "string",
+          "title": "Encryption algorithm",
+          "description": "Negotiated encryption algorithm",
+          "readOnly": true
+        },
+        "integrity": {
+          "type": "string",
+          "title": "Integrity algorithm",
+          "description": "Negotiated integrity algorithm",
+          "readOnly": true
+        },
+        "prf": {
+          "type": "string",
+          "title": "Pseudo-Random Function",
+          "description": "Negotiated pseudorandom function",
+          "readOnly": true
+        },
+        "dh": {
+          "type": "string",
+          "title": "Diffie Hellman Group",
+          "description": "Negotiated Diffie-Hellman group",
+          "readOnly": true
+        },
+        "local-ts": {
+          "type": "array",
+          "title": "Local TS",
+          "description": "Local traffic selector subnet",
+          "readOnly": true
+        },
+        "remote-ts": {
+          "type": "array",
+          "title": "Remote TS",
+          "description": "Remote traffic selector subnet",
+          "readOnly": true
+        },
+        "expires": {
+          "type": "string",
+          "title": "rekey/reauth countdown",
+          "description": "SA remaining lifetime before rekey",
+          "readOnly": true
+        },
+        "reqid": {
+          "readOnly": true,
+          "type": "string",
+          "description": "SA unique identifier (SPI)"
+        },
+        "rx-tx": {
+          "readOnly": true,
+          "title": "Rx/Tx counter",
+          "type": "string",
+          "description": "SA traffic counters (RX/TX)"
         }
-    },
-    "actions": {
-        "debug": {
-            "exec": "handler",
-            "args": ["debug", "ipsec/strongswan"],
-            "description": "Change logging level",
-            "schema": {
-                "required": ["level"],
-                "properties": {
-                    "level": {
-                        "title": "Logging level",
-                        "type": "string",
-                        "enum": ["0", "1", "2"],
-                        "description": "Verbose logging level"
-                    }
-                }
-            }
-        }
-    },
-    "acquire": {
-        "exec": "subscript/ipsec/sas.uc",
-        "args": ["get"]
-    },
-    "delete": {
-        "exec": "subscript/ipsec/sas.uc",
-        "args": ["delete"],
-        "reload": true
+      }
     }
+  },
+  "acquire": {
+    "exec": "subscript/ipsec/status.uc",
+    "args": [
+      "get"
+    ]
+  },
+  "delete": {
+    "exec": "subscript/ipsec/status.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  }
 }

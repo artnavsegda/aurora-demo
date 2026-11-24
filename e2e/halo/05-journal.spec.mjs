@@ -9,7 +9,7 @@ test('Halo: журнал открывается и показывает стро
     await journalButton(page).click()
     await expect(page.locator('body')).toContainText('/ journal')
     await expect(page.locator('.font-mono').first()).toBeVisible({ timeout: 10_000 })
-    await expect(page.locator('.font-mono').first()).toContainText('R50-DEMO')
+    await expect(page.locator('.font-mono').first()).toContainText('Router')
     await page.waitForTimeout(1200)
 
     expect(httpErrors.filter((e) => e.includes('journal'))).toEqual([])

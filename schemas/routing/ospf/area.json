@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "OSPF area",
   "type": "object",
   "definitions": {
@@ -10,13 +13,15 @@
       "title": "OSPF Area ID"
     }
   },
-
   "namesake": "name",
-	"patternProperties": {
+  "patternProperties": {
     ".*": {
       "type": "object",
       "title": "Area entity",
-      "required": ["name", "id"],
+      "required": [
+        "name",
+        "id"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name",
@@ -28,15 +33,37 @@
         "type": {
           "type": "string",
           "description": "Area type",
-          "enum": ["standard", "nssa", "stub"]
+          "enum": [
+            "standard",
+            "nssa",
+            "stub"
+          ]
         },
         "summary": {
           "type": "boolean",
           "description": "Propagate inter-area summary routes (Type-3 Summary LSA) into this area; without it, only a default route is injected (totally stubby)",
           "hidden": true,
           "modificator": [
-            {"if": [{"type":"nssa"}], "then": {"hidden": false}},
-            {"if": [{"type":"stub"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "type": "nssa"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "stub"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-nssa": {
@@ -44,7 +71,19 @@
           "description": "Advertise a default route (Type-7) into the NSSA area",
           "hidden": true,
           "modificator": [
-            {"if": [{"type":"nssa"}, {"summary": true}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "type": "nssa"
+                },
+                {
+                  "summary": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-cost": {
@@ -56,8 +95,26 @@
           "default": 1000,
           "hidden": true,
           "modificator": [
-            {"if": [{"type":"nssa"}], "then": {"hidden": false}},
-            {"if": [{"type":"stub"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "type": "nssa"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "stub"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-cost2": {
@@ -68,7 +125,22 @@
           "maximum": 16777214,
           "hidden": true,
           "modificator": [
-            {"if": [{"type":"nssa"}, {"summary": true}, {"default-nssa": true}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "type": "nssa"
+                },
+                {
+                  "summary": true
+                },
+                {
+                  "default-nssa": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "interface": {
@@ -76,7 +148,9 @@
           "description": "Area interface",
           "items": {
             "type": "string",
-            "cue": ["/routing/ospf/interface"]
+            "cue": [
+              "/routing/ospf/interface"
+            ]
           }
         },
         "network": {
@@ -86,7 +160,10 @@
             "type": "string",
             "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))(:hidden)?$",
             "patternDescription": "Network address and the optional 'hidden' parameter, separated by a colon",
-            "patternExample": ["192.168.1.0/24", "192.168.1.0/24:hidden"]
+            "patternExample": [
+              "192.168.1.0/24",
+              "192.168.1.0/24:hidden"
+            ]
           }
         },
         "stubnet": {
@@ -96,7 +173,13 @@
             "type": "string",
             "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))(:hidden)?(:summary)?(:(?:0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[0-1]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[0-1]\\d{2}|42949672[0-8]\\d|429496729[0-5]))?$",
             "patternDescription": "Network address and optional parameters ['hidden', 'summary', 'cost], separated by a colon. Cost=0-4294967295",
-            "patternExample": ["192.168.1.0/24", "192.168.1.0/24:hidden", "192.168.1.0/24:summary", "192.168.1.0/24:10", "192.168.1.0/24:summary:10"]
+            "patternExample": [
+              "192.168.1.0/24",
+              "192.168.1.0/24:hidden",
+              "192.168.1.0/24:summary",
+              "192.168.1.0/24:10",
+              "192.168.1.0/24:summary:10"
+            ]
           }
         },
         "external": {
@@ -104,75 +187,106 @@
           "description": "Definition of external area IP ranges for NSSAs",
           "hidden": true,
           "modificator": [
-            {"if": [{"type": "nssa"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "type": "nssa"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ],
           "items": {
             "type": "string",
             "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))(:hidden)?(:(?:0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[0-1]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[0-1]\\d{2}|42949672[0-8]\\d|429496729[0-5]))?$",
             "patternDescription": "Network address and optional parameter ['hidden' or 'ospf_tag'], separated by a colon. Ospf_tag=0-4294967295",
-            "patternExample": ["192.168.1.0/24", "192.168.1.0/24:hidden", "192.168.1.0/24:55"]
+            "patternExample": [
+              "192.168.1.0/24",
+              "192.168.1.0/24:hidden",
+              "192.168.1.0/24:55"
+            ]
           }
         }
       }
     },
-
     "actions": {
       "ranges": {
         "exec": "./subscript/routing/ospf/area.uc",
-        "args": ["ranges"],
+        "args": [
+          "ranges"
+        ],
         "wait": true,
         "title": "Ranges",
         "description": "State of area IP ranges, including NSSA external ones, as a table"
       }
     }
-	},
-
+  },
   "delete": {
     "exec": "./subscript/routing/ospf/area.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
-	},
-
-	"add": {
-		"exec": "./subscript/routing/ospf/area.uc",
-    "args": ["add"],
+  },
+  "add": {
+    "exec": "./subscript/routing/ospf/area.uc",
+    "args": [
+      "add"
+    ],
     "merge": true,
     "description": "add new entry (params: <name> <area-id>)",
     "schema": {
-    	"required": ["name", "id"],
+      "required": [
+        "name",
+        "id"
+      ],
       "properties": {
-       "name": {"$ref": "/defaults#/definitions/name"},
-       "id": {"$ref": "#/definitions/id"},
-       "instance": {"cue": ["/routing/ospf/instance"]}
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        },
+        "id": {
+          "$ref": "#/definitions/id"
+        },
+        "instance": {
+          "cue": [
+            "/routing/ospf/instance"
+          ]
+        }
       }
     }
   },
-  
   "apply": {
     "exec": "./subscript/routing/ospf/area.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-  
   "clean": {
     "exec": "./subscript/routing/ospf/area.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
-	"set": {
-		"exec": "./subscript/routing/ospf/area.uc",
-		"args": ["set"]
-	},
-
-	"acquire": {
-		"exec": "./subscript/routing/ospf/area.uc",
-		"args": ["get"]
-	},
-
-	"status": {
-		"exec": "./subscript/routing/ospf/area.uc",
-		"args": ["status"]
-	}
-
+  "set": {
+    "exec": "./subscript/routing/ospf/area.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "./subscript/routing/ospf/area.uc",
+    "args": [
+      "get"
+    ]
+  },
+  "status": {
+    "exec": "./subscript/routing/ospf/area.uc",
+    "args": [
+      "status"
+    ]
+  }
 }

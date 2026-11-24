@@ -8,7 +8,7 @@ test('вход, сводка и прямое открытие схемы пос�
     await login(page, username)
 
     // сводка: модель платы и плитки
-    await expect(page.locator('.footer')).toContainText('R50-L4.WAn', { timeout: 15_000 })
+    await expect(page.locator('.footer')).toContainText('Donyx iRM', { timeout: 15_000 })
     await expect(page.locator('.plates-container').first()).toBeVisible({ timeout: 15_000 })
     await expect(page.locator('body')).toContainText('Storage')
 

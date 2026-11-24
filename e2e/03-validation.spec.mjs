@@ -20,7 +20,7 @@ test('Apply не залипает после исправления ошибки
     await input.fill('bad<>')
     await input.press('Tab')
     await page.waitForTimeout(900)
-    await expect(page.locator('.element-error-description')).toContainText('Arguments using iptables syntax')
+    await expect(page.locator('.element-error-description')).toContainText('Arguments using nft syntax')
 
     const apply = page.locator('.action-btn').filter({ hasText: /^\s*apply\s*$/i })
     const applyRequests = []

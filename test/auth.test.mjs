@@ -68,7 +68,7 @@ describe('auth и служебные роуты', () => {
         assert.equal(dash.statusCode, 200)
         const sections = dash.json()
         assert.ok(Array.isArray(sections))
-        assert.equal(sections.find((s) => s.label === 'device')?.items?.[0]?.items?.[0]?.value, 'RAD-DEMO-0001')
+        assert.equal(sections.find((s) => s.label === 'device')?.items?.[0]?.items?.[0]?.value, 'DONYX-DEMO-0001')
 
         const board = await app.inject({
             method: 'POST',
@@ -76,7 +76,7 @@ describe('auth и служебные роуты', () => {
             payload: { token },
         })
         assert.equal(board.statusCode, 200)
-        assert.equal(board.json().model, 'R50-L4.WAn')
+        assert.equal(board.json().model, 'Donyx iRM')
     })
 
     test('статика: схема с двойным слешем и 404', async () => {

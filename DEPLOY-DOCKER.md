@@ -1,20 +1,21 @@
 # Aurora Demo Backend — Deployment Guide (x86_64)
 
-This image is for **testing/demo only**. It contains the Aurora demo backend and
-the **Aurora Vue 2** frontend. Halo/donyx is **not** included.
+This image is for **testing/demo only**. It contains the Aurora demo backend
+with a **Donyx iRM** data/schema snapshot and the **Aurora Vue 2** frontend.
+Halo/donyx client code is **not** included.
 
 ## Package contents
 
 | File | Purpose |
 | --- | --- |
-| `aurora-demo-backend-2026-11-23-amd64.tar` | Docker image archive, `linux/amd64` |
-| `aurora-demo-backend-2026-11-23-amd64.tar.sha256` | SHA-256 checksum |
+| `aurora-demo-backend-2026-11-24-donyx-amd64.tar` | Docker image archive, `linux/amd64` |
+| `aurora-demo-backend-2026-11-24-donyx-amd64.tar.sha256` | SHA-256 checksum |
 | `docker-compose.deploy.yml` | Optional Compose file for the same image |
 
 Image name/tag after loading:
 
 ```text
-aurora-demo-backend:2026-11-23-amd64
+aurora-demo-backend:2026-11-24-donyx-amd64
 ```
 
 ## 1. Copy files to the server
@@ -22,7 +23,7 @@ aurora-demo-backend:2026-11-23-amd64
 Copy all three files to the server, for example:
 
 ```sh
-scp aurora-demo-backend-2026-11-23-amd64.tar* \
+scp aurora-demo-backend-2026-11-24-donyx-amd64.tar* \
     docker-compose.deploy.yml \
     user@server:/opt/aurora-demo/
 ```
@@ -32,13 +33,13 @@ scp aurora-demo-backend-2026-11-23-amd64.tar* \
 On the server, from the directory with the files:
 
 ```sh
-sha256sum -c aurora-demo-backend-2026-11-23-amd64.tar.sha256
+sha256sum -c aurora-demo-backend-2026-11-24-donyx-amd64.tar.sha256
 ```
 
 Expected output:
 
 ```text
-aurora-demo-backend-2026-11-23-amd64.tar: OK
+aurora-demo-backend-2026-11-24-donyx-amd64.tar: OK
 ```
 
 If the checksum does not match, do not deploy; copy the archive again.
@@ -46,13 +47,13 @@ If the checksum does not match, do not deploy; copy the archive again.
 ## 3. Load the image
 
 ```sh
-docker load -i aurora-demo-backend-2026-11-23-amd64.tar
+docker load -i aurora-demo-backend-2026-11-24-donyx-amd64.tar
 ```
 
 Check architecture (must be `amd64`):
 
 ```sh
-docker image inspect aurora-demo-backend:2026-11-23-amd64 \
+docker image inspect aurora-demo-backend:2026-11-24-donyx-amd64 \
   --format '{{.Architecture}} {{.Os}}'
 ```
 
@@ -88,7 +89,7 @@ docker run -d \
   --security-opt no-new-privileges:true \
   --memory 256m \
   --pids-limit 100 \
-  aurora-demo-backend:2026-11-23-amd64
+  aurora-demo-backend:2026-11-24-donyx-amd64
 ```
 
 Check that it is running:
@@ -197,7 +198,7 @@ Check:
 
 ```sh
 uname -m
-docker image inspect aurora-demo-backend:2026-11-23-amd64 \
+docker image inspect aurora-demo-backend:2026-11-24-donyx-amd64 \
   --format '{{.Architecture}}'
 ```
 

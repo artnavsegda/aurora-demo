@@ -15,7 +15,7 @@
 - `/schema/*.json`.
 
 Этот сервис реализует тот же протокол поверх in-memory состояния. Схемы — прод-формат
-Aurora (с `namesake`, `showParams`, `patternProperties`), данные — слепок R50.
+Aurora (с `namesake`, `showParams`, `patternProperties`), данные — слепок Donyx iRM.
 
 Один backend обслуживает и Aurora, и Halo: у них общий протокол и общий набор схем.
 horizon-uc (`~config`, `~get`, `@apply`) — это другое поколение, сюда не входит.
@@ -52,7 +52,7 @@ Halo/donyx в образ не входит — это внутренняя ра�
 ```sh
 # frontend/aurora уже содержит Vue 2 dist; при обновлении:
 # scripts/prepare-frontend.sh /path/to/aurora-vue2/dist
-docker build --platform linux/amd64 -t aurora-demo-backend:2026-11-23-amd64 .
+docker build --platform linux/amd64 -t aurora-demo-backend:2026-11-24-donyx-amd64 .
 docker compose -f docker-compose.deploy.yml up -d
 ```
 
@@ -63,7 +63,7 @@ docker run -d --name aurora-demo \
   -p 8080:8080 \
   --read-only --tmpfs /tmp:rw,noexec,nosuid,nodev \
   --cap-drop ALL --security-opt no-new-privileges:true \
-  aurora-demo-backend:2026-11-23-amd64
+  aurora-demo-backend:2026-11-24-donyx-amd64
 ```
 
 Образ: non-root, read-only rootfs, `cap_drop: ALL`, лимит памяти,
@@ -80,7 +80,7 @@ healthcheck. Проверено: `docker build --platform linux/amd64`, `/health
 - `add` / `delete` / `clean` / `reorder` — реальные операции над состоянием сессии;
 - `status` — статус таблицы и записи, с «живыми» счётчиками;
 - `@cue` — подсказки `+value`, `$option`, `/schema[фильтр]`, `/defaults/...`;
-- dashboard — плата, прошивка, uptime, RAM/CPU/Storage, модем;
+- dashboard — снятая с Donyx сводка: плата, hardware, temperature, mobile, интерфейсы и ipsec;
 - `journal` — поток журнала, сначала 50 строк, потом по строке в секунду;
 - действия `ping`, `traceroute`, `sniffer`, `download` и прочие `wait`-команды —
   потоковый вывод;
@@ -90,32 +90,34 @@ healthcheck. Проверено: `docker build --platform linux/amd64`, `/health
 
 ## Данные
 
-`fixtures/fixtures.json` собран скриптом:
+`fixtures/fixtures.json` и `fixtures/dashboard.json` собраны из слепка Donyx iRM:
 
 ```sh
-python3 scripts/build-fixtures.py \
-  /Users/artnavsegda/Documents/GitHub/irz-artifacts/snapshots/r50-irzos-0.1.283/horizont
+# 1. снять @schemas, @get, status, records и dashboard с роутера
+ROUTER_PASSWORD=... scripts/capture-router.py https://192.168.3.1 admin \
+  --out /Users/artnavsegda/Documents/irz/donyx-snapshot-2026-11-24
+
+# 2. почистить идентификаторы и разложить по schemas/ и fixtures/
+scripts/import-donyx-snapshot.py \
+  /Users/artnavsegda/Documents/irz/donyx-snapshot-2026-11-24
 ```
 
-Источник — слепок `@get` и `status` реального R50. Скрипт чистит серийники, IMEI,
-Wi-Fi-ключи и MAC-адреса. Пустые на слепке разделы немного заполняются примерами
-(ARP, DHCP-аренды, SMS, файлы, события, BGP, WireGuard).
+Слепок включает все пути из `@schemas` (list + hidden), данные `@get`, статусы
+таблиц и записей, а также сводку `/script/dashboard`. Импорт заменяет
+`schemas/` целиком, поэтому старые пути не остаются. Скрипт чистит серийник,
+IMEI/IMSI/ICCID, Wi-Fi-ключи, SSID и MAC-адреса; пароль администратора в
+фикстуры не попадает.
 
-Схемы (`schemas/`) сняты с `https://irzos.demo.radiofid.ru/schema/...` — это
-прод-схемы Aurora. При обновлении прошивки их можно переснять:
-
-```sh
-scripts/fetch-schemas.py https://irzos.demo.radiofid.ru \
-  /path/to/_schemas.json
-```
-
-Скрипт возьмёт список путей из слепка и обновит `schemas/`.
+Схемы (`schemas/`) — это `/schema/<path>.json` с того же Donyx. При обновлении
+прошивки слепок и импорт повторяют тем же порядком.
 
 ## Ограничения и что дальше
 
-- Halo-модули (`firmware`, `software`, `clock`, `gps`, `load`) пока не эмулируются:
-  основные разделы и сводка работают, CGI модулей нужно добавить отдельно.
-- Часть разделов остаётся пустой — это нормально для демо; можно добавить фикстуры.
+- Halo-модули (`firmware`, `software`, `clock`, `gps`, `load`, а также
+  dashboard-секции) пока не эмулируются: основные разделы и сводка работают,
+  CGI модулей нужно добавить отдельно.
+- Часть разделов на этом устройстве пустая — так и должно быть: фикстуры больше
+  не досыпаются примерами.
 - Нет rate limit и TLS: перед публичным запуском поставить nginx/Caddy, ограничить
   логин и wrapper, включить `X-Robots-Tag: noindex`.
 - Состояние хранится в памяти и теряется при рестарте; для нескольких реплик нужны

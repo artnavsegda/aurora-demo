@@ -14,8 +14,8 @@ describe('fixtures', () => {
         assert.ok(SCHEMA_HIDDEN.includes('/defaults'))
         assert.ok(SCHEMA_PATHS.has('/ip/interface'))
         assert.equal(SCHEMA_PATHS.has('/no/such/path'), false)
-        assert.equal(HOSTNAME, 'R50-DEMO')
-        assert.equal(MODEL, 'R50-L4.WAn')
+        assert.equal(HOSTNAME, 'Router')
+        assert.equal(MODEL, 'Donyx iRM')
     })
 
     test('cloneData отдаёт глубокую копию', () => {
@@ -47,7 +47,7 @@ describe('fixtures', () => {
 
     test('fixtures не содержат исходных секретов', () => {
         const defaults = fixture.data['/defaults'].get
-        assert.equal(defaults.serial, 'RAD-DEMO-0001')
+        assert.equal(defaults.serial, 'DONYX-DEMO-0001')
 
         const modem = fixture.data['/mobile/modem'].get.modem1
         assert.equal(modem.imei, '000000000000000')
@@ -61,13 +61,13 @@ describe('dashboard', () => {
     test('секции device/hardware/mobile', () => {
         const sections = dashboard()
         assert.ok(Array.isArray(sections))
-        assert.equal(sections.length, 3)
+        assert.equal(sections.length, 6)
 
         const device = sections.find((s) => s.label === 'device')
         assert.ok(device)
         const boardSection = device.items.find((i) => i.label === 'board')
         assert.equal(boardSection.items.find((i) => i.label === 'model').value, MODEL)
-        assert.equal(boardSection.items.find((i) => i.label === 'serial').value, 'RAD-DEMO-0001')
+        assert.equal(boardSection.items.find((i) => i.label === 'serial').value, 'DONYX-DEMO-0001')
 
         const hardware = sections.find((s) => s.label === 'hardware')
         assert.ok(hardware)
@@ -78,12 +78,18 @@ describe('dashboard', () => {
         const mobile = sections.find((s) => s.label === 'mobile')
         assert.ok(mobile)
         assert.equal(mobile.items[0].label, 'modem1')
+
+        const temperature = sections.find((s) => s.label === 'temperature')
+        assert.ok(temperature)
+        const interfaces = sections.find((s) => s.label === 'interface')
+        assert.ok(interfaces)
+        assert.ok(interfaces.items.some((i) => i.label === 'bridge0'))
     })
 
     test('board', () => {
         const b = board()
         assert.equal(b.model, MODEL)
-        assert.equal(b.serial, 'RAD-DEMO-0001')
+        assert.equal(b.serial, 'DONYX-DEMO-0001')
         assert.equal(b.hostname, HOSTNAME)
     })
 })

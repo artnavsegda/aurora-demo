@@ -1,14 +1,17 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
-  "definitions": {
-
-  },
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "definitions": {},
   "title": "port",
   "description": "Ethernet switch ports (physical interfaces)",
   "type": "object",
   "namesake": "name",
-  "showParams": ["macaddr"],
+  "showParams": [
+    "macaddr"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
@@ -19,17 +22,14 @@
           "hidden": true,
           "noExport": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
-
         "macaddr": {
           "$ref": "/defaults#/definitions/macaddr",
           "description": "Ethernet port MAC address",
           "noExport": true
         },
-
         "pvid": {
           "type": "number",
           "title": "Primary VID",
@@ -37,63 +37,75 @@
           "hidden": true,
           "minimum": 1,
           "maximum": 4094
-        },        
-
+        },
         "mtu": {
           "$ref": "/defaults#/definitions/mtu",
           "description": "Ethernet interface Maximum Transmission Unit (MTU) size (byte)",
           "maximum": 1500,
           "default": 1500
         },
-
         "accessed": {
           "type": "boolean",
           "hidden": true
         },
-
         "promisc": {
           "type": "boolean",
           "title": "Promiscuous Mode",
           "description": "Enable promiscuous mode for unrestricted packet capture"
         },
-
         "speed": {
           "type": "string",
           "description": "Ethernet link speed negotiation",
           "strictEnum": true,
-          "cue": ["/defaults/ether_port_speed"]
+          "cue": [
+            "/defaults/ether_port_speed"
+          ]
         },
-
         "duplex": {
           "type": "string",
           "description": "Ethernet duplex mode",
-          "enum": ["half", "full"],
+          "enum": [
+            "half",
+            "full"
+          ],
           "modificator": [
-            {"if": [{"speed": "auto"}], "then": {"hidden": true}}
+            {
+              "if": [
+                {
+                  "speed": "auto"
+                }
+              ],
+              "then": {
+                "hidden": true
+              }
+            }
           ]
         }
       }
     }
-
   },
-
   "apply": {
     "exec": "subscript/network/ethernet.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "status": {
     "exec": "subscript/network/ethernet.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "set": {
     "exec": "subscript/network/ethernet.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/network/ethernet.uc",
-    "args": ["get"]
-   }
+    "args": [
+      "get"
+    ]
+  }
 }

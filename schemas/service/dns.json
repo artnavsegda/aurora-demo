@@ -1,10 +1,12 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "description": "DNS server for domain name resolution",
   "type": "object",
   "properties": {
-
     "dns-address": {
       "type": "array",
       "description": "DNS forwarder address to resolve external queries",
@@ -13,7 +15,6 @@
       },
       "title": "DNS Server"
     },
-
     "dns-forwarding": {
       "type": "array",
       "description": "DNS server for this domain zone addreses resolve",
@@ -21,10 +22,11 @@
       "items": {
         "pattern": "^([A-Za-z0-9]+)(\\.[A-Za-z0-9]+)*=([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
         "patternDescription": "Domain name and DNS server address separated by '=' symbol",
-        "patternExample": ["example.com=8.8.8.8"]
+        "patternExample": [
+          "example.com=8.8.8.8"
+        ]
       }
     },
-
     "interface": {
       "type": "array",
       "description": "DNS interface to process name resolution requests",
@@ -41,37 +43,55 @@
         "type": "string",
         "pattern": "^([A-Za-z0-9]+)(\\.[A-Za-z0-9]+)*=([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
         "patternDescription": "Domain name and IP address separated by '=' symbol",
-        "patternExample": ["example.com=192.168.1.1"]
+        "patternExample": [
+          "example.com=192.168.1.1"
+        ]
       }
     },
     "flags": {
-      "type":"array",
+      "type": "array",
       "description": "DNS server parameter for custom settings",
       "uniqueItems": true,
       "hidden": true,
       "items": {
         "type": "string",
-        "enum": ["domain-needed", "localise-queries", "no-negcache", "read-ethers", "filterwin2k", "no-resolv", "strict-order", "clear-on-reload"]
+        "enum": [
+          "domain-needed",
+          "local-service",
+          "localise-queries",
+          "no-negcache",
+          "read-ethers",
+          "filterwin2k",
+          "no-resolv",
+          "strict-order",
+          "clear-on-reload"
+        ]
       }
     },
-
     "rebind-protection": {
       "type": "boolean",
       "title": "Rebind Protection",
       "description": "DNS rebind protection to block private IP responses",
       "hidden": false
     },
-
     "rebind-localhost": {
       "type": "boolean",
       "title": "Rebind localhost",
       "description": "Allow localhost DNS responses for testing purposes",
       "hidden": true,
       "modificator": [
-          {"if": [{"rebind-protection": true}], "then": {"hidden": false}}
+        {
+          "if": [
+            {
+              "rebind-protection": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
       ]
     },
-
     "rebind-domain": {
       "type": "array",
       "title": "Rebind domain",
@@ -81,28 +101,41 @@
         "$ref": "/defaults#/definitions/hostname"
       },
       "modificator": [
-        {"if": [{"rebind-protection": true}], "then": {"hidden": false}}
+        {
+          "if": [
+            {
+              "rebind-protection": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
       ]
     }
   },
-
   "status": {
     "exec": "subscript/service/dns.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "apply": {
     "exec": "subscript/service/dns.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
     "exec": "subscript/service/dns.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/service/dns.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

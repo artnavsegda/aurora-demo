@@ -1,235 +1,345 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "documentation": ["local", "global"],
-    "title": "OpenVPN server",
-    "description": "OpenVPN Server configuration",
-    "type": "object",
-    "required": ["tunnel-ip", "pool", "ca", "cert"],
-    "properties": {
-        "name": {
-            "$ref": "/defaults#/definitions/name",
-            "hidden": true
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "OpenVPN server",
+  "description": "OpenVPN Server configuration",
+  "type": "object",
+  "required": [
+    "tunnel-ip",
+    "pool",
+    "ca",
+    "cert"
+  ],
+  "properties": {
+    "name": {
+      "$ref": "/defaults#/definitions/name",
+      "hidden": true
+    },
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled"
+    },
+    "dev-type": {
+      "type": "string",
+      "description": "Virtual interface type",
+      "enum": [
+        "tun",
+        "tap"
+      ]
+    },
+    "protocol": {
+      "type": "string",
+      "description": "Tunnel transport protocol",
+      "enum": [
+        "tcp",
+        "udp"
+      ]
+    },
+    "port": {
+      "$ref": "/defaults#/definitions/port",
+      "description": "Listening port number",
+      "default": "1194"
+    },
+    "tunnel-ip": {
+      "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict",
+      "title": "Tunnel IP",
+      "description": "Local tunnel IP address",
+      "patternExample": [
+        "10.10.10.1/24"
+      ]
+    },
+    "pool": {
+      "$ref": "/defaults#/definitions/ipaddr-strict-pool",
+      "description": "Client IP address assignment range",
+      "patternExample": [
+        "10.10.10.10-10.10.10.20"
+      ]
+    },
+    "cipher": {
+      "type": "array",
+      "description": "Data channel encryption algorithm",
+      "items": {
+        "type": "string",
+        "enum": [
+          "AES-128-CBC",
+          "AES-128-GCM",
+          "AES-192-CBC",
+          "AES-192-GCM",
+          "AES-256-CBC",
+          "AES-256-GCM"
+        ]
+      }
+    },
+    "auth": {
+      "type": "array",
+      "description": "Authentication algorithm",
+      "items": {
+        "type": "string",
+        "enum": [
+          "MD5",
+          "SHA1",
+          "SHA256",
+          "SHA384",
+          "SHA512"
+        ]
+      }
+    },
+    "tls-mode": {
+      "type": "string",
+      "title": "TLS Mode",
+      "description": "Additional options when establishing a TLS session",
+      "enum": [
+        "none",
+        "tls-auth",
+        "tls-crypt"
+      ]
+    },
+    "ta-key": {
+      "type": "string",
+      "title": "TA Key",
+      "description": "Hash-based Message Authentication Code (HMAC) key for packet validation",
+      "cue": [
+        "/storage/file[file-type:!temporary]"
+      ],
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "tls-mode": "!none"
             },
-
-        "disabled": {
-            "$ref": "/defaults#/definitions/disabled"
-        },
-
-        "dev-type": {
-            "type": "string",
-            "description": "Virtual interface type",
-            "enum": ["tun", "tap"]
-        },
-
-        "protocol": {
-            "type": "string",
-            "description": "Tunnel transport protocol",
-            "enum": ["tcp", "udp"]
-        },
-
-        "port": {
-            "$ref": "/defaults#/definitions/port",
-            "description": "Listening port number",
-            "default": "1194"
-        },
-
-        "tunnel-ip": {
-            "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict",
-            "title": "Tunnel IP",
-            "description": "Local tunnel IP address",
-            "patternExample": ["10.10.10.1/24"]
-        },
-
-        "pool": {
-            "$ref": "/defaults#/definitions/ipaddr-strict-pool",
-            "description": "Client IP address assignment range",
-            "patternExample": ["10.10.10.10-10.10.10.20"]
-        },
-
-        "cipher": {
-            "type": "array",
-            "description": "Data channel encryption algorithm",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "AES-128-CBC", "AES-128-GCM",
-                    "AES-192-CBC", "AES-192-GCM",
-                    "AES-256-CBC", "AES-256-GCM"
-                ]
+            {
+              "tls-mode": "!"
             }
-        },
-
-        "auth": {
-            "type": "array",
-            "description": "Authentication algorithm",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "MD5", "SHA1", "SHA256", "SHA384", "SHA512"
-                ]
-            }
-        },
-
-        "tls-mode": {
-            "type": "string",
-            "title": "TLS Mode",
-            "description": "Additional options when establishing a TLS session",
-            "enum": ["none", "tls-auth", "tls-crypt"]
-        },
-
-        "ta-key": {
-            "type": "string",
-            "title": "TA Key",
-            "description": "Hash-based Message Authentication Code (HMAC) key for packet validation",
-            "cue": ["/storage/file[file-type:!temporary]"],
-            "hidden": true,
-            "modificator": [
-                {"if": [{"tls-mode": "!none"}, {"tls-mode": "!"}], "then": {"hidden": false}}
-            ]
-        },
-
-        "ca": {
-            "type": "string",
-            "description": "Certificate Authority (CA) public key",
-            "cue": ["/storage/certificate"]
-        },
-
-        "cert": {
-            "type": "string",
-            "description": "Local Transport Layer Security (TLS) certificate bundle (cert + key)",
-            "cue": ["/storage/certificate"]
-        },
-
-        "keepalive": {
-            "type": "string",
-            "description": "Configure keepalive ping and auto-restart on link failure",
-            "pattern": "^\\d+ \\d+$",
-            "patternDescription": "Two numbers: interval (sec) and timeout (sec)",
-            "patternExample": ["10 60"]
-        },
-
-        "push": {
-            "type": "array",
-            "title": "Push to client",
-            "description": "Push configuration parameters to client",
-            "uniqueItems": true,
-            "items": {
-                "type": "pair",
-                "pattern": "^[_\\-\\/!,.=A-Za-z0-9\\s]+$",
-                "patternDescription": "Key and value separated by the '=' symbol",
-                "patternExample": [
-                    "route-gateway=192.168.1.1",
-                    "ping=10", "ping-restart=60"
-                ],
-                "enum": [
-                "route-metric", "route-delay", "redirect-gateway",
-                "ip-win32", "dhcp-option", "inactive", "ping", "ping-exit", 
-                "ping-restart", "setenv", "auth-token", "persist-key", 
-                "persist-tun", "topology", "echo", "comp-lzo", "socket-flags", 
-                "sndbuf", "rcvbuf"
-                ]
-            }
-        },
-
-        "push-route": {
-            "type": "array",
-            "title": "Push route",
-            "description": "Push routes to client",
-            "items": {
-                "type": "string",
-                "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))?(@([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})?$",
-                "patternDescription": "Network or host IP address (with prefix and gateway)",
-                "patternExample": [
-                    "192.168.1.1",
-                    "192.168.1.0/24",
-                    "192.168.1.0/24@10.10.10.1"
-                ]
-            }
-        },
-
-        "flag": {
-            "type": "array",
-            "description": "Tunnel advanced configuration flags",
-            "items": {
-                "type": "string",
-                "enum": [
-                    "allow-recursive-routing", "auth-nocache",
-                    "client-to-client", "comp-noadapt", "disable", "duplicate-cn",
-                    "fast-io", "float", "mtu-test", "multihome", "ncp-disable",
-                    "nobind", "opt-verify", "passtos", "persist-key",
-                    "persist-local-ip", "persist-remote-ip", "persist-tun",
-                    "ping-timer-rem", "pull", "push-peer-info", "push-reset",
-                    "remote-random", "route-nopull", "single-session", "suppress-timestamps",
-                    "tcp-nodelay", "tls-client", "tls-exit", "tls-server", "username-as-common-name"
-                ]
-            }
-        },
-
-        "extra": {
-            "type": "array",
-            "title": "Extra parameters",
-            "description": "Tunnel extra parameters (custom options)",
-            "items": {
-                "type": "pair",
-                "pattern": "^[_\\-\\/!.=A-Za-z0-9\\s]+$",
-                "patternDescription": "Key and value separated by the '=' symbol",
-                "patternExample": ["ping=10", "ping-restart=120"],    
-                "enum": [
-                    "auth-retry", "bcast-buffers",
-                    "comp-lzo", "compress", "connect-freq",
-                    "connect-retry", "connect-retry-max", "connect-timeout",
-                    "ecdh-curve", "explicit-exit-notify", "fragment", "hand-window", "hash-size",
-                    "ifconfig-pool-netmask", "ifconfig-push-local", "ifconfig-push-netmask",
-                    "inactive", "key-direction", "keysize", "link-mtu", "max-clients",
-                    "mssfix", "mtu-disc", "ping", "ping-exit", "ping-restart", "prng",
-                    "pull-filter-accept", "pull-filter-ignore", "pull-filter-reject",
-                    "rcvbuf", "reneg-bytes", "reneg-pkts", "reneg-sec", "replay-persist",
-                    "replay-window", "resolv-retry", "shaper", "sndbuf", "tcp-queue-limit",
-                    "tls-timeout", "tls-version-min", "tran-window", "tun-mtu",
-                    "tun-mtu-extra", "txqueuelen", "verb", "verify-client-cert",
-                    "verify-x509-name", "x509-username-field"
-                ]
-            }
+          ],
+          "then": {
+            "hidden": false
+          }
         }
-
+      ]
     },
-
-    "actions": {
-        "generate-ta-key": {
-            "title": "Generate TA Key",
-            "description": "Generate a key file used as TA Key or Static Key",
-            "exec": "subscript/service/openvpn.uc",
-            "args": ["genkey"],
-            "reload": true,
-            "schema": {
-                "required": ["filename"],
-                "properties": {
-                    "filename": {
-                        "$ref": "/defaults#/definitions/name-ext"
-                    }
-                }
-            }
-        }
+    "ca": {
+      "$ref": "/defaults#/definitions/ca",
+      "title": "CA"
     },
-
-    "apply": {
-      "exec": "subscript/service/openvpn.uc",
-      "args": ["apply"],
-      "reload": true
+    "cert": {
+      "$ref": "/defaults#/definitions/cert",
+      "title": "Certificate",
+      "description": "Local Transport Layer Security (TLS) certificate bundle (cert + key)"
     },
-
-    "status": {
-      "exec": "subscript/service/openvpn.uc",
-      "args": ["status"]
+    "keepalive": {
+      "type": "string",
+      "description": "Configure keepalive ping and auto-restart on link failure",
+      "pattern": "^\\d+ \\d+$",
+      "patternDescription": "Two numbers: interval (sec) and timeout (sec)",
+      "patternExample": [
+        "10 60"
+      ]
     },
-
-    "set": {
-      "exec": "subscript/service/openvpn.uc",
-      "args": ["set"]
+    "push": {
+      "type": "array",
+      "title": "Push to client",
+      "description": "Push configuration parameters to client",
+      "uniqueItems": true,
+      "items": {
+        "type": "pair",
+        "pattern": "^[_\\-\\/!,.=A-Za-z0-9\\s]+$",
+        "patternDescription": "Key and value separated by the '=' symbol",
+        "patternExample": [
+          "route-gateway=192.168.1.1",
+          "ping=10",
+          "ping-restart=60"
+        ],
+        "enum": [
+          "route-metric",
+          "route-delay",
+          "redirect-gateway",
+          "ip-win32",
+          "dhcp-option",
+          "inactive",
+          "ping",
+          "ping-exit",
+          "ping-restart",
+          "setenv",
+          "auth-token",
+          "persist-key",
+          "persist-tun",
+          "topology",
+          "echo",
+          "comp-lzo",
+          "socket-flags",
+          "sndbuf",
+          "rcvbuf"
+        ]
+      }
     },
-
-    "acquire": {
-      "exec": "subscript/service/openvpn.uc",
-      "args": ["get"]
+    "push-route": {
+      "type": "array",
+      "title": "Push route",
+      "description": "Push routes to client. Without #metric the route-metric from Push to client applies",
+      "items": {
+        "type": "string",
+        "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))?(@([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})?(#(0|[1-9]\\d{0,6}))?$",
+        "patternDescription": "Network or host IP address (with optional prefix, gateway and metric)",
+        "patternExample": [
+          "192.168.1.1",
+          "192.168.1.0/24",
+          "192.168.1.0/24@10.10.10.1",
+          "192.168.1.0/24#100",
+          "192.168.1.0/24@10.10.10.1#100"
+        ]
+      }
+    },
+    "flag": {
+      "type": "array",
+      "description": "Tunnel advanced configuration flags",
+      "items": {
+        "type": "string",
+        "enum": [
+          "allow-recursive-routing",
+          "auth-nocache",
+          "client-to-client",
+          "comp-noadapt",
+          "disable",
+          "duplicate-cn",
+          "fast-io",
+          "float",
+          "mtu-test",
+          "multihome",
+          "nobind",
+          "opt-verify",
+          "passtos",
+          "persist-key",
+          "persist-local-ip",
+          "persist-remote-ip",
+          "persist-tun",
+          "ping-timer-rem",
+          "pull",
+          "push-peer-info",
+          "push-reset",
+          "remote-random",
+          "route-nopull",
+          "single-session",
+          "suppress-timestamps",
+          "tcp-nodelay",
+          "tls-client",
+          "tls-exit",
+          "tls-server",
+          "username-as-common-name"
+        ]
+      }
+    },
+    "extra": {
+      "type": "array",
+      "title": "Extra parameters",
+      "description": "Tunnel extra parameters (custom options)",
+      "items": {
+        "type": "pair",
+        "pattern": "^[_\\-\\/!.=A-Za-z0-9\\s]+$",
+        "patternDescription": "Key and value separated by the '=' symbol",
+        "patternExample": [
+          "ping=10",
+          "ping-restart=120"
+        ],
+        "enum": [
+          "auth-retry",
+          "bcast-buffers",
+          "comp-lzo",
+          "compress",
+          "connect-freq",
+          "connect-retry",
+          "connect-retry-max",
+          "connect-timeout",
+          "ecdh-curve",
+          "explicit-exit-notify",
+          "fragment",
+          "hand-window",
+          "hash-size",
+          "ifconfig-pool-netmask",
+          "inactive",
+          "key-direction",
+          "keysize",
+          "link-mtu",
+          "max-clients",
+          "mssfix",
+          "mtu-disc",
+          "ping",
+          "ping-exit",
+          "ping-restart",
+          "prng",
+          "pull-filter-accept",
+          "pull-filter-ignore",
+          "pull-filter-reject",
+          "rcvbuf",
+          "reneg-bytes",
+          "reneg-pkts",
+          "reneg-sec",
+          "replay-persist",
+          "replay-window",
+          "resolv-retry",
+          "shaper",
+          "sndbuf",
+          "tcp-queue-limit",
+          "tls-timeout",
+          "tls-version-min",
+          "tran-window",
+          "tun-mtu",
+          "tun-mtu-extra",
+          "txqueuelen",
+          "verb",
+          "verify-client-cert",
+          "verify-x509-name",
+          "x509-username-field"
+        ]
+      }
     }
+  },
+  "actions": {
+    "generate-ta-key": {
+      "title": "Generate TA Key",
+      "description": "Generate a key file used as TA Key or Static Key",
+      "exec": "subscript/service/openvpn.uc",
+      "args": [
+        "genkey"
+      ],
+      "reload": true,
+      "schema": {
+        "required": [
+          "filename"
+        ],
+        "properties": {
+          "filename": {
+            "$ref": "/defaults#/definitions/name-ext"
+          }
+        }
+      }
+    }
+  },
+  "apply": {
+    "exec": "subscript/service/openvpn.uc",
+    "args": [
+      "apply"
+    ],
+    "reload": true
+  },
+  "status": {
+    "exec": "subscript/service/openvpn.uc",
+    "args": [
+      "status"
+    ]
+  },
+  "set": {
+    "exec": "subscript/service/openvpn.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/service/openvpn.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

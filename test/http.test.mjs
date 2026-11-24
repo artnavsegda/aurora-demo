@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { after, before, describe, test } from 'node:test'
 
 import { makeApp } from './helpers.mjs'
+import { HOSTNAME } from '../src/fixtures.mjs'
 
 describe('HTTP: потоковые действия и upload', () => {
     let app
@@ -121,6 +122,6 @@ describe('HTTP: потоковые действия и upload', () => {
         controller.abort()
 
         assert.ok((text.match(/\n/g) || []).length >= 3, `stream closed early: ${JSON.stringify(text)}`)
-        assert.match(text, /R50-DEMO/)
+        assert.match(text, new RegExp(HOSTNAME))
     })
 })

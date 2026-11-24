@@ -59,9 +59,9 @@ describe('session', () => {
         const store = new SessionStore()
         const s = store.create('frank')
         const first = s.get('/network/ethernet')
-        first['894484b5c'].name = 'changed'
+        first['a4881f998'].name = 'changed'
         const second = s.get('/network/ethernet')
-        assert.equal(second['894484b5c'].name, 'changed') // тот же объект в рамках сессии
-        assert.notEqual(second['894484b5c'], fixture.data['/network/ethernet'].get['894484b5c'])
+        assert.equal(second['a4881f998'].name, 'changed') // тот же объект в рамках сессии
+        assert.notEqual(second['a4881f998'], fixture.data['/network/ethernet'].get['a4881f998'])
     })
 })

@@ -1,15 +1,16 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "ntp",
   "description": "NTP configuration",
   "type": "object",
-
   "properties": {
     "disabled": {
       "$ref": "/defaults#/definitions/disabled"
     },
-
     "pool": {
       "type": "array",
       "title": "Pool",
@@ -23,10 +24,29 @@
       "type": "boolean",
       "description": "Enable Network Time Protocol (NTP) server mode"
     },
+    "_gps": {
+      "type": "boolean",
+      "description": "hidden option, GPS receiver is present (capability BOARD_GPS)",
+      "hidden": true,
+      "noExport": true
+    },
     "sync-with-gps": {
       "type": "boolean",
       "title": "Synchronize with GPS",
-      "description": "Enable GPS time synchronization"
+      "description": "Enable GPS time synchronization",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "_gps": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
     },
     "sync-with-modem": {
       "type": "boolean",
@@ -34,41 +54,50 @@
       "description": "Enable cellular network time synchronization"
     }
   },
-
   "actions": {
     "info": {
       "exec": "subscript/service/ntp.uc",
-      "args": ["status", "info"],
+      "args": [
+        "status",
+        "info"
+      ],
       "wait": true,
       "description": "NTP client status information"
     },
     "get-modem-time": {
       "exec": "handler",
       "title": "Get modem time",
-      "args": ["run", "service/get-modem-time"],
+      "args": [
+        "run",
+        "service/get-modem-time"
+      ],
       "wait": true,
       "description": "Show time the modem gets from the cellular network"
     }
   },
-
   "status": {
     "exec": "subscript/service/ntp.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "apply": {
     "exec": "subscript/service/ntp.uc",
     "merge": true,
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
     "exec": "subscript/service/ntp.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-  
   "acquire": {
     "exec": "subscript/service/ntp.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

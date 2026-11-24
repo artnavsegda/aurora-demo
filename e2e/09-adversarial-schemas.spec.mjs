@@ -52,8 +52,9 @@ test('испытательная схема validation: типы, границы
     // cue: литералы, defaults и заведомо отсутствующий источник
     const literals = (await page.locator('.schema-element.cue-literals select option').allTextContents()).map((s) => s.trim())
     expect(literals).toEqual(expect.arrayContaining(['one', 'two']))
-    const defaults = (await page.locator('.schema-element.cue-defaults select option').allTextContents()).map((s) => s.trim())
-    expect(defaults).toEqual(expect.arrayContaining(['ovpnserver']))
+    // /defaults/server приходит отдельным @cue-запросом
+    await expect.poll(async () => (await page.locator('.schema-element.cue-defaults select option').allTextContents()).map((s) => s.trim()))
+        .toEqual(expect.arrayContaining(['ovpnserver']))
     await expect(page.locator('.schema-element.cue-missing')).toBeVisible()
 
     // readOnly и сломанный $ref не должны ломать страницу

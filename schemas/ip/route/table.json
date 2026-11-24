@@ -1,65 +1,80 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "documentation": ["local", "global"],
-    "title": "rule",
-    "description": "Static routing table definitions",
-    "type": "object",
-    "showParams": ["state", "number"],
-    "patternProperties": {
-        ".*": {
-            "type": "object",
-            "title": "Table",
-            "properties": {
-                "number": {
-                    "type": "number",
-                    "description": "Routing table numeric identifier",
-                    "minimum": 16384,
-                    "maximum": 99999,
-                    "readOnly": true
-                }
-            }
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "rule",
+  "description": "Static routing table definitions",
+  "type": "object",
+  "showParams": [
+    "state",
+    "number"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Table",
+      "properties": {
+        "number": {
+          "type": "number",
+          "description": "Routing table numeric identifier",
+          "minimum": 16384,
+          "maximum": 99999,
+          "readOnly": true
         }
-    },
-
-    "delete": {
-        "exec": "subscript/route/table.uc",
-        "args": ["delete"],
-        "reload": true
-    },
-
-    "add": {
-        "exec": "subscript/route/table.uc",
-        "args": ["add"],
-        "merge": true,
-        "schema": {
-            "required": ["name"],
-            "properties": {
-                "name": {
-                    "$ref": "/defaults#/definitions/name",
-                    "title": "Name",
-                    "description": "Routing table name label",
-                    "pattern": "^[a-zA-Z0-9_]+$",
-                    "patternDescription": "Element name (allowed symbol _ )",
-                    "patternExample": ["table_1"]
-                }
-            }
-        }
-    },
-
-    "clean": {
-        "exec": "subscript/route/table.uc",
-        "args": ["clean"],
-        "reload": true,
-        "confirm": true
-    },
-
-    "apply": {
-        "exec": "subscript/route/table.uc",
-        "args": ["apply"]
-    },
-
-    "acquire": {
-        "exec": "subscript/route/table.uc",
-        "args": ["get"]
+      }
     }
+  },
+  "delete": {
+    "exec": "subscript/route/table.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "add": {
+    "exec": "subscript/route/table.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "title": "Name",
+          "description": "Routing table name label",
+          "pattern": "^[a-zA-Z0-9_]+$",
+          "patternDescription": "Element name (allowed symbol _ )",
+          "patternExample": [
+            "table_1"
+          ]
+        }
+      }
+    }
+  },
+  "clean": {
+    "exec": "subscript/route/table.uc",
+    "args": [
+      "clean"
+    ],
+    "reload": true,
+    "confirm": true
+  },
+  "apply": {
+    "exec": "subscript/route/table.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/route/table.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "ESP Proposals",
   "description": "ESP security algorithms configuration",
   "type": "object",
@@ -12,7 +15,12 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": ["aes128", "aes192", "aes256", "3des"]
+        "enum": [
+          "aes128",
+          "aes192",
+          "aes256",
+          "3des"
+        ]
       }
     },
     "auth": {
@@ -22,7 +30,13 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": ["sha1", "sha256", "sha384", "sha512", "md5"]
+        "enum": [
+          "sha1",
+          "sha256",
+          "sha384",
+          "sha512",
+          "md5"
+        ]
       }
     },
     "pfs": {
@@ -33,7 +47,17 @@
       "uniqueItems": true,
       "items": {
         "type": "string",
-        "enum": ["modp768", "modp1024", "modp1536", "modp2048", "modp3072", "modp4096", "modp6144", "modp8192", "none"]
+        "enum": [
+          "modp768",
+          "modp1024",
+          "modp1536",
+          "modp2048",
+          "modp3072",
+          "modp4096",
+          "modp6144",
+          "modp8192",
+          "none"
+        ]
       }
     }
   },
@@ -59,49 +83,54 @@
       }
     }
   },
-  
   "delete": {
-    "exec": "handler",
-    "args": ["delete", "ipsec/proposal"],
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
-    "exec": "handler",
-    "args": ["add", "ipsec/proposal"],
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
-        "name": {"$ref": "#/definitions/name"}
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        }
       }
     }
   },
-  
   "apply": {
-    "exec": "handler",
-    "args": ["apply", "ipsec/proposal"]
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
-    "exec": "handler",
-    "args": ["clean", "ipsec/proposal"],
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
-  "_status": {
-    "exec": "handler",
-    "args": ["status", "ipsec/proposal"]
-  },
-
   "set": {
-    "exec": "handler",
-    "args": ["set", "ipsec/proposal"]
-  },    
-
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "set"
+    ]
+  },
   "acquire": {
-    "exec": "handler",
-    "args": ["get", "ipsec/proposal"]
+    "exec": "subscript/ipsec/proposal.uc",
+    "args": [
+      "get"
+    ]
   }
 }

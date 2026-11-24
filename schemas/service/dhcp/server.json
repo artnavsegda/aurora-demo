@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "description": "DHCP server for IP address management",
   "type": "object",
   "definitions": {
@@ -17,55 +20,90 @@
     }
   },
   "namesake": "interface",
-  "showParams": ["mode"],
+  "showParams": [
+    "mode"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
-      "required": ["interface"],
+      "required": [
+        "interface"
+      ],
       "properties": {
         "interface": {
           "type": "string",
           "noExport": true,
           "hidden": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
-
         "mode": {
           "type": "string",
           "description": "DHCP server mode to configure request handling",
-          "enum": ["server", "relay"]
+          "enum": [
+            "server",
+            "relay"
+          ]
         },
-
         "server": {
           "$ref": "/defaults#/definitions/host-port",
           "description": "DHCP relay server to forward client requests",
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "relay"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "relay"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "relay-mode": {
           "type": "string",
           "title": "Relay Mode",
           "description": "DHCP Option 82 handling for relay agent information",
-          "enum": ["append", "replace", "forward", "discard"],
+          "enum": [
+            "append",
+            "replace",
+            "forward",
+            "discard"
+          ],
           "hidden": true,
           "modificator": [
             {
-              "if": [{"mode": "relay"}, {"suboption":true}],
-              "then": {"hidden": false, "readOnly": true}
+              "if": [
+                {
+                  "mode": "relay"
+                },
+                {
+                  "suboption": true
+                }
+              ],
+              "then": {
+                "hidden": false,
+                "readOnly": true
+              }
             },
             {
-              "if": [{"mode": "relay"}, {"suboption":false}],
-              "then": {"hidden": false}
+              "if": [
+                {
+                  "mode": "relay"
+                },
+                {
+                  "suboption": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
             }
           ]
         },
-
         "circuit-id": {
           "type": "string",
           "title": "Circuit ID",
@@ -73,17 +111,24 @@
           "hidden": true,
           "noExport": true
         },
-
         "remote-id": {
           "type": "string",
           "title": "Remote ID",
           "description": "Option 82 Remote ID",
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "relay"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "relay"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "hops": {
           "type": "integer",
           "title": "Maximum hops",
@@ -92,54 +137,97 @@
           "default": 3,
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "relay"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "relay"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "suboption": {
-           "type": "boolean",
-           "title": "Enable RFC 3527",
-           "description": "Send link selection suboption for directly connected clients",
-           "hidden": true,
-           "modificator": [
-            {"if": [{"mode": "relay"}], "then": {"hidden": false}}
+          "type": "boolean",
+          "title": "Enable RFC 3527",
+          "description": "Send link selection suboption for directly connected clients",
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "mode": "relay"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "debug": {
           "$ref": "/defaults#/definitions/debug",
           "hidden": true,
-           "modificator": [
-            {"if": [{"mode": "relay"}], "then": {"hidden": false}}
+          "modificator": [
+            {
+              "if": [
+                {
+                  "mode": "relay"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "pool": {
           "type": "array",
           "title": "IP pool",
           "description": "IP address pool range for DHCP assignments",
-          "items" : {
+          "items": {
             "type": "string",
             "pattern": "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(-(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))?$",
             "patternDescription": "IP address or range specified with a '-' symbol",
-            "patternExample": ["192.168.1.100", "192.168.1.100-192.168.1.100"]
+            "patternExample": [
+              "192.168.1.100",
+              "192.168.1.100-192.168.1.100"
+            ]
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "router": {
           "$ref": "/defaults#/definitions/ipaddr-strict",
           "title": "router",
           "description": "Default gateway IP address (DHCP Option 3)",
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "dns-server": {
           "type": "array",
           "title": "DNS server",
@@ -149,10 +237,18 @@
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "ntp-server": {
           "type": "array",
           "title": "NTP server",
@@ -162,33 +258,69 @@
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "leasetime": {
           "type": "string",
           "description": "IP lease duration to define assignment timeframe",
-          "enum": ["30m", "1h", "4h", "12h", "24h", "7d"],
+          "enum": [
+            "30m",
+            "1h",
+            "4h",
+            "12h",
+            "24h",
+            "7d"
+          ],
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "flags": {
-          "type":"array",
+          "type": "array",
           "description": "DHCP server parameter for advanced configuration",
           "items": {
             "type": "string",
-            "enum": ["authoritative", "no-override", "sequential-ip", "rapid-commit"]
+            "enum": [
+              "authoritative",
+              "no-override",
+              "sequential-ip",
+              "rapid-commit"
+            ]
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "option": {
           "type": "array",
           "title": "DHCP Options",
@@ -199,7 +331,11 @@
             "type": "pair",
             "pattern": "(^bootfile-name\\=((0x([0-9A-F]+))|((?!0x)(\\S+)))$)|(^tftp-server\\=((0x([0-9A-F]+))|((?!0x)(\\S+)))$)|(^classless-static-route\\=([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))@([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$)",
             "patternDescription": "Key and value separated by the '=' symbol",
-            "patternExample": ["tftp-server=192.168.1.100", "bootfile=image.bin", "classless-static-route=192.168.1.0/24@1.2.3.4"],
+            "patternExample": [
+              "tftp-server=192.168.1.100",
+              "bootfile=image.bin",
+              "classless-static-route=192.168.1.0/24@1.2.3.4"
+            ],
             "enum": [
               "tftp-server",
               "bootfile-name",
@@ -208,25 +344,38 @@
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"mode": "server"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "mode": "server"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         }
       }
     }
   },
-
   "delete": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["interface"],
+      "required": [
+        "interface"
+      ],
       "properties": {
         "interface": {
           "$ref": "#/definitions/interface",
@@ -236,30 +385,36 @@
       }
     }
   },
-
   "apply": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "reload": true,
     "confirm": true
   },
-
   "status": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
   "set": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/service/dhcp/server.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

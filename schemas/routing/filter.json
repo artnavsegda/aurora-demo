@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "Routing filter",
   "type": "object",
   "definitions": {
@@ -9,16 +12,19 @@
       "description": "Network prefix",
       "title": "Rule prefix",
       "patternDescription": "Network address (with prefix)",
-      "patternExample": ["192.168.1.0/24"]
+      "patternExample": [
+        "192.168.1.0/24"
+      ]
     }
   },
-
   "namesake": "name",
-	"patternProperties": {
+  "patternProperties": {
     ".*": {
       "type": "object",
       "title": "Interface entity",
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name-ext",
@@ -28,7 +34,10 @@
           "type": "string",
           "description": "Rule action",
           "title": "Rule action",
-          "enum": ["accept", "reject"]
+          "enum": [
+            "accept",
+            "reject"
+          ]
         },
         "match": {
           "type": "boolean",
@@ -42,7 +51,13 @@
           "type": "string",
           "description": "Route source",
           "title": "Route source",
-          "enum": ["any", "static", "connected", "ospf", "bgp"]
+          "enum": [
+            "any",
+            "static",
+            "connected",
+            "ospf",
+            "bgp"
+          ]
         },
         "min-length": {
           "type": "number",
@@ -76,47 +91,56 @@
         }
       }
     }
-	},
-
-	"delete": {
+  },
+  "delete": {
     "exec": "./subscript/routing/filter.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
-	},
-
-	"add": {
-		"exec": "./subscript/routing/filter.uc",
-    "args": ["add"],
+  },
+  "add": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": [
+      "add"
+    ],
     "merge": true,
     "description": "add new entry (params: <name>)",
     "schema": {
-    	"required": ["name"],
-    	"properties": {
-        "name": {"$ref": "/defaults#/definitions/name"}
-    	}
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        }
+      }
     }
-	},
-
+  },
   "apply": {
     "exec": "./subscript/routing/filter.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
     "exec": "./subscript/routing/filter.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
-	"set": {
-		"exec": "./subscript/routing/filter.uc",
-		"args": ["set"]
-	},
-
-	"acquire": {
-		"exec": "./subscript/routing/filter.uc",
-		"args": ["get"]
+  "set": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "./subscript/routing/filter.uc",
+    "args": [
+      "get"
+    ]
   }
-  
 }

@@ -1,16 +1,14 @@
-import { HOSTNAME, MODEL, fixture } from './fixtures.mjs'
-
-const BOOT = Date.now() - (3 * 86400 + 4 * 3600 + 12 * 60) * 1000
+import { HOSTNAME, MODEL, dashboardFixture, fixture } from './fixtures.mjs'
 
 function pad(n) {
     return String(n).padStart(2, '0')
 }
 
-function uptime() {
-    const sec = Math.max(0, Math.floor((Date.now() - BOOT) / 1000))
+function formatUptime(sec) {
     const days = Math.floor(sec / 86400)
     const rest = sec % 86400
-    return `${days}d ${pad(Math.floor(rest / 3600))}:${pad(Math.floor((rest % 3600) / 60))}:${pad(rest % 60)}`
+    const time = `${pad(Math.floor(rest / 3600))}:${pad(Math.floor((rest % 3600) / 60))}:${pad(rest % 60)}`
+    return days > 0 ? `${days}d ${time}` : time
 }
 
 function deviceTime() {
@@ -19,101 +17,64 @@ function deviceTime() {
         `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-function wave(period, min, max, phase = 0) {
-    const t = Date.now() / 1000
-    const k = (Math.sin((t / period) * Math.PI * 2 + phase) + 1) / 2
-    return Math.round(min + k * (max - min))
+function section(sections, label) {
+    return sections.find((s) => s && s.label === label)
 }
 
-export function dashboard() {
-    const ramTotal = 512
-    const ramUsed = wave(90, 180, 260, 1.3)
-    const cpuLoad = wave(37, 3, 28, 0.4)
-    const storageUsed = 42.1
+function subsection(sections, label, name) {
+    const root = section(sections, label)
+    return root && Array.isArray(root.items)
+        ? root.items.find((i) => i && (i.label === name || i.name === name))
+        : undefined
+}
 
-    return [
-        {
-            label: 'device',
-            items: [
-                {
-                    label: 'board',
-                    items: [
-                        { label: 'serial', value: fixture.serial || 'RAD-DEMO-0001' },
-                        { label: 'model', value: MODEL },
-                        { label: 'cpu', value: 'IPQ4019' },
-                        { label: 'linux', value: '6.6.93' },
-                    ],
-                },
-                {
-                    label: 'info',
-                    items: [
-                        { label: 'firmware', value: '1.2.0-demo' },
-                        { label: 'hostname', value: HOSTNAME },
-                        { label: 'device-time', value: deviceTime() },
-                        { label: 'timezone', value: '+0300' },
-                        { label: 'uptime', value: uptime() },
-                    ],
-                },
-            ],
-        },
-        {
-            label: 'hardware',
-            items: [
-                {
-                    label: 'Storage',
-                    type: 'h-bar',
-                    total: '128.00',
-                    unit: 'MB',
-                    items: [
-                        { label: 'used', value: storageUsed.toFixed(2) },
-                        { label: 'free', value: (128 - storageUsed).toFixed(2) },
-                    ],
-                },
-                {
-                    label: 'RAM',
-                    type: 'h-bar',
-                    total: ramTotal,
-                    unit: 'MB',
-                    items: [
-                        { label: 'used', value: ramUsed },
-                        { label: 'free', value: ramTotal - ramUsed },
-                    ],
-                },
-                {
-                    label: 'CPU',
-                    type: 'h-bar',
-                    total: 100,
-                    unit: '%',
-                    items: [
-                        { label: 'load', value: cpuLoad },
-                        { label: 'idle', value: 100 - cpuLoad },
-                    ],
-                },
-            ],
-        },
-        {
-            label: 'mobile',
-            items: [
-                {
-                    label: 'modem1',
-                    items: [
-                        { label: 'operator', value: 'Demo Mobile' },
-                        { label: 'state', value: 'connected' },
-                        { label: 'signal', value: `${wave(53, 18, 24)} dBm` },
-                        { label: 'network', value: 'LTE' },
-                    ],
-                },
-            ],
-        },
-    ]
+function setValue(parent, label, value) {
+    if (!parent || !Array.isArray(parent.items))
+        return
+    const item = parent.items.find((i) => i && i.label === label)
+    if (item)
+        item.value = value
+}
+
+// uptime берём из снятой сводки, чтобы после старта контейнера он продолжал идти
+function capturedUptimeSeconds(sections) {
+    const info = subsection(sections, 'device', 'info')
+    const item = info && info.items.find((i) => i.label === 'uptime')
+    const m = String(item && item.value || '').match(/^(?:(\d+)d\s+)?(\d+):(\d+):(\d+)$/)
+    if (!m)
+        return 0
+    return Number(m[1] || 0) * 86400 + Number(m[2]) * 3600 + Number(m[3]) * 60 + Number(m[4])
+}
+
+const BOOT = Date.now() - capturedUptimeSeconds(dashboardFixture) * 1000
+
+export function dashboard() {
+    const sections = structuredClone(dashboardFixture)
+    if (!Array.isArray(sections) || sections.length === 0)
+        return []
+
+    const info = subsection(sections, 'device', 'info')
+    if (info) {
+        setValue(info, 'hostname', HOSTNAME)
+        setValue(info, 'device-time', deviceTime())
+        setValue(info, 'uptime', formatUptime(Math.max(0, Math.floor((Date.now() - BOOT) / 1000))))
+    }
+
+    const board = subsection(sections, 'device', 'board')
+    if (board) {
+        setValue(board, 'model', MODEL)
+        setValue(board, 'serial', fixture.serial || 'DONYX-DEMO-0001')
+    }
+
+    return sections
 }
 
 export function board() {
     return {
         model: MODEL,
-        serial: fixture.serial || 'RAD-DEMO-0001',
+        serial: fixture.serial || 'DONYX-DEMO-0001',
         hostname: HOSTNAME,
-        firmware: '1.2.0-demo',
-        uptime: uptime(),
+        firmware: '0.1.905-devel',
+        uptime: formatUptime(Math.max(0, Math.floor((Date.now() - BOOT) / 1000))),
     }
 }

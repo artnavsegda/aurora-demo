@@ -28,8 +28,8 @@ describe('cue', () => {
     test('литералы, $option и /defaults/schemas', () => {
         const s = session()
         assert.deepEqual(cue(s, '/defaults', ['+one', '+two']), { enum: ['one', 'two'] })
-        assert.deepEqual(cue(s, '/network/ethernet/894484b5c', ['$name']), { enum: ['port1'] })
-        assert.deepEqual(cue(s, '/mobile/modem/modem1', ['$module']), { enum: ['MEIG SRM813Q'] })
+        assert.deepEqual(cue(s, '/network/ethernet/a4881f998', ['$name']), { enum: ['port1'] })
+        assert.deepEqual(cue(s, '/mobile/modem/modem1', ['$module']), { enum: ['MEIG SRM825'] })
         const schemas = cue(s, '/defaults', ['/defaults/schemas'])
         assert.equal(schemas.enum.length, SCHEMA_LIST.length)
         assert.ok(schemas.enum.includes('/ip/interface'))
@@ -37,8 +37,8 @@ describe('cue', () => {
 
     test('имена записей схемы', () => {
         const s = session()
-        assert.deepEqual(cue(s, '/network/bridge/e317b70aa', ['/network/ethernet']).enum,
-            ['port1', 'port2', 'port3', 'port4', 'port5'])
+        assert.deepEqual(cue(s, '/network/bridge/0f5ad700c', ['/network/ethernet']).enum,
+            ['port1', 'port2', 'port3', 'port4'])
         assert.deepEqual(cue(s, '/firewall/filter/eb08bf27f', ['/firewall/zone']).enum,
             ['banned', 'zone-lan', 'zone-wan'])
     })
@@ -53,7 +53,7 @@ describe('cue', () => {
 
     test('значение опции из другой схемы', () => {
         const s = session()
-        assert.deepEqual(cue(s, '/network/ethernet/894484b5c', ['/defaults/ether_port_speed']).enum,
+        assert.deepEqual(cue(s, '/network/ethernet/a4881f998', ['/defaults/ether_port_speed']).enum,
             ['10', '100', '1000', 'auto'])
     })
 

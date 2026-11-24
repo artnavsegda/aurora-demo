@@ -294,9 +294,12 @@ function statusFor(session, path, section) {
         return undefined
 
     if (section != null && section !== '') {
+        const data = session.get(path)
+        // запись могли удалить/очистить — статус не должен переживать данные
+        if (!findKey(schema, data, section))
+            return {}
         let value = fixtureStatus(path, section)
         if (value === undefined) {
-            const data = session.get(path)
             const key = findKey(schema, data, section)
             if (key && data[key]) {
                 const row = data[key]
@@ -309,8 +312,15 @@ function statusFor(session, path, section) {
     }
 
     let value = fixtureStatus(path)
-    if (value === undefined)
+    if (value === undefined) {
         value = generatedStatus(session, schema, path)
+    } else if (Array.isArray(value)) {
+        // глобальный status снят с устройства и содержит все записи; после
+        // удаления/clean в демо оставляем только те, что ещё есть в сессии.
+        const data = session.get(path)
+        value = value.filter((row) => !row || row.name == null ||
+            findKey(schema, data, row.name) != null)
+    }
     return liveStatus(value)
 }
 
@@ -419,7 +429,7 @@ function blobContent(type, path, values) {
         return {
             filename: 'demo-report.txt',
             text: [
-                `Report for ${MODEL} (${fixture.serial || 'RAD-DEMO-0001'})`,
+                `Report for ${MODEL} (${fixture.serial || 'DONYX-DEMO-0001'})`,
                 `Hostname: ${HOSTNAME}`,
                 `Generated: ${new Date().toISOString()}`,
                 '',

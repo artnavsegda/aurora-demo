@@ -30,7 +30,7 @@ describe('wrapper: схемы, чтение и запись', () => {
         const token = await loginToken(app, 'get-test')
         const data = await get(app, token, '/ip/interface')
         assert.equal(data.bridge0['.name'], 'bridge0')
-        assert.deepEqual(data.bridge0['ip-address'], ['192.168.1.1/24'])
+        assert.deepEqual(data.bridge0['ip-address'], ['192.168.3.1/24'])
     })
 
     test('@get несуществующего пути — 404', async () => {
@@ -105,22 +105,29 @@ describe('wrapper: схемы, чтение и запись', () => {
 
     test('reorder меняет порядок и _index', async () => {
         const token = await loginToken(app, 'reorder-test')
+        const before = await get(app, token, '/mobile/sms')
+        const keys = Object.keys(before)
+        const moved = keys[keys.length - 1]
+
         const res = await call(app, token, 'reorder', '/mobile/sms', {
-            _section: 'cfg02',
+            _section: moved,
             position: 0,
         })
         assert.equal(res.statusCode, 200)
 
         const data = await get(app, token, '/mobile/sms')
-        assert.deepEqual(Object.keys(data), ['cfg02', 'cfg01'])
-        assert.equal(data.cfg02._index, 0)
-        assert.equal(data.cfg01._index, 1)
+        assert.deepEqual(Object.keys(data), [moved, ...keys.slice(0, -1)])
+        assert.equal(data[moved]._index, 0)
+        assert.equal(data[keys[0]]._index, 1)
     })
 
     test('add в секцию с namesake=_index не перезаписывает существующую запись', async () => {
         const token = await loginToken(app, 'add-index')
         const before = await get(app, token, '/mobile/sms')
-        assert.deepEqual(Object.keys(before), ['cfg01', 'cfg02'])
+        const keys = Object.keys(before)
+        const maxIndex = Math.max(...Object.values(before).map((r) => Number(r._index) || 0))
+        const expectedIndex = maxIndex + 1
+        const expectedKey = `cfg${String(expectedIndex + 1).padStart(2, '0')}`
 
         const add = await call(app, token, 'add', '/mobile/sms', {
             from: '+7 900 000-00-03',
@@ -128,12 +135,12 @@ describe('wrapper: схемы, чтение и запись', () => {
         })
         assert.equal(add.statusCode, 200)
         const key = Object.keys(add.json())[0]
-        assert.equal(key, 'cfg03')
-        assert.equal(add.json()[key]._index, 2)
+        assert.equal(key, expectedKey)
+        assert.equal(add.json()[key]._index, expectedIndex)
 
         const after = await get(app, token, '/mobile/sms')
-        assert.deepEqual(Object.keys(after), ['cfg01', 'cfg02', 'cfg03'])
-        assert.equal(after.cfg01.text, before.cfg01.text)
+        assert.deepEqual(Object.keys(after), [...keys, expectedKey])
+        assert.equal(after[keys[0]].text, before[keys[0]].text)
     })
 
     test('status: таблица и запись', async () => {
@@ -162,9 +169,9 @@ describe('wrapper: схемы, чтение и запись', () => {
         assert.deepEqual(literals.json().enum, ['one', 'two'])
 
         const ports = await call(app, token, '@cue', '/network/bridge/e317b70aa', ['/network/ethernet'])
-        assert.deepEqual(ports.json().enum, ['port1', 'port2', 'port3', 'port4', 'port5'])
+        assert.deepEqual(ports.json().enum, ['port1', 'port2', 'port3', 'port4'])
 
-        const option = await call(app, token, '@cue', '/network/ethernet/894484b5c', ['$name'])
+        const option = await call(app, token, '@cue', '/network/ethernet/a4881f998', ['$name'])
         assert.deepEqual(option.json().enum, ['port1'])
 
         const filtered = await call(app, token, '@cue', '/firewall/filter/eb08bf27f', ['/firewall/zone[type:address]'])

@@ -36,7 +36,8 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - невалидное значение не уходит в `@set`, APPLY/OK блокируются, ADD с пустыми
   required не создаёт запись, ping без host не отправляется;
 - Stop обрывает потоковый вывод: окно помечается `stream stopped`, кнопка
-  блокируется, уже полученные строки остаются, `Close` закрывает окно.
+  блокируется, уже полученные строки остаются, `Close` закрывает окно;
+- глобальный commit из шапки уходит с `path: "/system/config"` и обновляет данные.
 
 ## Тесты валидатора в Halo
 
@@ -63,17 +64,13 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
 исправления Halo Playwright начнёт ругаться «expected to fail, but passed».
 
-1. **Commit — заглушка**: кнопка Save в шапке только показывает overlay на
-   5 секунд (`src/Dashboard.svelte`, `onCommit` с закомментированным
-   `commitMutation.mutate()`), запрос `commit` не уходит.
-2. **Нет глобального revert** в шапке; revert есть только как действие
+1. **Нет глобального revert** в шапке; revert есть только как действие
    `/system/config`.
-3. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
-   `/modules/dashboard/hardware/index.js` и `.../mobile/index.js` (404).
+2. **Dashboard-модули**: демо-бэкенд не отдаёт
+   `/modules/dashboard/<section>/index.js` для секций сводки (404).
    Это ограничение демо-модулей, а не входа/схем.
-4. **Качество кода**: в flat-схеме `Render.svelte` передаёт
-   `selectedKey="wtf"`, в production остались `console.log`, а
-   `commitMutation` объявлен, но не используется.
+3. **Качество кода**: в flat-схеме `Render.svelte` передаёт
+   `selectedKey="wtf"`, в production остались `console.log`.
 
 Журнал **не является багом Halo**: прод-wrapper читает JSON из stdin без
 проверки `Content-Type`, Halo это делает корректно. Ошибка была в демо-бэкенде,
@@ -81,8 +78,8 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 ## Ожидаемые падения
 
-`04-commit-revert` (commit и revert) — проверки из списка выше.
-`01-dashboard`, `02-edit-apply`, `03-validation`, `05-journal`,
+`04-commit-revert` (revert) — проверка из списка выше. `01-dashboard`,
+`02-edit-apply`, `03-validation`, `04-commit-revert` (commit), `05-journal`,
 `06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`
 проходят.
 

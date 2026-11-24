@@ -1,129 +1,168 @@
 {
-	"$schema": "http://json-schema.org/schema#",
-	"documentation": ["local", "global"],
-	"title": "Users",
-	"description": "Managing system users",
-	"type": "object",
-	"noExport": true,
-	"showParams": ["level", "ssh-keys"],
-	"patternProperties": {
-		".*": {
-			"type": "object",
-			"properties": {
-				"disabled": {
-					"$ref": "/defaults#/definitions/disabled",
-					"description": "Disable user account and access"
-				},
-
-				"no-password": {
-					"$ref": "/defaults#/definitions/disabled",
-					"title": "No password",
-					"description": "Deny access by password"
-				},
-
-				"denied": {
-					"type": "array",
-					"description": "Menu items not accessible to the user",
-					"items": {
-						"type": "string",
-						"cue": ["/defaults/schemas"]
-					}
-				},
-
-				"level": {
-					"type": "string",
-					"enum": ["administrator", "user"],
-					"description": "User access level"
-				},
-
-				"ssh-keys": {
-					"type": "array",
-					"title": "SSH key",
-					"description": "User SSH key",
-					"hidden": true,
-					"modificator": [
-						{"if": [{"ssh-keys":"!"}], "then":{"hidden": false}}
-					],
-					"items": {
-						"type": "string",
-						"strictEnum": true,
-						"cue": ["$ssh-keys"]
-					}
-				}
-			}
-		},
-		"actions": {
-			"password": {
-				"exec": "subscript/system/user.uc",
-				"args": ["password"],
-				"required": ["new"],
-				"description": "Change user password",
-				"schema": {
-					"properties": {
-						"new": {
-							"$ref": "/defaults#/definitions/password",
-							"title": "New password",
-							"description": "Password (plain text or hash [md5|sha256|sha512], like in /etc/shadow)"
-						}
-					}
-				}
-			},
-
-			"import-ssh-key": {
-				"exec": "subscript/system/user.uc",
-				"title": "Import SSH key",
-				"description": "Import a user's SSH key",
-				"args": ["import_ssh_key"],
-				"required": ["file"],
-				"reload": true,
-				"schema": {
-					"properties": {
-						"file": {
-							"type": "string",
-							"title": "SSH key file",
-							"description": "SSH key file in temporary storage",
-							"strictEnum": true,
-							"cue": ["/storage/file[file-type:temporary]"]
-						}
-					}
-				}
-			}
-		}
-	},
-
-	"apply": {
-		"exec": "subscript/system/user.uc",
-		"args": ["apply"]
-	},
-
-	"delete": {
-		"exec": "subscript/system/user.uc",
-		"args": ["delete"],
-		"reload": true
-	},
-
-	"add": {
-		"exec": "subscript/system/user.uc",
-		"args": ["add"],
-		"merge": true,
-		"schema": {
-			"required": ["name"],
-			"properties": {
-				"name": {
-					"type": "string",
-					"$ref": "/defaults#/definitions/name"
-				}
-			}
-		}
-	},
-
-	"set": {
-		"exec": "subscript/system/user.uc",
-		"args": ["set"]
-	},
-
-	"acquire": {
-		"exec": "subscript/system/user.uc",
-		"args": ["get"]
-	}
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "Users",
+  "description": "Managing system users",
+  "type": "object",
+  "noExport": true,
+  "showParams": [
+    "level",
+    "ssh-keys"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled",
+          "description": "Disable user account and access"
+        },
+        "deny-password": {
+          "$ref": "/defaults#/definitions/disabled",
+          "title": "Deny password",
+          "description": "Deny access by password"
+        },
+        "denied": {
+          "type": "array",
+          "description": "Menu items not accessible to the user",
+          "items": {
+            "type": "string",
+            "cue": [
+              "/defaults/schemas"
+            ]
+          }
+        },
+        "level": {
+          "type": "string",
+          "enum": [
+            "administrator",
+            "user"
+          ],
+          "description": "User access level"
+        },
+        "ssh-keys": {
+          "type": "array",
+          "title": "SSH key",
+          "description": "User SSH key",
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "ssh-keys": "!"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ],
+          "items": {
+            "type": "string",
+            "strictEnum": true,
+            "cue": [
+              "$ssh-keys"
+            ]
+          }
+        }
+      }
+    },
+    "actions": {
+      "password": {
+        "exec": "subscript/system/user.uc",
+        "args": [
+          "password"
+        ],
+        "description": "Change user password",
+        "schema": {
+          "required": [
+            "new"
+          ],
+          "properties": {
+            "new": {
+              "$ref": "/defaults#/definitions/password-strong",
+              "title": "New password",
+              "description": "Password"
+            }
+          }
+        }
+      },
+      "import-ssh-key": {
+        "exec": "subscript/system/user.uc",
+        "title": "Import SSH key",
+        "description": "Import a user's SSH key",
+        "args": [
+          "import_ssh_key"
+        ],
+        "reload": true,
+        "schema": {
+          "required": [
+            "file"
+          ],
+          "properties": {
+            "file": {
+              "type": "string",
+              "title": "SSH key file",
+              "description": "SSH key file in temporary storage",
+              "strictEnum": true,
+              "cue": [
+                "/storage/file[file-type:temporary]"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "apply": {
+    "exec": "subscript/system/user.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "delete": {
+    "exec": "subscript/system/user.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "add": {
+    "exec": "subscript/system/user.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "System username",
+          "patternExample": [
+            "Alice",
+            "operator1"
+          ],
+          "$ref": "/defaults#/definitions/name"
+        }
+      }
+    }
+  },
+  "set": {
+    "exec": "subscript/system/user.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/system/user.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

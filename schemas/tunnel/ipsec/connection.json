@@ -1,53 +1,80 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "IPSec tunnel connections",
   "description": "IKE Phase 1 configuration",
   "type": "object",
-  "definitions": {
-  },
-  "showParams": ["leftid", "left", "right", "rightid", "keyexchange"],
+  "definitions": {},
+  "showParams": [
+    "local-id",
+    "local-ip",
+    "remote-ip",
+    "remote-id",
+    "ike-version"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "Tunnel entity",
-      "required": ["psk","ca", "cert"],
+      "required": [
+        "psk",
+        "cert"
+      ],
       "properties": {
-        "left": {
-          "type": "string",
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "local-ip": {
+          "$ref": "/defaults#/definitions/interface-ipaddr",
           "title": "Local IP",
           "description": "Local endpoint address or source interface",
-          "cue": ["/ip/interface", "/mobile/modem"],
           "default": "auto"
         },
-        "right": {
+        "remote-ip": {
           "$ref": "/defaults#/definitions/host",
           "title": "Remote IP",
-          "description": "Remote endpoint (FQDN or IP address)"
+          "description": "Remote endpoint (FQDN or IP address). Not set - wait for incoming connections"
         },
-        "keyexchange": {
-          "type":"string",
+        "ike-version": {
+          "type": "string",
           "title": "IKE version",
           "description": "IKE protocol version selection",
-          "enum": ["ikev2", "ikev1"]
+          "enum": [
+            "ikev2",
+            "ikev1"
+          ]
         },
         "profile": {
           "type": "string",
           "title": "IKE Profile",
           "description": "IKE/ISAKMP encryption and authentication proposal",
-          "cue": ["/tunnel/ipsec/profile"]
+          "cue": [
+            "/tunnel/ipsec/profile"
+          ]
         },
-        "leftid": {
+        "local-id": {
           "type": "string",
           "readOnly": false,
           "title": "Local ID",
           "description": "Local IKE identity for authentication",
           "default": "auto",
           "modificator": [
-            {"if": [{"auth": "pubkey"}], "then": {"readOnly": true}}
+            {
+              "if": [
+                {
+                  "auth": "pubkey"
+                }
+              ],
+              "then": {
+                "readOnly": true
+              }
+            }
           ]
         },
-        "rightid": {
+        "remote-id": {
           "type": "string",
           "title": "Remote ID",
           "description": "Remote IKE identity for verification",
@@ -57,7 +84,10 @@
           "type": "string",
           "title": "Auth method",
           "description": "IKE authentication method",
-          "enum": ["psk", "pubkey"]
+          "enum": [
+            "psk",
+            "pubkey"
+          ]
         },
         "psk": {
           "$ref": "/defaults#/definitions/psk",
@@ -65,7 +95,16 @@
           "description": "IKE pre-shared key (PSK)",
           "hidden": true,
           "modificator": [
-            {"if": [{"auth": "psk"}], "then": {"hidden":false}}
+            {
+              "if": [
+                {
+                  "auth": "psk"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "cert": {
@@ -74,69 +113,93 @@
           "description": "Local certificate (including private key)",
           "hidden": true,
           "modificator": [
-            {"if": [{"auth": "pubkey"}], "then": {"hidden":false}}
+            {
+              "if": [
+                {
+                  "auth": "pubkey"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-        "leftsourceip": {
+        "local-virtual-ip": {
           "type": "string",
           "title": "Virtual IP",
           "description": "Virtual IP address for tunnel origination",
-          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
+          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
           "patternDescription": "IP address (without prefix) or requeste an address from the peer (%config)",
-          "patternExample": ["192.168.1.1", "%config"]
+          "patternExample": [
+            "192.168.1.1",
+            "%config"
+          ]
         },
-        "rightsourceip": {
+        "remote-virtual-ip": {
           "type": "string",
           "title": "Remote Virtual IP",
           "description": "Assign virtual IP to remote peer",
-          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(\/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
+          "pattern": "^(?:(%config)|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(/([0-2]?\\d|3[0-2]))?|(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(?:([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}))$",
           "patternDescription": "Single IP address or range specified with a '-' symbol or initiator must propose an address which is then echoed back (%config)",
-          "patternExample": ["192.168.1.1/24", "192.168.1.1-192.168.1.100", "%config"]
+          "patternExample": [
+            "192.168.1.1/24",
+            "192.168.1.1-192.168.1.100",
+            "%config"
+          ]
         }
       }
     }
   },
-
   "delete": {
-    "exec": "handler",
-    "args": ["delete", "ipsec/connection"],
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
-      "exec": "handler",
-      "args": ["add", "ipsec/connection"],
-      "merge": true,
-      "schema": {
-        "required": ["name"],
-        "properties": {
-          "name": {
-            "$ref": "/defaults#/definitions/name",
-            "description": "IKE connection profile name"
-          }
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name",
+          "description": "IKE connection profile name"
         }
       }
+    }
   },
-
   "apply": {
-      "exec": "handler",
-      "args": ["apply", "ipsec/connection"]
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "apply"
+    ]
   },
-  
   "clean": {
-      "exec": "handler",
-      "args": ["clean", "ipsec/connection"],
-      "confirm": true,
-      "reload": true
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "clean"
+    ],
+    "confirm": true,
+    "reload": true
   },
-  
   "set": {
-    "exec": "handler",
-    "args": ["set", "ipsec/connection"]
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
-    "exec": "handler",
-    "args": ["get", "ipsec/connection"]
+    "exec": "subscript/ipsec/connection.uc",
+    "args": [
+      "get"
+    ]
   }
 }

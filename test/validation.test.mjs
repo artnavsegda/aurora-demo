@@ -315,6 +315,7 @@ describe("shared/validation", () => {
             "/ip/nhrp#/patternProperties/.*/properties/map/items: patternExample \"10.0.1.101@133.94.75.36.14\"",
             "/service/dhcp/server#/patternProperties/.*/properties/option/items: patternExample \"bootfile=image.bin\"",
             "/service/openvpn-server#/properties/push/items: patternExample \"route-gateway=192.168.1.1\"",
+            "/tools#/actions/sniffer/schema/properties/mac: patternExample \"BE:AF:CO:OF:FE:E0\"",
         ])
     })
 })

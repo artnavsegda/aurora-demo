@@ -1,22 +1,32 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "Wireguard",
   "description": "WireGuard network interface",
   "type": "object",
-  "showParams": ["tunnel-ip", "port", "mtu", "fw-mark"],
+  "showParams": [
+    "tunnel-ip",
+    "port",
+    "mtu",
+    "fw-mark"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "WireGuard interface",
-      "required": ["priv-key", "port"],
+      "required": [
+        "priv-key",
+        "port"
+      ],
       "properties": {
         "proto": {
           "type": "string",
           "hidden": true,
           "noExport": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
@@ -25,16 +35,16 @@
           "title": "Tunnel IP",
           "description": "Tunnel interface IP address"
         },
-
         "priv-key": {
           "type": "string",
           "title": "Private key",
           "description": "Private key for authentication and traffic encryption",
           "pattern": "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{2}={2})$",
           "patternDescription": "Base64-encoded key",
-          "patternExample": ["ABC123abc456ABC789abc123ABC456abc789Abc123A="]
+          "patternExample": [
+            "ABC123abc456ABC789abc123ABC456abc789Abc123A="
+          ]
         },
-
         "pub-key": {
           "type": "string",
           "title": "Public key",
@@ -42,19 +52,18 @@
           "description": "Public key for authentication and traffic encryption",
           "pattern": "^(?:[A-Za-z0-9+\\/]{4})*(?:[A-Za-z0-9+\\/]{4}|[A-Za-z0-9+\\/]{3}=|[A-Za-z0-9+\\/]{2}={2})$",
           "patternDescription": "Base64-encoded key",
-          "patternExample": ["ABC123abc456ABC789abc123ABC456abc789Abc123A="]
+          "patternExample": [
+            "ABC123abc456ABC789abc123ABC456abc789Abc123A="
+          ]
         },
-
         "port": {
           "$ref": "/defaults#/definitions/port-strict",
           "description": "Listening port for incoming connections"
         },
-
         "mtu": {
           "$ref": "/defaults#/definitions/mtu",
           "default": 1420
         },
-
         "fw-mark": {
           "type": "number",
           "title": "Mark",
@@ -63,28 +72,34 @@
       }
     }
   },
-
   "status": {
     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "apply": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["apply"]
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["set"]
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "set"
+    ]
   },
-
   "add": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["add"],
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name"
@@ -92,22 +107,25 @@
       }
     }
   },
-
   "delete": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["delete"],
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "clean": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-    "args": ["clean"],
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "clean"
+    ],
     "reload": true,
     "confirm": true
   },
-
   "acquire": {
-     "exec": "subscript/tunnel/wireguard/interface.uc",
-     "args": ["get"]
-   }
+    "exec": "subscript/tunnel/wireguard/interface.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

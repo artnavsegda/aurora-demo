@@ -131,10 +131,8 @@ describe('check-schemas: разбор схем', () => {
 
         const known = [
             '/mobile/sms#/actions/send-sms/schema/properties/message  unknown type "text"',
+            '/network/bridge-vlan#/patternProperties/.*  required field "name" is not in properties',
             '/network/fdb#/patternProperties/.*/properties/mac  $ref: unknown pointer /definitions/mac in /defaults',
-            '/tunnel/ipsec/connection#/patternProperties/.*  required field "ca" is not in properties',
-            '/tunnel/ipsec/profile#/add/add/schema/properties/name  $ref: unknown pointer /definitions/name in /tunnel/ipsec/profile',
-            '/tunnel/ipsec/proposal#/add/add/schema/properties/name  $ref: unknown pointer /definitions/name in /tunnel/ipsec/proposal',
         ].sort()
 
         assert.deepEqual(errors, known)

@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "IP Lock",
+  "description": "anti-brutforce policy",
+  "type": "object",
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled",
+      "description": "Disable this function"
+    },
+    "attempt": {
+      "type": "number",
+      "description": "Attempts count",
+      "minimum": 1,
+      "maximum": 16,
+      "default": 5
+    },
+    "interval": {
+      "type": "number",
+      "description": "Watch time (interval)",
+      "minimum": 10,
+      "maximum": 604800,
+      "default": 900
+    },
+    "timeout": {
+      "type": "number",
+      "title": "Lock timeout",
+      "description": "Lock timeout (sec.)",
+      "minimum": 10,
+      "maximum": 604800,
+      "default": 300
+    },
+    "white-list": {
+      "$ref": "/defaults#/definitions/ipaddr-list",
+      "title": "allowed address",
+      "description": "ignore failed attempts from address"
+    },
+    "no-prompt": {
+      "hidden": true,
+      "noExport": true,
+      "type": "boolean",
+      "description": "Do not show password prompt for blocked"
+    },
+    "debug": {
+      "hidden": true,
+      "noExport": true,
+      "type": "boolean",
+      "description": "Show debug messages"
+    }
+  },
+  "apply": {
+    "exec": "subscript/system/iplock.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "set": {
+    "exec": "subscript/system/iplock.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/system/iplock.uc",
+    "args": [
+      "get"
+    ]
+  }
+}

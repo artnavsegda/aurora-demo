@@ -1,43 +1,51 @@
 {
-	"$schema": "http://json-schema.org/schema#",
-	"documentation": ["local", "global"],
-	"title": "AAA Radius",
-	"description": "Providing access",
-	"type": "object",
-	"properties": {
-		"disabled": {
-			"$ref": "/defaults#/definitions/disabled",
-			"description": "Disable Radius authentication"
-		},
-		"server": {
-			"$ref": "/defaults#/definitions/host-port",
-			"description": "Authentication server"
-		},
-		"nas-id": {
-			"$ref": "/defaults#/definitions/name-ext",
-			"title": "NAS Id",
-			"description": "Unique NAS Identifier",
-			"maxLength": 32
-		},
-		"secret": {
-			"$ref": "/defaults#/definitions/password",
-			"title": "Secret",
-			"description": "Password for NAS authentication on the RADIUS server"
-		}
-	},
-
-	"apply": {
-		"exec": "subscript/system/aaa.uc",
-		"args": ["apply"]
-	},
-
-	"set": {
-		"exec": "subscript/system/aaa.uc",
-		"args": ["set"]
-	},
-
-	"acquire": {
-		"exec": "subscript/system/aaa.uc",
-		"args": ["get"]
-	}
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "AAA Radius",
+  "description": "Providing access",
+  "type": "object",
+  "properties": {
+    "disabled": {
+      "$ref": "/defaults#/definitions/disabled",
+      "description": "Disable Radius authentication"
+    },
+    "server": {
+      "$ref": "/defaults#/definitions/host-port",
+      "description": "Authentication server"
+    },
+    "nas-id": {
+      "$ref": "/defaults#/definitions/name-ext",
+      "title": "NAS Id",
+      "description": "Unique NAS Identifier",
+      "maxLength": 32
+    },
+    "secret": {
+      "type": "password",
+      "title": "Secret",
+      "description": "Password for NAS authentication on the RADIUS server",
+      "pattern": "^[^\\s`]+$",
+      "patternDescription": "spaces and '`' symbol are not allowed"
+    }
+  },
+  "apply": {
+    "exec": "subscript/system/radius.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "set": {
+    "exec": "subscript/system/radius.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/system/radius.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

@@ -1,110 +1,120 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "documentation": ["local", "global"],
-    "title": "Clients",
-    "description": "List of tunnels clients",
-    "type": "object",
-    "namesake": "username",
-    "showParams": ["service", "tunnel-ip", "route"],
-    "patternProperties": {
-        ".*": {
-            "type": "object",
-            "properties": {
-                "username": {
-                    "$ref": "/defaults#/definitions/name-ext",
-                    "description": "Tunnel client username",
-                    "hidden": true
-                },
-
-                "disabled": {
-                    "$ref": "/defaults#/definitions/disabled",
-                    "description": "Disable tunnel client access"
-                },
-
-                "service": {
-                    "type": "array",
-                    "description": "The services that user will be able to use",
-                    "items": {
-                        "type": "string",
-                        "cue": ["/defaults/services"]
-                    }
-                },
-                
-                "password": {
-                    "$ref": "/defaults#/definitions/password"
-                },
-                
-                "tunnel-ip": {
-                    "$ref": "/defaults#/definitions/ipaddr",
-                    "description": "Tunnel IP address to assign to the client",
-                    "title": "Tunnel IP"
-                },
-
-                "peer-ip": {
-                    "hidden": true,
-                    "noExport": true,
-                    "$ref": "/defaults#/definitions/ipaddr",
-                    "title": "Peer IP",
-                    "description": "Remote peer tunnel address"
-                },
-
-                "route": {
-                    "type": "array",
-                    "description": "Addresses beyond the remote side to add a local route",
-                    "uniqueItems": true,
-                    "items": {
-                        "$ref": "/defaults#/definitions/ipaddr"
-                      }
-                },
-
-                "gateway": {
-                    "hidden": true,
-                    "noExport": true,
-                    "$ref": "/defaults#/definitions/ipaddr",
-                    "description": "Gateway for routes"
-                }
-            }
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "Clients",
+  "description": "List of tunnels clients",
+  "type": "object",
+  "namesake": "username",
+  "showParams": [
+    "service",
+    "tunnel-ip",
+    "route"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "$ref": "/defaults#/definitions/name-ext",
+          "description": "Tunnel client username",
+          "hidden": true
+        },
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled",
+          "description": "Disable tunnel client access"
+        },
+        "service": {
+          "type": "array",
+          "description": "The services that user will be able to use",
+          "items": {
+            "type": "string",
+            "cue": [
+              "/defaults/services"
+            ]
+          }
+        },
+        "password": {
+          "$ref": "/defaults#/definitions/password"
+        },
+        "tunnel-ip": {
+          "$ref": "/defaults#/definitions/ipaddr",
+          "description": "Tunnel IP address to assign to the client",
+          "title": "Tunnel IP"
+        },
+        "peer-ip": {
+          "hidden": true,
+          "noExport": true,
+          "$ref": "/defaults#/definitions/ipaddr",
+          "title": "Peer IP",
+          "description": "Remote peer tunnel address"
+        },
+        "route": {
+          "type": "array",
+          "description": "Addresses beyond the remote side to add a local route",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "/defaults#/definitions/ipaddr"
+          }
+        },
+        "gateway": {
+          "hidden": true,
+          "noExport": true,
+          "$ref": "/defaults#/definitions/ipaddr",
+          "description": "Gateway for routes"
         }
-    },
-
-    "delete": {
-        "exec": "subscript/service/client.uc",
-        "args": ["delete"],
-        "reload": true
-    },
-
-    "apply": {
-        "exec": "subscript/service/client.uc",
-        "args": ["apply"]
-    },
-
-    "add": {
-        "exec": "subscript/service/client.uc",
-        "args": ["add"],
-        "merge": true,
-        "schema": {
-            "required": ["username"],
-            "properties": {
-                "username": {
-                    "$ref": "/defaults#/definitions/name-ext"
-                }
-            }
-        }
-    },
-
-    "set": {
-        "exec": "subscript/service/client.uc",
-        "args": ["set"]
-    },
-
-    "acquire": {
-        "exec": "subscript/service/client.uc",
-        "args": ["get"]
-    },
-    
-    "clean": {
-        "exec": "subscript/service/client.uc",
-        "args": ["clean"],
-        "reload": true
+      }
     }
+  },
+  "delete": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "apply": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "add": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "username"
+      ],
+      "properties": {
+        "username": {
+          "$ref": "/defaults#/definitions/name-ext"
+        }
+      }
+    }
+  },
+  "set": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "get"
+    ]
+  },
+  "clean": {
+    "exec": "subscript/service/client.uc",
+    "args": [
+      "clean"
+    ],
+    "reload": true
+  }
 }

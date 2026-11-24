@@ -1,11 +1,19 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "Tools",
   "type": "object",
   "decription": "System utilities and diagnostic tools",
   "noExport": true,
   "definitions": {
+    "local-ip": {
+      "$ref": "/defaults#/definitions/interface-ipaddr",
+      "title": "Local IP",
+      "description": "Local source address or interface"
+    },
     "count": {
       "type": "number",
       "minimum": 1,
@@ -13,15 +21,18 @@
       "description": "Number of packets to send"
     }
   },
-
   "actions": {
     "download": {
       "description": "Upload file to device storage",
-      "exec": "handler",
-      "args": ["run", "tools/download"],
+      "exec": "subscript/tools/download.uc",
+      "args": [
+        "run"
+      ],
       "wait": true,
       "schema": {
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "properties": {
           "url": {
             "type": "string",
@@ -49,23 +60,27 @@
         }
       }
     },
-
     "ping": {
-      "exec": "handler",
-      "args": ["run", "tools/ping"],
+      "exec": "subscript/tools/ping.uc",
+      "args": [
+        "run"
+      ],
       "description": "ICMP echo requests to remote host",
       "wait": true,
       "schema": {
-        "required": ["host"],
+        "required": [
+          "host"
+        ],
         "properties": {
           "host": {
             "$ref": "/defaults#/definitions/host"
           },
-          "interface": {
-            "strictEnum": true,
-            "$ref": "/defaults#/definitions/interface"
+          "local-ip": {
+            "$ref": "#/definitions/local-ip"
           },
-          "count": { "$ref": "#/definitions/count" },
+          "count": {
+            "$ref": "#/definitions/count"
+          },
           "size": {
             "type": "number",
             "minimum": 8,
@@ -75,14 +90,17 @@
         }
       }
     },
-
     "sniffer": {
-      "exec": "handler",
-      "args": ["run", "tools/sniffer"],
+      "exec": "subscript/tools/sniffer.uc",
+      "args": [
+        "run"
+      ],
       "description": "Network packet analyzer",
       "wait": true,
       "schema": {
-        "required": ["interface"],
+        "required": [
+          "interface"
+        ],
         "properties": {
           "interface": {
             "strictEnum": true,
@@ -92,58 +110,62 @@
           "proto": {
             "type": "string",
             "title": "Protocol",
-            "enum": ["none", "arp", "aarp", "rarp", "ip", "ip6", "ipx", "icmp", "igmp", "tcp", "udp", "esp", "vlan", "stp", "pppoed", "pppoes", "mpls"],
-            "enableInvert": true,
+            "enum": [
+              "arp",
+              "aarp",
+              "rarp",
+              "ip",
+              "ip6",
+              "ipx",
+              "icmp",
+              "igmp",
+              "tcp",
+              "udp",
+              "esp",
+              "vlan",
+              "stp",
+              "pppoed",
+              "pppoes",
+              "mpls"
+            ],
             "strictEnum": true,
+            "default": "none",
             "description": "Protocol filter"
           },
-          "src-addr": {
-            "$ref": "/defaults#/definitions/ipaddr",
-            "title": "Source IP",
+          "host": {
+            "$ref": "/defaults#/definitions/host-cidr",
             "enableInvert": true,
-            "description": "Source IP address filter"
+            "description": "Source or destination host or network filter",
+            "pattern": "(^!?([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/([0-2]?\\d|3[0-2]))?$)|(^!?(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])))$)",
+            "patternDescription": "Host address (FQDN or CIDR address)",
+            "patternExample": [
+              "localhost",
+              "sample.example.com",
+              "8.8.8.8",
+              "192.168.1.0/24",
+              "!192.168.1.0/24"
+            ]
           },
-          "dst-addr": {
-            "$ref": "/defaults#/definitions/ipaddr",
-            "title": "Destination IP",
-            "enableInvert": true,
-            "description": "Destination IP address filter"
-          },
-          "src-port": {
+          "port": {
             "$ref": "/defaults#/definitions/port",
-            "title": "Source port",
             "enableInvert": true,
-            "description": "Source port filter"
+            "description": "Source or destination port filter"
           },
-          "dst-port": {
-            "$ref": "/defaults#/definitions/port",
-            "title": "Destination port",
-            "enableInvert": true,
-            "description": "Destination port filter"
-          },
-          "src-mac": {
+          "mac": {
             "type": "string",
-            "title": "Source MAC",
-            "description": "Source MAC address filter",
+            "title": "MAC",
+            "description": "Source or destination MAC address filter",
             "enableInvert": true,
-            "pattern": "^!?((\\d|[A-F]){2}:){5}(\\d|[A-F]){2}$"
+            "pattern": "^!?((\\d|[a-fA-F]){2}:){5}(\\d|[a-fA-F]){2}$",
+            "patternDescription": "MAC address",
+            "patternExample": [
+              "ff:ff:ff:ff:ff:ff",
+              "BE:AF:CO:OF:FE:E0"
+            ]
           },
-          "dst-mac": {
-            "type": "string",
-            "title": "Destination MAC",
-            "description": "Destination MAC address filter",
-            "enableInvert": true,
-            "pattern": "^!?((\\d|[A-F]){2}:){5}(\\d|[A-F]){2}$"
+          "count": {
+            "$ref": "#/definitions/count"
           },
-          "append": {
-            "type": "string",
-            "title": "Append operation",
-            "enum": ["and"],
-            "strictEnum": true,
-            "default": "or",
-            "description": "Logical operator for filters"
-          },
-          "count": { "$ref": "#/definitions/count" },
           "file": {
             "type": "string",
             "description": "File name for packet dump",
@@ -154,74 +176,121 @@
       }
     },
     "arping": {
-      "exec": "handler",
-      "args": ["run", "tools/arping"],
+      "exec": "subscript/tools/arping.uc",
+      "args": [
+        "run"
+      ],
       "description": "ARP requests to remote host",
       "wait": true,
       "schema": {
-        "required": ["host", "interface"],
+        "required": [
+          "host",
+          "local-ip"
+        ],
         "properties": {
-          "host": { "$ref": "/defaults#/definitions/host" },
-          "interface": { "$ref": "/defaults#/definitions/interface" },
-          "count": { "$ref": "#/definitions/count" }
+          "host": {
+            "$ref": "/defaults#/definitions/host"
+          },
+          "local-ip": {
+            "$ref": "#/definitions/local-ip"
+          },
+          "count": {
+            "$ref": "#/definitions/count"
+          }
         }
       }
     },
     "traceroute": {
-      "exec": "handler",
-      "args": ["run", "tools/traceroute"],
+      "exec": "subscript/tools/traceroute.uc",
+      "args": [
+        "run"
+      ],
       "wait": true,
       "description": "Traceroute to remote host",
       "schema": {
-        "required": ["host"],
+        "required": [
+          "host"
+        ],
         "properties": {
-          "host": { "$ref": "/defaults#/definitions/host" },
+          "host": {
+            "$ref": "/defaults#/definitions/host"
+          },
+          "local-ip": {
+            "$ref": "#/definitions/local-ip"
+          },
           "max_hops": {
             "type": "number",
             "description": "Maximum number of hops to host",
             "title": "Maximum hops",
-            "minimim": 1,
+            "minimum": 1,
             "maximum": 255,
             "default": 30
           },
           "protocol": {
             "type": "string",
-            "description": "Use ICMP echo or UDP datagrams",
-            "enum": ["udp"],
+            "description": "ICMP echo or UDP datagrams",
+            "enum": [
+              "udp"
+            ],
             "default": "icmp",
             "strictEnum": true
           },
           "port": {
-            "$ref": "/defaults#/definitions/port",
-            "default": "33434",
-            "hidden": true,
-            "modificator": [
-              {"if":[{"protocol":"udp"}], "then": {"hidden": false}}
-            ]
+            "type": "number",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 33434,
+            "description": "Initial UDP destination port, incremented per probe (UDP protocol only)"
           }
         }
       }
     },
     "resolve": {
-      "exec": "handler",
-      "args": ["run", "tools/resolve"],
+      "exec": "subscript/tools/resolve.uc",
+      "args": [
+        "run"
+      ],
       "description": "Query DNS about remote host",
       "wait": true,
       "schema": {
-        "required": ["host"],
+        "required": [
+          "host"
+        ],
         "properties": {
           "host": {
             "$ref": "/defaults#/definitions/host"
           },
           "dns-server": {
+            "title": "DNS server",
+            "default": "system",
             "$ref": "/defaults#/definitions/ipaddr-strict"
+          },
+          "type": {
+            "type": "string",
+            "title": "Record type",
+            "enum": [
+              "AAAA",
+              "CNAME",
+              "MX",
+              "NS",
+              "PTR",
+              "SOA",
+              "SRV",
+              "TXT"
+            ],
+            "strictEnum": true,
+            "default": "A",
+            "description": "DNS record type (default: A for a name, PTR for an IP address)"
           }
         }
       }
     },
     "blink": {
       "exec": "handler",
-      "args": ["run", "tools/blink"],
+      "args": [
+        "run",
+        "tools/blink"
+      ],
       "description": "Flashing the power indicator",
       "wait": true,
       "schema": {
@@ -237,45 +306,55 @@
         }
       }
     },
-    
     "telnet": {
       "exec": "handler",
-      "args": ["run", "tools/telnet"],
+      "args": [
+        "run",
+        "tools/telnet"
+      ],
       "description": "Telnet client session to remote host",
       "cliOnly": true,
       "wait": true,
       "schema": {
-        "required": ["host"],
+        "required": [
+          "host"
+        ],
         "properties": {
-          "host": { "$ref": "/defaults#/definitions/host" },
-          "interface": { "$ref": "/defaults#/definitions/interface" },
-          "port": { "$ref": "/defaults#/definitions/port" }
+          "host": {
+            "$ref": "/defaults#/definitions/host"
+          },
+          "interface": {
+            "$ref": "/defaults#/definitions/interface"
+          },
+          "port": {
+            "$ref": "/defaults#/definitions/port"
+          }
         }
       }
     },
-
     "journal": {
       "exec": "subscript/tools/log.uc",
-      "args": ["run"],
+      "args": [
+        "run"
+      ],
       "description": "View system log entries",
       "cliOnly": true,
       "wait": true,
       "schema": {
         "properties": {
-          "filter":  {
+          "filter": {
             "type": "string",
             "description": "Regular expression for filtering output"
           },
-          "last":    {
+          "last": {
             "type": "number",
             "minimum": 1,
-            "maximum": 1024,
+            "maximum": 3072,
             "description": "Show last N entries"
           }
         }
       }
     },
-
     "dashboard": {
       "exec": "dashboard-cli",
       "args": [],
@@ -283,19 +362,30 @@
       "cliOnly": true,
       "wait": true
     },
-
     "ssh": {
       "exec": "handler",
-      "args": ["run", "tools/ssh"],
+      "args": [
+        "run",
+        "tools/ssh"
+      ],
       "description": "SSH client session to remote host",
       "cliOnly": true,
       "wait": true,
       "schema": {
-        "required": ["host", "username"],
+        "required": [
+          "host",
+          "username"
+        ],
         "properties": {
-          "host": { "$ref": "/defaults#/definitions/host" },
-          "username": { "$ref": "/defaults#/definitions/username" },
-          "port": { "$ref": "/defaults#/definitions/port" }
+          "host": {
+            "$ref": "/defaults#/definitions/host"
+          },
+          "username": {
+            "$ref": "/defaults#/definitions/username"
+          },
+          "port": {
+            "$ref": "/defaults#/definitions/port"
+          }
         }
       }
     }

@@ -1,95 +1,117 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "GRE",
   "description": "GRE Tunnels",
   "type": "object",
-  "showParams": ["local-ip", "remote-ip", "mtu", "encryption"],
+  "showParams": [
+    "local-ip",
+    "remote-ip",
+    "mtu",
+    "encryption"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "GRE tunnel",
-      "required": ["psk", "tunnel-ip"],
+      "required": [
+        "psk",
+        "tunnel-ip"
+      ],
       "properties": {
         "proto": {
           "type": "string",
           "hidden": true,
           "noExport": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
-
         "local-ip": {
           "$ref": "/defaults#/definitions/interface-ipaddr",
           "title": "Local IP",
           "description": "Local endpoint address or source interface",
           "default": "auto"
         },
-
         "remote-ip": {
           "$ref": "/defaults#/definitions/host",
           "title": "Remote IP",
           "description": "Remote endpoint (FQDN or IP address)"
         },
-
         "tunnel-ip": {
           "$ref": "/defaults#/definitions/ipaddr",
           "title": "Tunnel IP",
           "description": "Tunnel interface IP address for virtual networking"
         },
-
         "key": {
           "type": "number",
           "description": "GRE tunnel key for session identification",
           "minimum": 0,
           "maximum": 4294967295
         },
-
         "_ipsec-installed": {
           "type": "boolean",
           "description": "hidden option, notice that the ipsec is installed",
           "hidden": true,
           "noExport": true
         },
-
         "encryption": {
           "type": "string",
           "title": "Encryption",
           "description": "Tunnel encryption method for secure data transmission",
-          "enum": ["none"],
+          "enum": [
+            "none"
+          ],
           "modificator": [
-            {"if": [{"_ipsec-installed": true}], "then":{"enum": ["none", "ipsec"]}}
+            {
+              "if": [
+                {
+                  "_ipsec-installed": true
+                }
+              ],
+              "then": {
+                "enum": [
+                  "none",
+                  "ipsec"
+                ]
+              }
+            }
           ]
         },
-
         "psk": {
           "$ref": "/defaults#/definitions/psk",
           "description": "IPsec pre-shared key for tunnel authentication",
           "minLength": 8,
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "ipsec"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "ipsec"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "mtu": {
           "$ref": "/defaults#/definitions/mtu",
           "description": "Tunnel interface MTU to define maximum packet size",
           "default": 1476
         },
-
         "ttl": {
           "$ref": "/defaults#/definitions/ttl",
           "description": "Tunnel interface TTL to control packet lifetime",
           "default": 64
         },
-
         "dscp": {
           "$ref": "/defaults#/definitions/dscp"
         },
-
         "do-not-frag": {
           "type": "boolean",
           "title": "DF Flag",
@@ -111,25 +133,43 @@
           "maximum": 4294967295,
           "hidden": true,
           "modificator": [
-            {"if": [{"keepalive-delay": "!"}, {"keepalive-delay": "!0"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "keepalive-delay": "!"
+                },
+                {
+                  "keepalive-delay": "!0"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         }
       }
     }
   },
-
   "delete": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["delete", "gre"],
+    "args": [
+      "delete",
+      "gre"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["add", "gre"],
+    "args": [
+      "add",
+      "gre"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name",
@@ -139,31 +179,41 @@
       }
     }
   },
-
   "apply": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["apply", "gre"]
+    "args": [
+      "apply",
+      "gre"
+    ]
   },
-
   "clean": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["clean", "gre"],
+    "args": [
+      "clean",
+      "gre"
+    ],
     "reload": true,
     "confirm": true
   },
-
   "status": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["status", "gre"]
+    "args": [
+      "status",
+      "gre"
+    ]
   },
-
   "set": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["set", "gre"]
-  },    
-
+    "args": [
+      "set",
+      "gre"
+    ]
+  },
   "acquire": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["get", "gre"]
+    "args": [
+      "get",
+      "gre"
+    ]
   }
 }

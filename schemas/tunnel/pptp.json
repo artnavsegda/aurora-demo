@@ -1,87 +1,124 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "PPTP",
   "description": "Point-to-Point Tunneling Protocol (PPTP) VPN tunnel connections",
   "type": "object",
-  "showParams": ["local-ip", "remote-ip", "encryption"],
+  "showParams": [
+    "local-ip",
+    "remote-ip",
+    "encryption"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "PPTP tunnel",
       "description": "PPTP tunnel interface",
-      "required": ["remote-ip", "psk"],
+      "required": [
+        "remote-ip",
+        "psk"
+      ],
       "properties": {
         "proto": {
           "type": "string",
           "hidden": true,
           "noExport": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
-
         "local-ip": {
           "$ref": "/defaults#/definitions/interface",
           "title": "Local IP",
           "description": "Local endpoint address or interface",
           "default": "auto"
         },
-
         "remote-ip": {
           "$ref": "/defaults#/definitions/host",
           "title": "Remote IP",
           "description": "Remote endpoint (FQDN or IP address)"
         },
-
         "username": {
           "$ref": "/defaults#/definitions/username"
         },
-
         "password": {
           "$ref": "/defaults#/definitions/password"
         },
-
-        "auth": {
-          "$ref": "/defaults#/definitions/ppp-auth",
-          "modificator": [
-            {"if":[{"encryption": "mppe"}], "then": {"enum": ["mschap-v2"]}}
-          ]
-        },
-
         "encryption": {
           "$ref": "/defaults#/definitions/encryption",
           "modificator": [
-            {"if": [{"/defaults/ipsec_installed": "true"}], "then":{"enum": ["none", "mppe", "ipsec"]}}
+            {
+              "if": [
+                {
+                  "/defaults/ipsec_installed": "true"
+                }
+              ],
+              "then": {
+                "enum": [
+                  "none",
+                  "mppe",
+                  "ipsec"
+                ]
+              }
+            }
           ]
         },
-
+        "auth": {
+          "$ref": "/defaults#/definitions/ppp-auth",
+          "modificator": [
+            {
+              "if": [
+                {
+                  "encryption": "mppe"
+                }
+              ],
+              "then": {
+                "enum": [
+                  "mschap-v2"
+                ]
+              }
+            }
+          ]
+        },
         "psk": {
           "$ref": "/defaults#/definitions/psk",
           "description": "IPsec pre-shared key for tunnel authentication",
           "modificator": [
-            {"if": [{"encryption": "ipsec"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "ipsec"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "ppp-option": {
           "$ref": "/defaults#/definitions/ppp-option"
         },
-
         "debug": {
           "$ref": "/defaults#/definitions/debug"
         }
       }
     }
   },
-
   "add": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["add", "pptp"],
+    "args": [
+      "add",
+      "pptp"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name",
@@ -90,36 +127,48 @@
       }
     }
   },
-
   "delete": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["delete", "pptp"],
+    "args": [
+      "delete",
+      "pptp"
+    ],
     "reload": true
   },
-
   "status": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["status", "pptp"]
+    "args": [
+      "status",
+      "pptp"
+    ]
   },
-
   "set": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["set", "pptp"]
+    "args": [
+      "set",
+      "pptp"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["get", "pptp"]
+    "args": [
+      "get",
+      "pptp"
+    ]
   },
-
   "apply": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["apply", "pptp"]
+    "args": [
+      "apply",
+      "pptp"
+    ]
   },
-
   "clean": {
     "exec": "subscript/tunnel/tunnel.uc",
-    "args": ["clean", "pptp"],
+    "args": [
+      "clean",
+      "pptp"
+    ],
     "reload": true,
     "confirm": true
   }

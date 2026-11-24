@@ -12,14 +12,14 @@ function stamp(date = new Date()) {
 }
 
 const TEMPLATES = [
-    (n) => `daemon.info dnsmasq[${1200 + (n % 30)}]: DHCPACK(br-lan) 192.168.1.${20 + (n % 80)} 02:00:00:00:aa:${(n % 255).toString(16).padStart(2, '0')} phone-${n % 7}`,
+    (n) => `daemon.info dnsmasq[${1200 + (n % 30)}]: DHCPACK(bridge0) 192.168.3.${20 + (n % 80)} 02:00:00:00:aa:${(n % 255).toString(16).padStart(2, '0')} phone-${n % 7}`,
     () => `daemon.notice netifd: Interface 'wan' is now up`,
     () => `daemon.notice netifd: Interface 'wan' is now down`,
     (n) => `user.info horizon: /ip/interface: apply by demo (${n})`,
     (n) => `daemon.info modem1: signal quality ${18 + (n % 8)} dBm, LTE band b${[3, 7, 20][n % 3]}`,
     (n) => `kern.warn kernel: [${12000 + n}.${100 + (n % 800)}] nf_conntrack: table full, dropping packet`,
-    (n) => `daemon.info hostapd: wlan0: STA 02:00:00:00:${(n % 255).toString(16).padStart(2, '0')}:11 IEEE 802.11: authenticated`,
-    (n) => `daemon.info dnsmasq[${1200 + (n % 30)}]: reply 192.168.1.1 is 8.8.8.8`,
+    (n) => `daemon.info hostapd: wifi1: STA 02:00:00:00:${(n % 255).toString(16).padStart(2, '0')}:11 IEEE 802.11: authenticated`,
+    (n) => `daemon.info dnsmasq[${1200 + (n % 30)}]: reply 192.168.3.1 is 8.8.8.8`,
     () => `user.notice root: ntp: sync with 0.openwrt.pool.ntp.org`,
     (n) => `daemon.info firewall: rule 'allow-dhcp' matched udp 0.0.0.0:68 -> 255.255.255.255:67 (${n})`,
     (n) => `user.info horizon: dashboard: refresh (${n})`,

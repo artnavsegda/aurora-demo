@@ -1,10 +1,12 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "BFD interfaces",
   "type": "object",
   "description": "Per-interface BFD settings - each entry becomes a separate interface {} block inside the single BFD protocol",
-
   "namesake": "interface",
   "patternProperties": {
     ".*": {
@@ -44,45 +46,55 @@
       }
     }
   },
-
   "delete": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "description": "add new entry (params: <interface>)",
     "schema": {
-      "required": ["interface"],
+      "required": [
+        "interface"
+      ],
       "properties": {
-        "interface": {"$ref": "/defaults#/definitions/interface"}
+        "interface": {
+          "$ref": "/defaults#/definitions/interface"
+        }
       }
     }
   },
-
   "apply": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
   "set": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "./subscript/routing/bfd/interface.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

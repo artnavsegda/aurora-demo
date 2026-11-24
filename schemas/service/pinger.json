@@ -1,169 +1,252 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "documentation": ["local", "global"],
-    "title": "Pinger",
-    "description": "Network connectivity and quality test",
-    "type": "object",
-    "showParams": ["type"],
-    "patternProperties": {
-        ".*": {
-            "type": "object",
-            "title": "Pinger",
-            "properties": {
-                "disabled": {
-                    "$ref": "/defaults#/definitions/disabled"
-                },
-                "interface": {
-                    "hidden": true,
-                    "readOnly": true,
-                    "$ref": "/defaults#/definitions/interface"
-                },
-                "type": {
-                    "description": "Reachability check method",
-                    "type": "string",
-                    "enum": ["icmp", "arping", "http", "tcp"]
-                },
-
-                "host": {
-                    "type": "array",
-                    "description": "Endpoint for availability check",
-                    "items": {
-                        "$ref": "/defaults#/definitions/host-port"
-                    },
-                    "modificator": [
-                        {
-                            "if": [{"type": "tcp"}], "then": {
-                                "items": {"$ref":"/defaults#/definitions/host-port-strict"}
-                            }
-                        }
-                    ]
-                },
-
-                "interval": {
-                    "type": "number",
-                    "description": "Interval between checks",
-                    "minimum": 10,
-                    "default": 30
-                },
-
-                "retries": {
-                    "type": "number",
-                    "description": "Limit of failed checks before restarting the interface",
-                    "minimum": 1,
-                    "default": 3
-                },
-
-                "count": {
-                    "type": "number",
-                    "title": "Request count",
-                    "description": "Number of packets to check per attempt",
-                    "minimum": 1,
-                    "default": 4,
-                    "hidden": true,
-                    "modificator": [
-                        {"if": [{"type": "arping"}], "then": {"hidden": false}},
-                        {"if": [{"type": "http"}], "then": {"hidden": false}},
-                        {"if": [{"type": "icmp"}], "then": {"hidden": false}}
-                    ]
-                },
-
-                "timeout": {
-                    "type": "number",
-                    "title": "Request Timeout",
-                    "description": "Timeout waiting for response from remote endpoint",
-                    "minimum": 1,
-                    "default": 2,
-                    "hidden": true,
-                    "noExport": true
-                },
-
-                "size": {
-                    "type": "number",
-                    "title": "Packet size",
-                    "description": "Packet size",
-                    "minimum": 1,
-                    "maximum": 65535,
-                    "default": 32,
-                    "hidden": true,
-                    "modificator": [
-                      {"if": [{"type": "!http"}], "then": {"hidden": false}}
-                    ]
-                },
-
-                "route-action": {
-                    "type": "string",
-                    "title": "Route action",
-                    "description": "Action performed after the first failure and before the number of attempts expires",
-                    "enum": ["decrease-metric"],
-                    "hidden": true
-                },
-
-                "rtt-threshold": {
-                    "type": "number",
-                    "title": "RTT Threshold",
-                    "description": "Round-trip time (RTT) failure threshold",
-                    "default": 500
-                },
-
-                "loss-threshold": {
-                    "type": "number",
-                    "title": "Loss Threshold",
-                    "description": "Packet loss failure threshold",
-                    "hidden": true,
-                    "default": "100%",
-                    "modificator": [
-                      {"if": [{"type": "icmp"}], "then": {"hidden": false}},
-                      {"if": [{"type": "arping"}], "then": {"hidden": false}},
-                      {"if": [{"type": "http"}], "then": {"hidden": false}}
-                    ]
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "Pinger",
+  "description": "Network connectivity and quality test",
+  "type": "object",
+  "showParams": [
+    "type"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Pinger",
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "interface": {
+          "hidden": true,
+          "readOnly": true,
+          "$ref": "/defaults#/definitions/interface"
+        },
+        "type": {
+          "description": "Reachability check method",
+          "type": "string",
+          "enum": [
+            "icmp",
+            "arping",
+            "http",
+            "tcp"
+          ]
+        },
+        "host": {
+          "type": "array",
+          "description": "Endpoint for availability check",
+          "items": {
+            "$ref": "/defaults#/definitions/host-port"
+          },
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "tcp"
                 }
+              ],
+              "then": {
+                "items": {
+                  "$ref": "/defaults#/definitions/host-port-strict"
+                }
+              }
             }
-        }
-    },
-
-    "delete": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["delete"],
-        "reload": true
-    },
-
-    "status": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["status"]
-    },
-
-    "apply": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["apply"]
-    },
-
-    "add": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["add"],
-        "merge": true,
-        "schema": {
-            "required": ["interface"],
-            "properties": {
-                "interface": {"$ref": "/defaults#/definitions/interface"}
+          ]
+        },
+        "interval": {
+          "type": "number",
+          "description": "Interval between checks",
+          "minimum": 10,
+          "default": 30
+        },
+        "retries": {
+          "type": "number",
+          "description": "Limit of failed checks before restarting the interface",
+          "minimum": 1,
+          "default": 3
+        },
+        "count": {
+          "type": "number",
+          "title": "Request count",
+          "description": "Number of packets to check per attempt",
+          "minimum": 1,
+          "default": 4,
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "arping"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "http"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "icmp"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
             }
+          ]
+        },
+        "timeout": {
+          "type": "number",
+          "title": "Request Timeout",
+          "description": "Timeout waiting for response from remote endpoint",
+          "minimum": 1,
+          "default": 2,
+          "hidden": true,
+          "noExport": true
+        },
+        "size": {
+          "type": "number",
+          "title": "Packet size",
+          "description": "Packet size",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 32,
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "!http"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ]
+        },
+        "route-action": {
+          "type": "string",
+          "title": "Route action",
+          "description": "Action performed after the first failure and before the number of attempts expires",
+          "enum": [
+            "decrease-metric"
+          ],
+          "hidden": true
+        },
+        "rtt-threshold": {
+          "type": "number",
+          "title": "RTT Threshold",
+          "description": "Round-trip time (RTT) failure threshold",
+          "default": 500
+        },
+        "loss-threshold": {
+          "type": "number",
+          "title": "Loss Threshold",
+          "description": "Packet loss failure threshold",
+          "hidden": true,
+          "default": "100%",
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "icmp"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "arping"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "http"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ]
         }
-    },
-
-    "clean": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["clean"],
-        "confirm": true,
-        "reload": true
-    },
-
-    "set": {
-        "exec": "subscript/service/pinger.uc",
-        "args": ["set"]
-    },
-
-    "acquire": {
-      "exec": "subscript/service/pinger.uc",
-      "args": ["get"]
+      }
     }
-
+  },
+  "delete": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "status": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "status"
+    ]
+  },
+  "apply": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "add": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "interface"
+      ],
+      "properties": {
+        "interface": {
+          "$ref": "/defaults#/definitions/interface"
+        }
+      }
+    }
+  },
+  "clean": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "clean"
+    ],
+    "confirm": true,
+    "reload": true
+  },
+  "set": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/service/pinger.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

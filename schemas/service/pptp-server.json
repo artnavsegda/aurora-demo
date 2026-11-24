@@ -1,15 +1,19 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "PPTP server",
   "description": "PPTP server configuration",
   "type": "object",
-  "required": ["psk"],
+  "required": [
+    "psk"
+  ],
   "properties": {
     "disabled": {
       "$ref": "/defaults#/definitions/disabled"
     },
-
     "ip-addr": {
       "type": "array",
       "title": "IP address",
@@ -19,7 +23,6 @@
         "$ref": "/defaults#/definitions/ipaddr-strict-pool"
       }
     },
-
     "ip-pool": {
       "type": "array",
       "title": "IP pool",
@@ -29,55 +32,87 @@
         "$ref": "/defaults#/definitions/ipaddr-strict-pool"
       }
     },
-
-    "auth": {
-      "$ref": "/defaults#/definitions/ppp-auth",
-      "modificator": [
-        {"if":[{"encryption": "mppe"}], "then": {"enum": ["mschap-v2"]}}
-      ]
-    },
-
     "encryption": {
       "$ref": "/defaults#/definitions/encryption",
       "modificator": [
-        {"if": [{"/defaults/ipsec_installed": "true"}], "then":{"enum": ["none", "mppe", "ipsec"]}}
+        {
+          "if": [
+            {
+              "/defaults/ipsec_installed": "true"
+            }
+          ],
+          "then": {
+            "enum": [
+              "none",
+              "mppe",
+              "ipsec"
+            ]
+          }
+        }
       ]
     },
-
+    "auth": {
+      "$ref": "/defaults#/definitions/ppp-auth",
+      "modificator": [
+        {
+          "if": [
+            {
+              "encryption": "mppe"
+            }
+          ],
+          "then": {
+            "enum": [
+              "mschap-v2"
+            ]
+          }
+        }
+      ]
+    },
     "psk": {
       "$ref": "/defaults#/definitions/psk",
       "description": "IPsec pre-shared key for tunnel authentication",
       "modificator": [
-        {"if": [{"encryption": "ipsec"}], "then": {"hidden": false}}
+        {
+          "if": [
+            {
+              "encryption": "ipsec"
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
       ]
     },
-
     "ppp-option": {
       "$ref": "/defaults#/definitions/ppp-option"
     },
-
     "debug": {
       "$ref": "/defaults#/definitions/debug"
     }
   },
-
   "apply": {
     "exec": "subscript/service/pptp-server.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
     "exec": "subscript/service/pptp-server.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/service/pptp-server.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   },
-  
   "status": {
     "exec": "subscript/service/pptp-server.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   }
 }

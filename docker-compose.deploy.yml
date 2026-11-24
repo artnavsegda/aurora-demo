@@ -1,6 +1,6 @@
 services:
   aurora:
-    image: aurora-demo-backend:2026-11-23-amd64
+    image: aurora-demo-backend:2026-11-24-donyx-amd64
     hostname: aurora-demo
     ports:
       - "8080:8080"

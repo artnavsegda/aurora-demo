@@ -1,51 +1,77 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "Management",
   "description": "System management",
   "type": "object",
-
   "properties": {
     "hostname": {
       "description": "Device hostname",
       "$ref": "/defaults#/definitions/hostname"
     },
-
     "timezone": {
       "type": "string",
       "description": "Device time zone",
       "title": "Time zone",
       "enum": [
-        "UTC-12", "UTC-11", "UTC-10", "UTC-9",  "UTC-8",
-        "UTC-7",  "UTC-6",  "UTC-5",  "UTC-4",  "UTC-3",
-        "UTC-2",  "UTC-1",  "UTC",    "UTC+1",  "UTC+2",
-        "UTC+3",  "UTC+4",  "UTC+5",  "UTC+6",  "UTC+7",
-        "UTC+8",  "UTC+9",  "UTC+10", "UTC+11", "UTC+12",
-        "UTC+13", "UTC+14"
+        "UTC-12",
+        "UTC-11",
+        "UTC-10",
+        "UTC-9",
+        "UTC-8",
+        "UTC-7",
+        "UTC-6",
+        "UTC-5",
+        "UTC-4",
+        "UTC-3",
+        "UTC-2",
+        "UTC-1",
+        "UTC",
+        "UTC+1",
+        "UTC+2",
+        "UTC+3",
+        "UTC+4",
+        "UTC+5",
+        "UTC+6",
+        "UTC+7",
+        "UTC+8",
+        "UTC+9",
+        "UTC+10",
+        "UTC+11",
+        "UTC+12",
+        "UTC+13",
+        "UTC+14"
       ]
     }
   },
-
   "apply": {
     "exec": "subscript/system/management.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
     "exec": "subscript/system/management.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-  
   "acquire": {
     "exec": "subscript/system/management.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   },
-
   "actions": {
     "change": {
       "exec": "subscript/system/management.uc",
       "title": "Change local time",
-      "args": ["change"],
+      "args": [
+        "change"
+      ],
       "description": "Set system date and time manually",
       "merge": true,
       "schema": {
@@ -56,31 +82,36 @@
             "description": "Set local time",
             "pattern": "^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$",
             "patternDescription": "HH:MM:SS",
-            "patternExample": ["12:40:11"]
+            "patternExample": [
+              "12:40:11"
+            ]
           },
-
           "isodate": {
             "type": "string",
             "title": "Date",
             "description": "Set local date",
             "pattern": "^2[0-9][0-9]{2}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1])$",
             "patternDescription": "YYYY-MM-DD",
-            "patternExample": ["2025-02-18"]
+            "patternExample": [
+              "2025-02-18"
+            ]
           }
         }
       }
     },
-
     "report": {
       "exec": "subscript/system/management.uc",
-      "args": ["report"],
+      "args": [
+        "report"
+      ],
       "description": "Generate system diagnostics report",
       "responseType": "blob"
     },
-
     "reboot": {
       "exec": "subscript/system/management.uc",
-      "args": ["reboot"],
+      "args": [
+        "reboot"
+      ],
       "description": "Reboot device",
       "confirm": true,
       "checkConnection": {
@@ -89,42 +120,43 @@
         "text": "The device is rebooting. Please wait"
       }
     },
-
     "upgrade": {
       "exec": "subscript/system/management.uc",
-      "args": ["upgrade"],
+      "args": [
+        "upgrade"
+      ],
       "description": "Upgrade firmware",
       "checkConnection": {
         "timeout": 360,
         "delay": 10,
         "text": "Firmware is upgrading. Please wait"
       },
-
       "schema": {
-        "required": ["file"],
+        "required": [
+          "file"
+        ],
         "properties": {
           "file": {
             "type": "string",
             "strictEnum": true,
             "description": "File in temporary storage",
-            "cue": ["/storage/file[file-type:temporary]"]
+            "cue": [
+              "/storage/file[file-type:temporary]"
+            ]
           },
-
           "reset-config": {
             "type": "boolean",
-            "title": "Reset сonfiguration",
+            "title": "Reset configuration",
             "description": "Reset to default settings"
           },
-
           "reset-storage": {
             "type": "boolean",
             "title": "Reset storage",
             "description": "Clear all /storage partitions"
           },
-
           "force": {
             "type": "boolean",
-            "title": "Force upgrage",
+            "title": "Force upgrade",
             "cliOnly": true,
             "hidden": true,
             "description": "Force firmware upgrade"
@@ -133,5 +165,4 @@
       }
     }
   }
-
 }

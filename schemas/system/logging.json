@@ -1,37 +1,77 @@
-
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "Logging",
   "description": "Setting up logging",
   "type": "object",
-
   "properties": {
-    "remote-host": {
-        "$ref": "/defaults#/definitions/host-port",
-        "description": "Remote host for receiving log",
-        "title": "Remote"
+    "remote": {
+      "type": "array",
+      "title": "Remote servers",
+      "uniqueItems": true,
+      "description": "Remote syslog servers as address:port/protocol. Every server receives every log record. TCP uses octet-counting framing (RFC 6587)",
+      "items": {
+        "type": "string",
+        "pattern": "^(\\[[0-9A-Fa-f:.]+\\]|[^\\[\\]:/ ]+):(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+/)([0-9]{1,5})/(tcp|udp)$",
+        "patternDescription": "Address, port and protocol (tcp or udp)",
+        "patternExample": [
+          "192.168.1.100:514/udp",
+          "192.168.1.100:514/tcp",
+          "log.example.com:6514/tcp"
+        ]
+      }
     },
-
-    "remote-proto": {
+    "hostname": {
       "type": "string",
-      "description": "Transport protocol for sending log",
-      "title": "Transport",
-      "enum": ["tcp", "udp"]
+      "title": "Hostname (prefix) override",
+      "description": "Hostname placed in every message. Empty means the device hostname"
     },
-
-    "remote-prefix": {
+    "format": {
       "type": "string",
-      "description": "Prefix for log entries",
-      "title": "Prefix"
+      "title": "Message format",
+      "enum": [
+        "rfc3164",
+        "rfc5424"
+      ],
+      "strictEnum": true,
+      "default": "rfc5424",
+      "description": "Wire format: RFC 3164 (BSD syslog) or RFC 5424"
     },
-
+    "buffer": {
+      "type": "boolean",
+      "title": "Accumulate buffer",
+      "default": false,
+      "description": "Keep messages in memory while a server is unreachable and send them on recovery. Off: messages arriving while a server is unreachable are lost"
+    },
+    "buffer-size": {
+      "type": "number",
+      "title": "Buffer size",
+      "minimum": 64,
+      "maximum": 2048,
+      "default": 512,
+      "description": "In-memory buffer size in KB. On overflow the oldest messages are dropped",
+      "hidden": true,
+      "modificator": [
+        {
+          "if": [
+            {
+              "buffer": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
     "file-log": {
       "$ref": "/defaults#/definitions/disabled",
       "title": "Log to file",
       "description": "Enable logging to local file"
     },
-
     "file-name": {
       "type": "string",
       "title": "File",
@@ -39,42 +79,63 @@
       "default": "syslog",
       "hidden": true,
       "modificator": [
-          { "if": [ {"file-log": true} ], "then": { "hidden": false } }
+        {
+          "if": [
+            {
+              "file-log": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
       ]
     },
-
     "file-size": {
       "type": "number",
       "default": 64,
-      "minimum": 1,
+      "minimum": 2,
       "maximum": 8192,
       "title": "File size",
-      "description": "Maximum file size (Kbyte)",
+      "description": "Maximum total size (Kbyte) of the log file and its .old copy",
       "hidden": true,
       "modificator": [
-          { "if": [ { "file-log": true} ], "then": { "hidden": false } }
+        {
+          "if": [
+            {
+              "file-log": true
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
       ]
     }
   },
-
   "apply": {
     "exec": "subscript/system/logging.uc",
-    "args": ["apply"],
+    "args": [
+      "apply"
+    ],
     "reload": true
   },
-
   "status": {
     "exec": "subscript/system/logging.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "set": {
     "exec": "subscript/system/logging.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/system/logging.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

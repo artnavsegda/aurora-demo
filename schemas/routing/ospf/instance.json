@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "OSPF instance",
   "type": "object",
   "definitions": {
@@ -8,18 +11,24 @@
       "type": "array",
       "items": {
         "type": "string",
-        "cue": ["/routing/filter"]
+        "cue": [
+          "/routing/filter"
+        ]
       }
     }
   },
-
   "namesake": "name",
-  "showParams": ["area"],
+  "showParams": [
+    "area"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "Instance entity",
-      "required": ["name", "area"],
+      "required": [
+        "name",
+        "area"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name",
@@ -43,40 +52,86 @@
           "title": "Export Filter File",
           "type": "string",
           "description": "Filter config file in bird syntax",
-          "cue": ["/storage/file[file-type:!temporary]"],
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "import-filter-file": {
           "title": "Import Filter File",
           "type": "string",
           "description": "Filter config file in bird syntax",
-          "cue": ["/storage/file[file-type:!temporary]"],
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-export": {
           "type": "string",
           "description": "Default export action",
           "title": "Default export",
-          "enum": ["accept", "reject"],
+          "enum": [
+            "accept",
+            "reject"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-import": {
           "type": "string",
           "description": "Default import action",
           "title": "Default import",
-          "enum": ["accept", "reject"],
+          "enum": [
+            "accept",
+            "reject"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "export-filter": {
@@ -85,7 +140,16 @@
           "title": "Export filter",
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "import-filter": {
@@ -94,7 +158,16 @@
           "title": "Import filter",
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "area": {
@@ -102,74 +175,89 @@
           "description": "Areas included in this OSPF instance",
           "items": {
             "type": "string",
-            "cue": ["/routing/ospf/area"]
+            "cue": [
+              "/routing/ospf/area"
+            ]
           }
         }
       }
     },
-
     "actions": {
       "route-stats": {
         "exec": "./subscript/routing/ospf/instance.uc",
-        "args": ["route_stats"],
+        "args": [
+          "route_stats"
+        ],
         "wait": true,
         "title": "Route stats",
         "description": "Route change statistics as a table"
       },
       "neighbors": {
         "exec": "./subscript/routing/ospf/instance.uc",
-        "args": ["neighbors"],
+        "args": [
+          "neighbors"
+        ],
         "wait": true,
         "title": "Neighbors",
         "description": "Neighbors of this OSPF instance as a table"
       }
     }
   },
-
   "delete": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "description": "add new entry (params: <name>)",
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
-       "name": {"$ref": "/defaults#/definitions/name"}
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        }
       }
     }
   },
-  
   "apply": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-  
   "clean": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-  
   "set": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "status": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "acquire": {
     "exec": "./subscript/routing/ospf/instance.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
-
 }

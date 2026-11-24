@@ -1,39 +1,46 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "OpenVPN",
   "description": "OpenVPN Tunnels",
   "type": "object",
-  "showParams": ["local-ip", "remote-ip", "encryption"],
+  "showParams": [
+    "local-ip",
+    "remote-ip",
+    "encryption"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "OpenVPN tunnel",
       "description": "OpenVPN tunnel interface",
-      "required": ["ca", "cert", "static-key"],
+      "required": [
+        "ca",
+        "cert",
+        "static-key"
+      ],
       "properties": {
         "proto": {
           "type": "string",
           "hidden": true,
           "noExport": true
         },
-
         "name": {
           "$ref": "/defaults#/definitions/name",
           "hidden": true
         },
-
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
         },
-
         "local-ip": {
           "$ref": "/defaults#/definitions/interface",
           "title": "Local IP",
           "description": "Local endpoint address or interface",
           "default": "auto"
         },
-
         "remote-ip": {
           "type": "array",
           "title": "Remote IP",
@@ -42,159 +49,294 @@
             "$ref": "/defaults#/definitions/host-port"
           }
         },
-
         "tunnel-ip": {
           "$ref": "/defaults#/definitions/ipaddr",
           "title": "Tunnel IP",
           "description": "Local tunnel interface IP address"
         },
-
         "dev-type": {
           "type": "string",
           "title": "Device Type",
           "description": "Virtual interface type",
-          "enum": ["tun", "tap"]
+          "enum": [
+            "tun",
+            "tap"
+          ]
         },
-
         "protocol": {
           "type": "string",
           "description": "Tunnel transport protocol selection",
-          "enum": ["tcp", "udp"]
+          "enum": [
+            "tcp",
+            "udp"
+          ]
         },
-
         "encryption": {
           "type": "string",
           "description": "Data channel encryption method",
-          "enum": ["none", "tls", "static-key"]
+          "enum": [
+            "tls",
+            "static-key"
+          ]
         },
-
         "static-key": {
           "type": "string",
           "title": "Static key",
           "description": "Pre-shared key (PSK) file for encryption",
-          "cue": ["/storage/file[file-type:!temporary]"],
-          "hidden": true, 
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
+          "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "static-key"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "static-key"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "cipher": {
           "type": "array",
           "description": "Data channel encryption algorithm",
           "items": {
             "type": "string",
             "enum": [
-              "AES-128-CBC", "AES-128-GCM",
-              "AES-192-CBC", "AES-192-GCM",
-              "AES-256-CBC", "AES-256-GCM"
+              "AES-128-CBC",
+              "AES-128-GCM",
+              "AES-192-CBC",
+              "AES-192-GCM",
+              "AES-256-CBC",
+              "AES-256-GCM"
             ]
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}},
-            {"if": [{"encryption": "static-key"}], "then": {"hidden": false, "items": {"enum": [
-              "AES-128-CBC",
-              "AES-192-CBC",
-              "AES-256-CBC"
-            ]}}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "encryption": "static-key"
+                }
+              ],
+              "then": {
+                "hidden": false,
+                "items": {
+                  "enum": [
+                    "AES-128-CBC",
+                    "AES-192-CBC",
+                    "AES-256-CBC"
+                  ]
+                }
+              }
+            }
           ]
         },
-
         "auth": {
           "type": "array",
           "description": "Authentication algorithm",
           "items": {
             "type": "string",
             "enum": [
-              "MD5", "SHA1", "SHA256", "SHA384", "SHA512", "none"
+              "MD5",
+              "SHA1",
+              "SHA256",
+              "SHA384",
+              "SHA512",
+              "none"
             ]
           },
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}},
-            {"if": [{"encryption": "static-key"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "encryption": "static-key"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "tls-mode": {
-            "type": "string",
-            "title": "TLS Mode",
-            "description": "Additional options when establishing a TLS session",
-            "enum": ["none", "tls-auth", "tls-crypt"],
-            "hidden": true,
-            "modificator": [
-              {"if": [{"encryption": "tls"}], "then": {"hidden": false}}
-            ]
+          "type": "string",
+          "title": "TLS Mode",
+          "description": "Additional options when establishing a TLS session",
+          "enum": [
+            "none",
+            "tls-auth",
+            "tls-crypt"
+          ],
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ]
         },
-
         "ta-key": {
           "title": "TA Key",
           "type": "string",
           "description": "Key for additional HMAC authentication",
-          "cue": ["/storage/file[file-type:!temporary]"],
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
           "hidden": true,
           "modificator": [
-            {"if": [{"tls-mode": "!none"}, {"tls-mode": "!"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "tls-mode": "!none"
+                },
+                {
+                  "tls-mode": "!"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "ca": {
-          "type": "string",
-          "description": "Certificate Authority (CA) public key",
-          "cue": ["/storage/certificate"],
+          "$ref": "/defaults#/definitions/ca",
+          "title": "CA",
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "cert": {
-          "type": "string",
+          "$ref": "/defaults#/definitions/cert",
+          "title": "Certificate",
           "description": "Local certificate (including private key)",
-          "cue": ["/storage/certificate"],
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "username": {
           "type": "string",
           "description": "Client authentication username",
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "password": {
           "$ref": "/defaults#/definitions/password",
           "description": "Client authentication password",
           "hidden": true,
           "modificator": [
-            {"if": [{"encryption": "tls"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "encryption": "tls"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "flag": {
           "type": "array",
           "description": "Tunnel advanced configuration flags",
           "items": {
             "type": "string",
             "enum": [
-              "allow-recursive-routing", "auth-nocache", "auth-user-pass-optional",
-              "client-to-client", "comp-noadapt",
-              "fast-io", "float", "mtu-test", "multihome", "ncp-disable",
-              "nobind", "opt-verify", "passtos", "persist-key",
-              "persist-local-ip", "persist-remote-ip", "persist-tun",
-              "ping-timer-rem", "pull", "push-peer-info", "push-reset",
-              "remote-random", "route-nopull", "single-session", "suppress-timestamps",
-              "tcp-nodelay", "tls-client", "tls-exit", "tls-server", "username-as-common-name"
+              "allow-recursive-routing",
+              "auth-nocache",
+              "auth-user-pass-optional",
+              "client-to-client",
+              "comp-noadapt",
+              "fast-io",
+              "float",
+              "mtu-test",
+              "multihome",
+              "nobind",
+              "opt-verify",
+              "passtos",
+              "persist-key",
+              "persist-local-ip",
+              "persist-remote-ip",
+              "persist-tun",
+              "ping-timer-rem",
+              "pull",
+              "push-peer-info",
+              "push-reset",
+              "remote-random",
+              "route-nopull",
+              "single-session",
+              "suppress-timestamps",
+              "tcp-nodelay",
+              "tls-client",
+              "tls-exit",
+              "tls-server",
+              "username-as-common-name"
             ]
           }
         },
-
         "extra": {
           "type": "array",
           "title": "Extra parameters",
@@ -203,67 +345,116 @@
             "type": "pair",
             "pattern": "^[_\\-\\/!.=A-Za-z0-9\\s]+$",
             "patternDescription": "Key and value separated by the '=' symbol",
-            "patternExample": ["ping=10", "ping-restart=60"],
+            "patternExample": [
+              "ping=10",
+              "ping-restart=60"
+            ],
             "enum": [
-              "auth-retry", "bcast-buffers",
-              "comp-lzo", "compress", "connect-freq",
-              "connect-retry", "connect-retry-max", "connect-timeout",
-              "ecdh-curve", "explicit-exit-notify", "fragment", "hand-window", "hash-size",
-              "ifconfig_local", "ifconfig_remote", "ifconfig_netmask",
-              "ifconfig-push-local", "ifconfig-push-netmask",
-              "inactive", "key-direction", "keysize", "link-mtu", "lport", "max-clients",
-              "mssfix", "mtu-disc", "ping", "ping-exit", "ping-restart", "prng",
-              "pull-filter-accept", "pull-filter-ignore", "pull-filter-reject",
-              "rcvbuf", "remote-cert-tls",
-              "reneg-bytes", "reneg-pkts", "reneg-sec", "replay-persist",
-              "replay-window", "resolv-retry", "shaper", "sndbuf", "topology",
-              "tcp-queue-limit", "tls-timeout", "tls-version-min", "tran-window", "tun-mtu",
-              "tun-mtu-extra", "txqueuelen", "verb", "verify-client-cert",
-              "verify-x509-name", "x509-username-field"
+              "auth-retry",
+              "bcast-buffers",
+              "comp-lzo",
+              "compress",
+              "connect-freq",
+              "connect-retry",
+              "connect-retry-max",
+              "connect-timeout",
+              "ecdh-curve",
+              "explicit-exit-notify",
+              "fragment",
+              "hand-window",
+              "hash-size",
+              "ifconfig_local",
+              "ifconfig_remote",
+              "ifconfig_netmask",
+              "inactive",
+              "key-direction",
+              "keysize",
+              "link-mtu",
+              "lport",
+              "max-clients",
+              "mssfix",
+              "mtu-disc",
+              "ping",
+              "ping-exit",
+              "ping-restart",
+              "prng",
+              "pull-filter-accept",
+              "pull-filter-ignore",
+              "pull-filter-reject",
+              "rcvbuf",
+              "remote-cert-tls",
+              "reneg-bytes",
+              "reneg-pkts",
+              "reneg-sec",
+              "replay-persist",
+              "replay-window",
+              "resolv-retry",
+              "shaper",
+              "sndbuf",
+              "topology",
+              "tcp-queue-limit",
+              "tls-timeout",
+              "tls-version-min",
+              "tran-window",
+              "tun-mtu",
+              "tun-mtu-extra",
+              "txqueuelen",
+              "verb",
+              "verify-client-cert",
+              "verify-x509-name",
+              "x509-username-field"
             ]
           }
         },
-
         "config-file": {
           "hidden": true,
           "type": "string",
           "description": "Path to additional config file",
-          "cue": ["/storage/file[file-type:!temporary]"]
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ]
         }
       }
     },
-
     "actions": {
       "generate-ta-key": {
-          "title": "Generate Static Key",
-          "description": "Generate a key file used as TA Key or Static Key",
-          "exec": "subscript/tunnel/openvpn.uc",
-          "args": ["genkey"],
-          "reload": true,
-          "schema": {
-              "required": ["filename"],
-              "properties": {
-                  "filename": {
-                      "$ref": "/defaults#/definitions/name-ext"
-                  }
-              }
+        "title": "Generate Static Key",
+        "description": "Generate a key file used as TA Key or Static Key",
+        "exec": "subscript/tunnel/openvpn.uc",
+        "args": [
+          "genkey"
+        ],
+        "reload": true,
+        "schema": {
+          "required": [
+            "filename"
+          ],
+          "properties": {
+            "filename": {
+              "$ref": "/defaults#/definitions/name-ext"
+            }
           }
+        }
       }
     }
   },
-
   "delete": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
         "name": {
           "$ref": "/defaults#/definitions/name",
@@ -272,32 +463,37 @@
       }
     }
   },
-
   "apply": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["apply"],
+    "args": [
+      "apply"
+    ],
     "reload": true
   },
-
   "clean": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "reload": true,
     "confirm": true
   },
-
   "status": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "set": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["set"]
-  },    
-
+    "args": [
+      "set"
+    ]
+  },
   "acquire": {
     "exec": "subscript/tunnel/openvpn.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

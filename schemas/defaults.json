@@ -1,7 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema#",
   "hidden": true,
-
   "properties": {
     "ether_port_speed": {
       "type": "array",
@@ -9,21 +8,18 @@
         "type": "string"
       }
     },
-
     "services": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-
     "schemas": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-
     "devices": {
       "type": "string",
       "description": "",
@@ -31,31 +27,32 @@
         "type": "string"
       }
     },
-
     "event_triggers": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-
     "ipsec_installed": {
       "type": "boolean",
       "description": "Is ipsec installed"
     },
-
     "ntripclient_installed": {
       "type": "boolean",
       "description": "Is ntripclient installed"
     },
-
     "server": {
       "type": "array",
       "items": {
         "type": "string"
       }
     },
-
+    "wireless_country_list": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "modem_modes": {
       "type": "array",
       "items": {
@@ -63,12 +60,13 @@
       }
     }
   },
-
   "acquire": {
-    "exec": "handler",
-    "args": ["get", "defaults"]
+    "exec": "subscript/defaults.uc",
+    "args": [
+      "get",
+      "defaults"
+    ]
   },
-
   "definitions": {
     "dscp": {
       "type": "string",
@@ -77,7 +75,6 @@
       "default": "0",
       "pattern": "^((6[0-3])|([1-5]\\d{1})|(\\d{1}))$"
     },
-
     "interface-ipaddr": {
       "type": "string",
       "description": "Interface or address",
@@ -91,9 +88,11 @@
       ],
       "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^([a-zA-Z\\_0-9]+)$",
       "patternDescription": "The name of the interface or its IP address",
-      "patternExample": ["bridge0", "192.168.1.1"]
+      "patternExample": [
+        "bridge0",
+        "192.168.1.1"
+      ]
     },
-
     "interface": {
       "type": "string",
       "description": "Network interface",
@@ -107,14 +106,15 @@
       ],
       "pattern": "^([a-zA-Z\\_0-9]+)$",
       "patternDescription": "Interface Name",
-      "patternExample": ["bridge0"]
+      "patternExample": [
+        "bridge0"
+      ]
     },
-
     "l2-device": {
       "type": "string",
       "description": "Layer 2 network device for data link operations",
       "cue": [
-        "/network/device", 
+        "/network/device",
         "/network/ethernet",
         "/wireless/network[mode:ap]",
         "/wireless/network[mode:sta;wds:true]",
@@ -123,7 +123,6 @@
         "/tunnel[proto:!;tun-mode:tap]"
       ]
     },
-
     "l2-device-for-vlans": {
       "type": "string",
       "description": "Layer 2 network device for data link operations",
@@ -134,125 +133,160 @@
         "/tunnel[proto:!;tun-mode:tap]"
       ]
     },
-
     "disabled": {
       "type": "boolean",
       "description": "Disable configuration",
       "title": "Disabled"
     },
-
     "name": {
       "type": "string",
       "description": "Configuration name",
       "pattern": "^(?![0-9_])[a-zA-Z0-9_]+$",
+      "maxLength": 28,
       "patternDescription": "The allowed characters are letters, digits, and the symbol \"_\".",
-      "patternExample": ["bridge0", "vpn", "client_1" ]
+      "patternExample": [
+        "bridge0",
+        "vpn",
+        "client_1"
+      ]
     },
-
     "name-ext": {
       "type": "string",
       "description": "Configuration name",
       "pattern": "^([a-zA-Z0-9-_@\\.])+$",
       "patternDescription": "The allowed characters are letters, digits, and the symbols «._-@».",
-      "patternExample": ["bridge0", "vpn-client1", "user_1@example.com"]
+      "patternExample": [
+        "bridge0",
+        "vpn-client1",
+        "user_1@example.com"
+      ]
     },
-
     "name-spaces": {
       "type": "string",
       "description": "Configuration name",
       "pattern": "^([a-zA-Z0-9-_@\\.\\ ])+$",
       "patternDescription": "The allowed characters are letters, digits, whitespaces and the symbols « . _ - @ ».",
-      "patternExample": ["California", "San Francisco", "Copyleft Certificate Co", "user_1@example.com"]
+      "patternExample": [
+        "California",
+        "San Francisco",
+        "Copyleft Certificate Co",
+        "user_1@example.com"
+      ]
     },
-
     "host": {
       "type": "string",
       "description": "Host address",
       "pattern": "(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\*|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])))$)",
       "patternDescription": "Host address (FQDN or IP address)",
-      "patternExample": ["localhost", "sample.example.com", "8.8.8.8"]
+      "patternExample": [
+        "localhost",
+        "sample.example.com",
+        "8.8.8.8"
+      ]
     },
-
     "host-cidr": {
       "type": "string",
       "description": "Host or network address",
       "pattern": "(^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/([0-2]?\\d|3[0-2]))?$)|(^(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\*|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])))$)",
       "patternDescription": "Host address (FQDN or CIDR address)",
-      "patternExample": ["localhost", "sample.example.com", "8.8.8.8", "192.168.1.0/24"]
+      "patternExample": [
+        "localhost",
+        "sample.example.com",
+        "8.8.8.8",
+        "192.168.1.0/24"
+      ]
     },
-
     "host-ipv6": {
       "type": "string",
       "description": "Host address",
       "pattern": "(^(((?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:((?::[0-9a-fA-F]{1,4}){1,3}|((?::[0-9a-fA-F]{1,4}){1,2})?(?::[0-9a-fA-F]{1,4})?)|(?:[0-9a-fA-F]{1,4}:)(?::[0-9a-fA-F]{1,4}){1,3}:|(?::[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3})(\\/(?:[0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?)$|^(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\*|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])))$)",
       "patternDescription": "Host address (FQDN or IPv6 address)",
-      "patternExample": ["localhost", "sample.example.com", "2001:4860:4860::8888"]
+      "patternExample": [
+        "localhost",
+        "sample.example.com",
+        "2001:4860:4860::8888"
+      ]
     },
-
     "hostname": {
       "type": "string",
       "description": "Device hostname",
       "pattern": "^(?!:\\/\\/)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\\.)*([a-zA-Z]){2,253}$|^(?!:\\/\\/)([a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9]))$",
       "patternDescription": "Hostname or FQDN (Fully Qualified Domain Name)",
-      "patternExample": ["localhost", "example.com", "sample.example.com"]
+      "patternExample": [
+        "localhost",
+        "example.com",
+        "sample.example.com"
+      ]
     },
-
     "host-port": {
       "type": "string",
       "description": "Host address",
       "pattern": "(^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|^(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\*|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z]))))(?::(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+)[\\d]{1,5})?$",
       "patternDescription": "Host address and port (optional)",
-      "patternExample": ["192.168.1.1", "example.com", "192.168.1.1:80"]
+      "patternExample": [
+        "192.168.1.1",
+        "example.com",
+        "192.168.1.1:80"
+      ]
     },
-
     "host-port-strict": {
       "type": "string",
       "description": "Host address",
       "pattern": "(^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|^(?!-)(?:(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z])?)|\\*|\\d+)\\.*)*(?:(?:(?:\\d?[A-Za-z-])|(?:[A-Za-z]))[A-Za-z-\\d]*(?:(?:[A-Za-z]*\\d)|(?:[A-Za-z]))))(?::(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+)[\\d]{1,5})$)",
       "patternDescription": "Host address and port",
-      "patternExample": ["example.com:80", "192.168.1.1:80"]
+      "patternExample": [
+        "example.com:80",
+        "192.168.1.1:80"
+      ]
     },
-
     "ipaddr-port": {
       "type": "string",
       "description": "IP address and port combination",
       "pattern": "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})(:(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+)(\\d{1,5}))?$",
       "patternDescription": "IP address (and application port)",
-      "patternExample": ["192.168.1.1", "192.168.1.1:51820"]
+      "patternExample": [
+        "192.168.1.1",
+        "192.168.1.1:51820"
+      ]
     },
-
     "ipaddr-port-strict": {
       "type": "string",
       "description": "IP address",
       "pattern": "^((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?::(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+)[\\d]{1,5})$",
       "patternDescription": "IP address and port number",
-      "patternExample": ["192.168.1.1:80"]
+      "patternExample": [
+        "192.168.1.1:80"
+      ]
     },
-
     "ipaddr": {
       "type": "string",
       "description": "IP address",
       "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])|255\\.255\\.255\\.(0|128|192|224|240|248|252|254|255)|255\\.255\\.(0|128|192|224|240|248|252|254|255)\\.0|255\\.(0|128|192|224|240|248|252|254|255)\\.0\\.0|(0|128|192|224|240|248|252|254|255)\\.0\\.0\\.0))?$",
       "patternDescription": "Network or host IP address",
-      "patternExample": ["192.168.1.1", "192.168.1.0/24", "192.168.1.1/255.255.255.0"]
+      "patternExample": [
+        "192.168.1.1",
+        "192.168.1.0/24",
+        "192.168.1.1/255.255.255.0"
+      ]
     },
-
     "ipaddr-with-prefix-strict": {
       "type": "string",
       "description": "IP address",
       "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))$",
       "patternDescription": "Network or host IP address (with prefix)",
-      "patternExample": ["192.168.1.1/24"]
+      "patternExample": [
+        "192.168.1.1/24"
+      ]
     },
-
     "ipaddr-strict": {
       "type": "string",
       "description": "IP address",
       "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}$",
       "patternDescription": "IP address (without prefix)",
-      "patternExample": ["192.168.1.1"]
+      "patternExample": [
+        "192.168.1.1"
+      ]
     },
-
     "ipaddr-list": {
       "type": "array",
       "description": "IP address",
@@ -263,102 +297,125 @@
         "description": "IP address",
         "pattern": "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])|255\\.255\\.255\\.(0|128|192|224|240|248|252|254|255)|255\\.255\\.(0|128|192|224|240|248|252|254|255)\\.0|255\\.(0|128|192|224|240|248|252|254|255)\\.0\\.0|(0|128|192|224|240|248|252|254|255)\\.0\\.0\\.0))?$",
         "patternDescription": "Network or host IP address",
-        "patternExample": ["192.168.1.1", "192.168.1.0/24", "192.168.1.1/255.255.255.0"]
+        "patternExample": [
+          "192.168.1.1",
+          "192.168.1.0/24",
+          "192.168.1.1/255.255.255.0"
+        ]
       }
     },
-
     "ipaddr-strict-pool": {
       "type": "string",
       "pattern": "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})-(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})|(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3})$",
       "patternDescription": "Single IP address or range specified with a '-' symbol",
-      "patternExample": ["192.168.1.100", "192.168.1.1-192.168.1.100"]
+      "patternExample": [
+        "192.168.1.100",
+        "192.168.1.1-192.168.1.100"
+      ]
     },
-
     "ipv6-addr": {
       "type": "string",
       "pattern": "^(((?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:((?::[0-9a-fA-F]{1,4}){1,3}|((?::[0-9a-fA-F]{1,4}){1,2})?(?::[0-9a-fA-F]{1,4})?)|(?:[0-9a-fA-F]{1,4}:)(?::[0-9a-fA-F]{1,4}){1,3}:|(?::[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3})(\\/(?:[0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))?)$",
       "description": "IPv6 address",
       "patternDescription": "IPv6 address with the ability to specify a network prefix",
-      "patternExample": ["2001:470:28:248::8/126", "fe80::5c7b:5bbb:6203:f069", "2001:470:28:248::2"]
+      "patternExample": [
+        "2001:470:28:248::8/126",
+        "fe80::5c7b:5bbb:6203:f069",
+        "2001:470:28:248::2"
+      ]
     },
-
     "ipv6-addr-strict": {
       "type": "string",
       "pattern": "^(((?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(?::[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(?::[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(?::[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((?::[0-9a-fA-F]{1,4}){1,6})|:(?:(?::[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(?::[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}[0-9])|(?:[0-9a-fA-F]{1,4}:){1,4}:((?::[0-9a-fA-F]{1,4}){1,3}|((?::[0-9a-fA-F]{1,4}){1,2})?(?::[0-9a-fA-F]{1,4})?)|(?:[0-9a-fA-F]{1,4}:)(?::[0-9a-fA-F]{1,4}){1,3}:|(?::[0-9a-fA-F]{1,4}:){1,4}(?::[0-9a-fA-F]{1,4}){1,3})?)$",
       "description": "IPv6 address",
       "patternDescription": "IPv6 address without the ability to specify a network prefix",
-      "patternExample": ["2001:470:28:248::8"]
+      "patternExample": [
+        "2001:470:28:248::8"
+      ]
     },
-
     "num-or-ipaddr": {
       "type": "string",
       "description": "4-byte integer (0-4294967295) that should be unique within an AS (number or IPv4 address)",
       "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$|^(0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[0-1]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[0-1]\\d{2}|42949672[0-8]\\d|429496729[0-5])$",
       "patternDescription": "Number (0-4294967295) or IPv4 address",
-      "patternExample": ["3232235777", "192.168.1.1"]
+      "patternExample": [
+        "3232235777",
+        "192.168.1.1"
+      ]
     },
-
     "port": {
       "type": "string",
       "description": "Application port",
       "pattern": "^((!?(?!0)(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])[\\d]{0,5}))$",
       "patternDescription": "Application port for service-specific traffic",
-      "patternExample": ["80", "!80"]
+      "patternExample": [
+        "80",
+        "!80"
+      ]
     },
-
     "port-strict": {
       "type": "string",
       "description": "Application port",
       "pattern": "^(((?!0)(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])[\\d]{0,5}))$",
       "patternDescription": "Application port for service-specific traffic",
-      "patternExample": ["22", "51820"]
+      "patternExample": [
+        "22",
+        "51820"
+      ]
     },
-
     "fw-mark": {
       "type": "string",
       "description": "Packet mark matching for firewall rule processing",
       "pattern": "^((!?(?![5-9]\\d{9})(?!4[3-9]\\d{8})(?!429[5-9]\\d{6})(?!42949[7-9]\\d{4})(?!429496[8-9]\\d{3})(?!4294967[3-9]\\d{2})(?!429496729[6-9])[\\d]{0,10}))$",
       "patternDescription": "Number between 0 and 4294967295",
-      "patternExample": ["16", "!453"]
+      "patternExample": [
+        "16",
+        "!453"
+      ]
     },
-
     "fw-ipaddr-port": {
-      "type":"string",
+      "type": "string",
       "description": "IP address and port combination",
       "pattern": "^!?(([01]?\\d\\d?|2[0-4]\\d|25[0-5])(\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])){3}(\\/(([0-2]?\\d|3[0-2])))?)?(:(?![7-9]\\d{4})(?!6[6-9]\\d{3})(?!65[6-9]\\d{2})(?!655[4-9]\\d)(?!6553[6-9])(?!0+)(\\d{1,5})(?:[-,][\\d]{1,5})*)?$",
       "patternDescription": "IP address and application port (optional)",
-      "patternExample": ["192.168.1.1", "192.168.1.0/24", "192.168.1.1:80", ":80", ":80,443,5000-5010"]
+      "patternExample": [
+        "192.168.1.1",
+        "192.168.1.0/24",
+        "192.168.1.1:80",
+        ":80",
+        ":80,443,5000-5010"
+      ]
     },
-
     "macaddr": {
       "type": "string",
       "description": "MAC address for hardware identification",
       "title": "MAC",
       "pattern": "^([0-9a-fA-F][02468aceACE]:([0-9a-fA-F]{2}:){4}[0-9a-fA-F]{2})$",
       "patternDescription": "unicast MAC address for hardware identification",
-      "patternExample": ["FE:FF:FF:FF:FF:FF"]
+      "patternExample": [
+        "FE:FF:FF:FF:FF:FF"
+      ]
     },
-
     "username": {
       "type": "string",
       "description": "Client authentication username"
     },
-
     "password": {
       "type": "password",
       "description": "Client authentication password",
       "pattern": "^([^`])+$",
       "patternDescription": "not allowed '`' symbol"
     },
-
     "password-strong": {
       "type": "password",
       "minLength": 8,
       "pattern": "(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).*$",
       "patternDescription": "Upper and lower case, digit, special character and not less 8 characters",
-      "patternExample": ["Secr3t$-", "1234W0r@"]
+      "patternExample": [
+        "Secr3t$-",
+        "1234W0r@"
+      ]
     },
-
     "mtu": {
       "type": "number",
       "title": "MTU",
@@ -366,7 +423,6 @@
       "minimum": 70,
       "maximum": 65535
     },
-
     "ttl": {
       "type": "number",
       "title": "TTL",
@@ -374,7 +430,6 @@
       "minimum": 1,
       "maximum": 255
     },
-
     "metric": {
       "type": "number",
       "description": "Route metric to determine path priority",
@@ -382,92 +437,154 @@
       "maximum": 8388608,
       "default": 0
     },
-
     "defaultroute": {
       "type": "boolean",
       "description": "Add default route via interface for gateway traffic"
     },
-
     "peerdns": {
       "type": "boolean",
       "description": "Use assigned DNS servers for domain name resolution"
     },
-
     "fw-protocol": {
       "type": "string",
       "description": "Protocol name matching for traffic classification",
       "enum": [
-        "dccp",     "ddp",  "egp",    "eigrp",    "encap",      "esp",    "etherip", 
-        "ggp",      "gre",  "hmp",    "icmp",     "idpr-cmtp",  "idrp",   "igmp", 
-        "igp",      "ip",   "ipcomp", "ipencap",  "ipip",       "isis",   "iso-tp4", 
-        "l2tp",     "ospf", "pim",    "pup",      "rdp",        "rspf",   "rsvp", 
-        "sctp",     "skip", "st",     "tcp",      "udp",        "vmtp",   "vrrp", 
-        "xns-idp",  "xtp"
+        "dccp",
+        "ddp",
+        "egp",
+        "eigrp",
+        "encap",
+        "esp",
+        "etherip",
+        "ggp",
+        "gre",
+        "hmp",
+        "icmp",
+        "idpr-cmtp",
+        "idrp",
+        "igmp",
+        "igp",
+        "ip",
+        "ipcomp",
+        "ipencap",
+        "ipip",
+        "isis",
+        "iso-tp4",
+        "l2tp",
+        "ospf",
+        "pim",
+        "pup",
+        "rdp",
+        "rspf",
+        "rsvp",
+        "sctp",
+        "skip",
+        "st",
+        "tcp",
+        "udp",
+        "vmtp",
+        "vrrp",
+        "xns-idp",
+        "xtp"
       ],
       "strictEnum": false
     },
-
     "fw6-protocol": {
       "type": "string",
       "description": "Protocol name matching for traffic classification",
       "enum": [
-        "dccp",     "ddp",  "egp",    "eigrp",    "encap",      "esp",    "etherip",
-        "ggp",      "gre",  "hmp",    "icmpv6",   "idpr-cmtp",  "idrp",   "igmp",
-        "igp",      "ipv6", "ipcomp", "ipencap",  "ipip",       "isis",   "iso-tp4",
-        "l2tp",     "ospf", "pim",    "pup",      "rdp",        "rspf",   "rsvp",
-        "sctp",     "skip", "st",     "tcp",      "udp",        "vmtp",   "vrrp",
-        "xns-idp",  "xtp"
+        "dccp",
+        "ddp",
+        "egp",
+        "eigrp",
+        "encap",
+        "esp",
+        "etherip",
+        "ggp",
+        "gre",
+        "hmp",
+        "icmpv6",
+        "idpr-cmtp",
+        "idrp",
+        "igmp",
+        "igp",
+        "ipv6",
+        "ipcomp",
+        "ipencap",
+        "ipip",
+        "isis",
+        "iso-tp4",
+        "l2tp",
+        "ospf",
+        "pim",
+        "pup",
+        "rdp",
+        "rspf",
+        "rsvp",
+        "sctp",
+        "skip",
+        "st",
+        "tcp",
+        "udp",
+        "vmtp",
+        "vrrp",
+        "xns-idp",
+        "xtp"
       ],
       "strictEnum": false
     },
-
     "fw-icmp-type": {
       "type": "string",
       "description": "ICMP type matching for diagnostic packet filtering",
       "enum": [
-          "address-mask-reply",
-          "host-redirect",
-          "pong",
-          "time-exceeded",
-          "address-mask-request",
-          "host-unknown",
-          "port-unreachable",
-          "timestamp-reply",
-          "any",
-          "host-unreachable",
-          "precedence-cutoff",
-          "timestamp-request",
-          "communication-prohibited",
-          "ip-header-bad",
-          "protocol-unreachable",
-          "TOS-host-redirect",
-          "destination-unreachable",
-          "network-prohibited",
-          "redirect",
-          "TOS-host-unreachable",
-          "echo-reply",
-          "network-redirect",
-          "required-option-missing",
-          "TOS-network-redirect",
-          "echo-request",
-          "network-unknown",
-          "router-advertisement",
-          "TOS-network-unreachable",
-          "fragmentation-needed",
-          "network-unreachable",
-          "router-solicitation",
-          "ttl-exceeded",
-          "host-precedence-violation",
-          "parameter-problem",
-          "source-quench",
-          "ttl-zero-during-reassembly",
-          "host-prohibited",
-          "ping",
-          "source-route-failed",
-          "ttl-zero-during-transit"
+        "any",
+        "echo-reply",
+        "destination-unreachable",
+        "source-quench",
+        "redirect",
+        "echo-request",
+        "router-advertisement",
+        "router-solicitation",
+        "time-exceeded",
+        "parameter-problem",
+        "timestamp-request",
+        "timestamp-reply",
+        "info-request",
+        "info-reply",
+        "address-mask-request",
+        "address-mask-reply"
       ]
     },
-
+    "fw-icmp-code": {
+      "type": "string",
+      "description": "ICMP code matching within the selected ICMP type",
+      "enum": [
+        "any",
+        "net-unreachable",
+        "host-unreachable",
+        "prot-unreachable",
+        "port-unreachable",
+        "frag-needed",
+        "source-route-failed",
+        "network-unknown",
+        "host-unknown",
+        "net-prohibited",
+        "host-prohibited",
+        "TOS-network-unreachable",
+        "TOS-host-unreachable",
+        "admin-prohibited",
+        "host-precedence-violation",
+        "precedence-cutoff",
+        "network-redirect",
+        "host-redirect",
+        "TOS-network-redirect",
+        "TOS-host-redirect",
+        "ttl-zero-during-transit",
+        "ttl-zero-during-reassembly",
+        "ip-header-bad",
+        "required-option-missing"
+      ]
+    },
     "fw-icmpv6-type": {
       "type": "string",
       "description": "ICMP type matching for diagnostic packet filtering",
@@ -497,36 +614,44 @@
         "redirect"
       ]
     },
-
     "debug": {
       "type": "boolean",
       "description": "Verbose logging for detailed diagnostics"
     },
-
     "ca": {
       "description": "Certificate Authority (CA) certificate",
-      "cue": ["/storage/certificate"]
+      "cue": [
+        "/storage/certificate"
+      ]
     },
-
     "cert": {
       "description": "Certificate for encryption and identity validation",
-      "cue": ["/storage/certificate"]
+      "cue": [
+        "/storage/certificate[priv-key:true]"
+      ]
     },
-
     "ppp-auth": {
       "type": "string",
       "title": "Authentication",
       "description": "Authentication protocol",
-      "enum": ["any", "chap", "mschap", "mschap-v2", "pap", "eap"]
+      "enum": [
+        "any",
+        "chap",
+        "mschap",
+        "mschap-v2",
+        "pap",
+        "eap"
+      ]
     },
-
     "encryption": {
       "type": "string",
       "description": "Tunnel encryption method",
       "title": "Encryption",
-      "enum": ["none", "mppe"]
+      "enum": [
+        "none",
+        "mppe"
+      ]
     },
-
     "psk": {
       "type": "password",
       "title": "Pre-Shared Key",
@@ -536,7 +661,6 @@
       "patternDescription": "not allowed '`' symbol",
       "hidden": true
     },
-
     "ppp-option": {
       "type": "array",
       "title": "Options",
@@ -546,7 +670,9 @@
         "type": "pair",
         "pattern": "^([a-z\\-0-9]+[=][0-9]+)$",
         "patternDescription": "Key and integer value separated by the '=' symbol",
-        "patternExample": ["mtu=1200"],
+        "patternExample": [
+          "mtu=1200"
+        ],
         "strictEnum": false,
         "enum": [
           "lcp-echo-failure",
@@ -561,7 +687,8 @@
           "ipcp-max-failure",
           "ipcp-max-terminate",
           "ipcp-restart",
-          "mru", "mtu"
+          "mru",
+          "mtu"
         ]
       }
     }

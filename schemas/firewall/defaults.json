@@ -1,122 +1,154 @@
 {
-	"$schema": "http://json-schema.org/schema#",
-	"documentation": ["local", "global"],
-	"title": "defaults",
-	"description": "Firewall global configuration",
-	"type": "object",
-	"required": ["input", "output", "forward"],
-	"properties": {
-		"input": {
-			"type": "string",
-			"description": "Default input policy for incoming traffic",
-			"enum": ["accept", "drop"]
-		},
-		"output": {
-			"type": "string",
-			"description": "Default output policy for outgoing traffic",
-			"enum": ["accept", "drop"]
-		},
-		"forward": {
-			"type": "string",
-			"description": "Default forward policy for routed traffic",
-			"enum": ["accept", "drop"]
-		},
-
-		"drop-invalid": {
-			"type": "boolean",
-			"title": "Drop Invalid",
-			"description": "Drop invalid packets (malformed or suspicious)"
-		},
-
-		"syn-flood": {
-			"type": "boolean",
-			"title": "SYN Flood",
-			"description": "SYN flood attack protection"
-		},
-		"syn-flood-rate": {
-			"type": "number",
-			"hidden": true,
-			"title": "SYN Rate",
-			"description": "TCP SYN packets per second threshold",
-			"default": 25,
-			"modificator": [
-				{"if": [{"syn-flood": "true"}], "then": {"hidden": false}}
-			]
-		},
-		"syn-flood-burst": {
-			"type": "number",
-			"hidden": true,
-			"title": "SYN Burst",
-			"description": "TCP SYN burst limit for attack mitigation",
-			"default": 50,
-			"modificator": [
-				{"if": [{"syn-flood": "true"}], "then": {"hidden": false}}
-			]
-		},
-
-		"tcp-syncookies": {
-			"type": "boolean",
-			"title": "SYN Cookies",
-			"description": "Enable TCP SYN cookies for flood protection"
-		},
-
-		"tcp-ecn": {
-			"type": "boolean",
-			"title": "TCP ECN",
-			"description": "Enable Explicit Congestion Notification (ECN)"
-		},
-
-		"tcp-window-scaling": {
-			"type": "boolean",
-			"title": "TCP Window Scaling",
-			"description": "TCP window scaling for high-latency networks"
-		},
-
-		"use-conntrack": {
-			"type": "boolean",
-			"title": "Connection tracker",
-			"description": "Connection tracking (conntrack) for session monitoring"
-		},
-
-		"flow-offloading": {
-			"type": "boolean",
-			"title": "Use FLOWOFFLOAD",
-			"description": "Flow offloading for hardware acceleration"
-		},
-
-		"nat-helper": {
-			"type": "array",
-            "uniqueItems": true,
-			"description": "NAT helper for this protocol",
-            "items": {
-                "strictEnum": true,
-                "enum": [
-                    "ftp",
-                    "pptp",
-                    "sip",
-                    "snmp",
-                    "tftp",
-                    "rtsp",
-                    "ras",
-                    "q931"
-                ]
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "defaults",
+  "description": "Firewall global configuration",
+  "type": "object",
+  "required": [
+    "input",
+    "output",
+    "forward"
+  ],
+  "properties": {
+    "input": {
+      "type": "string",
+      "description": "Default input policy for incoming traffic",
+      "enum": [
+        "accept",
+        "drop"
+      ]
+    },
+    "output": {
+      "type": "string",
+      "description": "Default output policy for outgoing traffic",
+      "enum": [
+        "accept",
+        "drop"
+      ]
+    },
+    "forward": {
+      "type": "string",
+      "description": "Default forward policy for routed traffic",
+      "enum": [
+        "accept",
+        "drop"
+      ]
+    },
+    "drop-invalid": {
+      "type": "boolean",
+      "title": "Drop Invalid",
+      "description": "Drop invalid packets (malformed or suspicious)"
+    },
+    "syn-flood": {
+      "type": "boolean",
+      "title": "SYN Flood",
+      "description": "SYN flood attack protection"
+    },
+    "syn-flood-rate": {
+      "type": "number",
+      "hidden": true,
+      "title": "SYN Rate",
+      "description": "TCP SYN packets per second threshold",
+      "default": 25,
+      "modificator": [
+        {
+          "if": [
+            {
+              "syn-flood": "true"
             }
-		}
-
-	},
-
-	"apply": {
-		"exec": "subscript/firewall/defaults.uc",
-		"args": ["apply", "firewall/defaults"]
- 	}	,
-
-	"set": {
-        "exec": "subscript/firewall/defaults.uc",
-        "args": ["set", "firewall/defaults"]
-	},
-
-	"acquire": {
-		"exec": "subscript/firewall/defaults.uc",
-		"args": ["get", "firewall/defaults"]
-	}
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "syn-flood-burst": {
+      "type": "number",
+      "hidden": true,
+      "title": "SYN Burst",
+      "description": "TCP SYN burst limit for attack mitigation",
+      "default": 50,
+      "modificator": [
+        {
+          "if": [
+            {
+              "syn-flood": "true"
+            }
+          ],
+          "then": {
+            "hidden": false
+          }
+        }
+      ]
+    },
+    "tcp-syncookies": {
+      "type": "boolean",
+      "title": "SYN Cookies",
+      "description": "Enable TCP SYN cookies for flood protection"
+    },
+    "tcp-ecn": {
+      "type": "boolean",
+      "title": "TCP ECN",
+      "description": "Enable Explicit Congestion Notification (ECN)"
+    },
+    "tcp-window-scaling": {
+      "type": "boolean",
+      "title": "TCP Window Scaling",
+      "description": "TCP window scaling for high-latency networks"
+    },
+    "use-conntrack": {
+      "type": "boolean",
+      "title": "Connection tracker",
+      "description": "Connection tracking (conntrack) for session monitoring"
+    },
+    "flow-offloading": {
+      "type": "boolean",
+      "title": "Use FLOWOFFLOAD",
+      "description": "Flow offloading for hardware acceleration"
+    },
+    "nat-helper": {
+      "type": "array",
+      "title": "NAT Helper",
+      "uniqueItems": true,
+      "description": "NAT helper for this protocol",
+      "items": {
+        "strictEnum": true,
+        "enum": [
+          "ftp",
+          "pptp",
+          "sip",
+          "snmp",
+          "tftp",
+          "rtsp",
+          "ras",
+          "q931"
+        ]
+      }
+    }
+  },
+  "apply": {
+    "exec": "subscript/firewall/defaults.uc",
+    "args": [
+      "apply",
+      "firewall/defaults"
+    ]
+  },
+  "set": {
+    "exec": "subscript/firewall/defaults.uc",
+    "args": [
+      "set",
+      "firewall/defaults"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/firewall/defaults.uc",
+    "args": [
+      "get",
+      "firewall/defaults"
+    ]
+  }
 }

@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "lease",
   "description": "DHCP static leases list",
   "type": "object",
@@ -8,17 +11,28 @@
     "interface": {
       "type": "string",
       "description": "interface to search for lease",
-      "cue": ["/service/dhcp/server"]
+      "cue": [
+        "/service/dhcp/server"
+      ]
     }
   },
   "namesake": "ip",
   "noCache": true,
-  "showParams": ["state", "mac", "interface", "host", "expires"],
+  "showParams": [
+    "state",
+    "mac",
+    "interface",
+    "host",
+    "expires"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
       "title": "Static lease entity",
-      "required": ["ip", "mac"],
+      "required": [
+        "ip",
+        "mac"
+      ],
       "properties": {
         "interface": {
           "$ref": "#/definitions/interface",
@@ -57,7 +71,14 @@
           "hidden": true,
           "type": "string",
           "description": "DHCP lease time to specify IP assignment duration",
-          "enum": ["30m", "1h", "4h", "12h", "24h", "7d"]
+          "enum": [
+            "30m",
+            "1h",
+            "4h",
+            "12h",
+            "24h",
+            "7d"
+          ]
         }
       }
     },
@@ -66,54 +87,65 @@
         "exec": "subscript/service/dhcp/leases.uc",
         "title": "Make static",
         "description": "Make static lease",
-        "args": ["make_static"],
+        "args": [
+          "make_static"
+        ],
         "reload": true
       }
     }
   },
-
   "delete": {
     "exec": "subscript/service/dhcp/leases.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
-      "exec": "subscript/service/dhcp/leases.uc",
-      "description": "Add static DHCP lease to reserve IP for a MAC address",
-      "args": ["add"],
-      "merge": true,
-      "schema": {
-        "required": ["ip", "mac"],
-        "properties": {
-          "ip": {
-            "$ref": "/defaults#/definitions/ipaddr-strict"
-          },
-          "mac": {
-            "$ref": "/defaults#/definitions/macaddr"
-          }
+    "exec": "subscript/service/dhcp/leases.uc",
+    "description": "Add static DHCP lease to reserve IP for a MAC address",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "ip",
+        "mac"
+      ],
+      "properties": {
+        "ip": {
+          "$ref": "/defaults#/definitions/ipaddr-strict"
+        },
+        "mac": {
+          "$ref": "/defaults#/definitions/macaddr"
         }
       }
+    }
   },
-
   "apply": {
-      "exec": "subscript/service/dhcp/leases.uc",
-      "args": ["apply"]
+    "exec": "subscript/service/dhcp/leases.uc",
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
-      "exec": "subscript/service/dhcp/leases.uc",
-      "args": ["clean"],
-      "reload": true
+    "exec": "subscript/service/dhcp/leases.uc",
+    "args": [
+      "clean"
+    ],
+    "reload": true
   },
-
   "set": {
     "exec": "subscript/service/dhcp/leases.uc",
-    "args": ["set"]
-  },    
-
+    "args": [
+      "set"
+    ]
+  },
   "acquire": {
     "exec": "subscript/service/dhcp/leases.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

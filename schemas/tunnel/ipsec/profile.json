@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "IKE Profiles",
   "description": "IKE/ISAKMP SA security proposals",
   "type": "object",
@@ -11,8 +14,13 @@
       "readOnly": false,
       "uniqueItems": true,
       "items": {
-        "type":"string",
-        "enum": ["aes128", "aes192", "aes256", "3des"]
+        "type": "string",
+        "enum": [
+          "aes128",
+          "aes192",
+          "aes256",
+          "3des"
+        ]
       }
     },
     "hash": {
@@ -21,8 +29,14 @@
       "readOnly": false,
       "uniqueItems": true,
       "items": {
-        "type":"string",
-        "enum": ["sha1", "sha256", "sha384", "sha512", "md5"]
+        "type": "string",
+        "enum": [
+          "sha1",
+          "sha256",
+          "sha384",
+          "sha512",
+          "md5"
+        ]
       }
     },
     "dh": {
@@ -32,8 +46,17 @@
       "readOnly": false,
       "uniqueItems": true,
       "items": {
-        "type":"string",
-        "enum": ["modp768", "modp1024", "modp1536", "modp2048", "modp3072", "modp4096", "modp6144", "modp8192"]
+        "type": "string",
+        "enum": [
+          "modp768",
+          "modp1024",
+          "modp1536",
+          "modp2048",
+          "modp3072",
+          "modp4096",
+          "modp6144",
+          "modp8192"
+        ]
       }
     }
   },
@@ -56,71 +79,94 @@
         "dh": {
           "$ref": "#/definitions/dh"
         },
-        "ikelifetime": {
+        "ike-lifetime": {
           "type": "number",
           "title": "IKE Lifetime",
           "description": "IKE/ISAKMP SA rekey interval (seconds)",
           "default": 10800
         },
-        "dpddelay": {
+        "dpd-delay": {
           "type": "integer",
           "title": "DPD Delay",
           "description": "Dead Peer Detection (DPD) packet sending interval",
           "default": 30
         },
-        "dpdtimeout" : {
+        "dpd-timeout": {
           "type": "integer",
           "title": "DPD Timeout",
           "default": 150,
           "description": "Terminate IKEv1 connection after a timeout without a response to the DPD packet"
         },
-        "dpdaction": {
-          "type":"string",
+        "retry-interval": {
+          "type": "integer",
+          "title": "Retry Interval",
+          "hidden": true,
+          "minimum": 10,
+          "default": 60,
+          "description": "Retry setting up a tunnel that is down after this time (sec)"
+        },
+        "dpd-action": {
+          "type": "string",
           "title": "DPD Action",
           "description": "Action to perform when connection is broken due to timeout with no response to the DPD packet",
-          "enum": ["hold", "restart", "clear", "none"]
+          "enum": [
+            "hold",
+            "restart",
+            "clear",
+            "none"
+          ]
         }
       }
     }
   },
-
   "delete": {
-    "exec": "handler",
-    "args": ["delete", "ipsec/profile"],
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
-    "exec": "handler",
-    "args": ["add", "ipsec/profile"],
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
-        "name": {"$ref": "#/definitions/name"}
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        }
       }
     }
   },
-
   "clean": {
-    "exec": "handler",
-    "args": ["clean", "ipsec/profile"],
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
   "apply": {
-    "exec": "handler",
-    "args": ["apply", "ipsec/profile"]
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "apply"
+    ]
   },
-
   "set": {
-    "exec": "handler",
-    "args": ["set", "ipsec/profile"]
-  },    
-
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "set"
+    ]
+  },
   "acquire": {
-    "exec": "handler",
-    "args": ["get", "ipsec/profile"]
+    "exec": "subscript/ipsec/profile.uc",
+    "args": [
+      "get"
+    ]
   }
 }

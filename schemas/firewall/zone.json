@@ -1,143 +1,213 @@
 {
-	"$schema": "http://json-schema.org/schema#",
-	"documentation": ["local", "global"],
-	"title": "zone",
-	"description": "IP set for grouped address management",
-	"type": "object",
-	"definitions": {
-		"type": {
-			"type": "string",
-			"description": "IP set type",
-			"enum": ["interface", "address"]
-		}
-	},
-	"namesake": "name",
-	"patternProperties": {
-		".*": {
-			"type": "object",
-			"title": "Zone",
-			"properties": {
-				"disabled": {
-					"$ref": "/defaults#/definitions/disabled",
-					"description": "Disable firewall zone"
-				},
-
-				"name": {
-					"hidden": true,
-					"$ref": "/defaults#/definitions/name-ext"
-				},
-
-				"type": {
-					"$ref": "#/definitions/type",
-					"readOnly": true
-				},
-
-				"size": {
-					"hidden": true,
-					"type": "number",
-					"minimum": 1,
-					"description": "IP set maximum entry limit",
-					"default": 65535
-				},
-
-				"entry": {
-					"type": "array",
-					"description": "IP set member addresses",
-					"strictEnum": false,
-					"modificator": [
-						{"if": [{"type": "interface"}], "then": {
-							"items": {
-								"$ref": "/defaults#/definitions/interface"
-							}
-						}},
-						{"if": [{"type": "address"}], "then": {
-							"items": {
-								"$ref": "/defaults#/definitions/host-cidr"
-							}
-						}}
-					]
-				},
-
-				"include": {
-					"type": "array",
-					"description": "Import IP set entries from files",
-					"items": {
-						"type": "string",
-						"cue": ["/storage/file"]
-					},
-					"hidden": true,
-					"modificator": [
-						{"if": [{"type": "address"}], "then": {"hidden": false}}
-					]
-				}
-			}
-		}
-	},
-
-	"actions": {
-		"find": {
-			"exec": "subscript/firewall/zone.uc",
-			"args": ["find"],
-			"wait": true,
-			"schema": {
-				"required": ["element"],
-				"properties": {
-					"element": {
-						"type": "string"
-					}
-				}
-			}
-		}
-	},
-
-	"delete": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["delete"],
-		"reload": true
-	},
-
-	"status": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["status"]
-	},
-
-	"add": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["add"],
-		"merge": true,
-		"schema": {
-			"required": ["name", "type"],
-			"properties": {
-				"name": {
-					"$ref": "/defaults#/definitions/name-ext",
-					"title": "Name",
-					"description": "IP set name for rule reference"
-				},
-				"type": {
-					"$ref": "#/definitions/type"
-				}
-			}
-		}
-	},
-
-	"clean": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["clean"],
-		"reload": true,
-		"confirm": true
-	},
-
-	"apply": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["apply"]
-	},
-
-	"set": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["set"]
-	},
-	"acquire": {
-		"exec": "subscript/firewall/zone.uc",
-		"args": ["get"]
-	}
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "title": "zone",
+  "description": "IP set for grouped address management",
+  "type": "object",
+  "definitions": {
+    "type": {
+      "type": "string",
+      "description": "IP set type",
+      "enum": [
+        "interface",
+        "address"
+      ]
+    }
+  },
+  "namesake": "name",
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Zone",
+      "properties": {
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled",
+          "description": "Disable firewall zone"
+        },
+        "name": {
+          "hidden": true,
+          "$ref": "/defaults#/definitions/name-ext"
+        },
+        "type": {
+          "$ref": "#/definitions/type",
+          "readOnly": true
+        },
+        "size": {
+          "type": "number",
+          "minimum": 1,
+          "description": "IP set maximum entry limit",
+          "default": 2048
+        },
+        "timeout": {
+          "type": "number",
+          "minimum": 0,
+          "description": "default expiration timeout for element (sec.)",
+          "default": 0
+        },
+        "entry": {
+          "type": "array",
+          "description": "IP set member addresses",
+          "strictEnum": false,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "interface"
+                }
+              ],
+              "then": {
+                "items": {
+                  "$ref": "/defaults#/definitions/interface"
+                }
+              }
+            },
+            {
+              "if": [
+                {
+                  "type": "address"
+                }
+              ],
+              "then": {
+                "items": {
+                  "$ref": "/defaults#/definitions/host-cidr"
+                }
+              }
+            }
+          ]
+        },
+        "include": {
+          "type": "array",
+          "description": "Import IP set entries from files",
+          "items": {
+            "type": "string",
+            "cue": [
+              "/storage/file"
+            ]
+          },
+          "hidden": true,
+          "modificator": [
+            {
+              "if": [
+                {
+                  "type": "address"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
+          ]
+        }
+      }
+    },
+    "actions": {
+      "push": {
+        "exec": "subscript/firewall/zone.uc",
+        "args": [
+          "push"
+        ],
+        "wait": true,
+        "schema": {
+          "required": [
+            "element"
+          ],
+          "properties": {
+            "element": {
+              "description": "value of element",
+              "type": "string"
+            },
+            "timeout": {
+              "type": "number",
+              "description": "expiration timeout for element (sec.)",
+              "minimum": 1
+            }
+          }
+        }
+      }
+    }
+  },
+  "actions": {
+    "find": {
+      "exec": "subscript/firewall/zone.uc",
+      "args": [
+        "find"
+      ],
+      "wait": true,
+      "schema": {
+        "required": [
+          "element"
+        ],
+        "properties": {
+          "element": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "status": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "status"
+    ]
+  },
+  "add": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "name",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "/defaults#/definitions/name-ext",
+          "title": "Name",
+          "description": "IP set name for rule reference"
+        },
+        "type": {
+          "$ref": "#/definitions/type"
+        }
+      }
+    }
+  },
+  "clean": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "clean"
+    ],
+    "reload": true,
+    "confirm": true
+  },
+  "apply": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "set": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/firewall/zone.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

@@ -9,6 +9,13 @@ export const fixture = JSON.parse(
     fs.readFileSync(path.join(root, 'fixtures', 'fixtures.json'), 'utf8'),
 )
 
+// Сводка снята с устройства вместе с @get/status: состав секций (device,
+// hardware, temperature, mobile, interface, ipsec) у Donyx отличается от R50.
+const dashboardFile = path.join(root, 'fixtures', 'dashboard.json')
+export const dashboardFixture = fs.existsSync(dashboardFile)
+    ? JSON.parse(fs.readFileSync(dashboardFile, 'utf8'))
+    : []
+
 // Испытательные схемы (/test/...): подключаются только для тестового прогона,
 // чтобы не появляться в обычном демо.
 const testFixtureFile = path.join(root, 'fixtures', 'test-schemas.json')
@@ -24,8 +31,8 @@ if (testFixture) {
 
 export const TEST_SCHEMAS_ENABLED = Boolean(testFixture)
 
-export const HOSTNAME = fixture.hostname || 'R50-DEMO'
-export const MODEL = fixture.model || 'R50'
+export const HOSTNAME = fixture.hostname || 'Router'
+export const MODEL = fixture.model || 'Donyx iRM'
 export const SCHEMA_LIST = Array.isArray(fixture.list) ? fixture.list : []
 export const SCHEMA_HIDDEN = Array.isArray(fixture.hidden) ? fixture.hidden : []
 export const SCHEMA_PATHS = new Set([...SCHEMA_LIST, ...SCHEMA_HIDDEN])

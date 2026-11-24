@@ -1,115 +1,121 @@
 {
-	"$schema": "http://json-schema.org/schema#",
-	"documentation": ["local", "global"],
-	"type": "object",
-	"definitions": {
-		"name": {
-			"type": "string",
-			"description": "File name",
-			"title": "File Name",
-			"pattern": "^[a-zA-Z0-9\\_\\-\\.]+$"
-		},
-		"upload": {
-			"type": "string",
-			"isFile": true,
-			"title": "File Name",
-			"default": "untitled-file"
-		},
-		"url": {
-			"type": "string",
-			"title": "URL",
-			"description": "A source UR"
-		}
-	},
-
-	"showParams": ["file-type", "file-size"],
-	"patternProperties": {
-		".*": {
-			"type": "object",
-			"title": "File entity",
-			"b64Export": true,
-			"properties": {
-				"file-name": {
-					"hidden": true,
-					"type": "string",
-					"description": "Absolute file name",
-					"title": "Absolute file name",
-					"readOnly": true
-				},
-
-				"file-type": {
-					"type": "string",
-					"description": "File type",
-					"title": "File type",
-					"readOnly": true
-				},
-
-				"file-size": {
-					"type": "string",
-					"description": "File size",
-					"title": "File size",
-					"readOnly": true
-				},
-
-				"last-change": {
-					"type": "string",
-					"description": "File last modification timestamp",
-					"title": "Last change",
-					"readOnly": true
-				},
-
-				"last-access": {
-					"type": "string",
-					"description": "File last access timestamp",
-					"title": "Last access",
-					"readOnly": true
-				}
-			}
-		},
-		"actions": {
-			"download": {
-				"exec": "subscript/storage/file.uc",
-				"description": "Download file from the device storage",
-				"args": ["retrieve"],
-				"webOnly": true,
-				"responseType": "blob"
-			},
-
-			"import": {
-				"exec": "subscript/storage/file.uc",
-				"args": ["import"],
-				"description": "Import file to the device storage",
-				"reload": true
-			}
-
-		}
-	},
-	"actions": {
-		"upload": {
-			"exec": "dummy",
-			"args": [],
-			"description": "Upload files to the temporary storage",
-			"fileUpload": true,
-			"reload": true,
-			"webOnly": true
-		}
-	},
-
-	"delete": {
-		"exec": "subscript/storage/file.uc",
-		"args": ["delete"],
-		"reload": true
-	},
-	
-	"clean": {
-		"exec": "subscript/storage/file.uc",
-		"args": ["clean"],
-		"confirm": true,
-		"reload": true
-	},
-
-	"acquire": {
-		"exec": "subscript/storage/file.uc",
-		"args": ["get"]
-	}
+  "$schema": "http://json-schema.org/schema#",
+  "documentation": [
+    "local",
+    "global"
+  ],
+  "type": "object",
+  "definitions": {
+    "name": {
+      "type": "string",
+      "description": "File name",
+      "title": "File Name",
+      "pattern": "^[a-zA-Z0-9\\_\\-\\.]+$"
+    },
+    "upload": {
+      "type": "string",
+      "isFile": true,
+      "title": "File Name",
+      "default": "untitled-file"
+    },
+    "url": {
+      "type": "string",
+      "title": "URL",
+      "description": "A source UR"
+    }
+  },
+  "showParams": [
+    "file-type",
+    "file-size"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "File entity",
+      "b64Export": true,
+      "properties": {
+        "file-name": {
+          "hidden": true,
+          "type": "string",
+          "description": "Absolute file name",
+          "title": "Absolute file name",
+          "readOnly": true
+        },
+        "file-type": {
+          "type": "string",
+          "description": "File type",
+          "title": "File type",
+          "readOnly": true
+        },
+        "file-size": {
+          "type": "string",
+          "description": "File size",
+          "title": "File size",
+          "readOnly": true
+        },
+        "last-change": {
+          "type": "string",
+          "description": "File last modification timestamp",
+          "title": "Last change",
+          "readOnly": true
+        },
+        "last-access": {
+          "type": "string",
+          "description": "File last access timestamp",
+          "title": "Last access",
+          "readOnly": true
+        }
+      }
+    },
+    "actions": {
+      "download": {
+        "exec": "subscript/storage/file.uc",
+        "description": "Download file from the device storage",
+        "args": [
+          "retrieve"
+        ],
+        "webOnly": true,
+        "responseType": "blob"
+      },
+      "import": {
+        "exec": "subscript/storage/file.uc",
+        "args": [
+          "import"
+        ],
+        "description": "Import file to the device storage",
+        "reload": true
+      }
+    }
+  },
+  "actions": {
+    "upload": {
+      "exec": "dummy",
+      "args": [],
+      "description": "Upload files to the temporary storage",
+      "fileUpload": true,
+      "reload": true,
+      "webOnly": true
+    }
+  },
+  "delete": {
+    "exec": "subscript/storage/file.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "clean": {
+    "exec": "subscript/storage/file.uc",
+    "args": [
+      "clean"
+    ],
+    "confirm": true,
+    "reload": true
+  },
+  "acquire": {
+    "exec": "subscript/storage/file.uc",
+    "args": [
+      "get"
+    ]
+  }
 }

@@ -3,7 +3,6 @@ import { expect, test } from '@playwright/test'
 import { collectRequests, commitButton, login, open, openRow } from './helpers.mjs'
 
 test('Halo: commit отправляет запрос', async ({ page }) => {
-    test.fail(true, 'Halo: commit — заглушка, revert отсутствует')
     const requests = collectRequests(page)
     await login(page, 'halo-commit')
     await open(page, '/ip/interface')
@@ -22,7 +21,7 @@ test('Halo: commit отправляет запрос', async ({ page }) => {
 })
 
 test('Halo: revert доступен', async ({ page }) => {
-    test.fail(true, 'Halo: commit — заглушка, revert отсутствует')
+    test.fail(true, 'Halo: revert отсутствует')
     await login(page, 'halo-user2')
     await open(page, '/ip/interface')
 

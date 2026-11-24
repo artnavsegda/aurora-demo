@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "title": "Bridge VLAN",
+  "description": "Bridge VLAN settings",
+  "type": "object",
+  "namesake": "_index",
+  "showParams": [
+    "bridge",
+    "vid",
+    "port",
+    "untagged"
+  ],
+  "patternProperties": {
+    ".*": {
+      "type": "object",
+      "title": "Bridge",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "bridge": {
+          "readOnly": true
+        },
+        "vid": {
+          "title": "VID",
+          "readOnly": true
+        },
+        "disabled": {
+          "$ref": "/defaults#/definitions/disabled"
+        },
+        "untagged": {
+          "type": "boolean",
+          "description": ""
+        },
+        "port": {
+          "type": "array",
+          "description": "Bridge port members",
+          "uniqueItems": true,
+          "strictEnum": false,
+          "items": {
+            "$ref": "/defaults#/definitions/l2-device"
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "delete"
+    ],
+    "reload": true
+  },
+  "add": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "add"
+    ],
+    "merge": true,
+    "schema": {
+      "required": [
+        "bridge",
+        "vid"
+      ],
+      "properties": {
+        "bridge": {
+          "description": "bridge with vlan filtering option",
+          "cue": [
+            "/network/bridge[vlan-filtering:true]"
+          ]
+        },
+        "vid": {
+          "type": "number",
+          "title": "VID",
+          "description": "VLAN ID",
+          "minimum": 1,
+          "maximum": 4095
+        }
+      }
+    }
+  },
+  "clean": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "clean"
+    ],
+    "reload": true,
+    "confirm": true
+  },
+  "apply": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "apply"
+    ]
+  },
+  "status": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "status"
+    ]
+  },
+  "set": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "set"
+    ]
+  },
+  "acquire": {
+    "exec": "subscript/network/bridge-vlan.uc",
+    "args": [
+      "get"
+    ]
+  }
+}

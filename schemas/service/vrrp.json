@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "VRRP",
   "description": "Virtual Router Redundancy Protocol",
   "type": "object",
@@ -8,15 +11,24 @@
     "interface": {
       "type": "string",
       "description": "Interface for processing VRRP packets",
-      "cue": ["/ip/interface"]
+      "cue": [
+        "/ip/interface"
+      ]
     }
   },
   "namesake": "interface",
-  "showParams": ["virtual-ip", "virtual-id"],
+  "showParams": [
+    "virtual-ip",
+    "virtual-id"
+  ],
   "patternProperties": {
     ".*": {
       "type": "object",
-      "required": ["interface", "virtual-ip", "virtual-id"],
+      "required": [
+        "interface",
+        "virtual-ip",
+        "virtual-id"
+      ],
       "properties": {
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
@@ -28,14 +40,14 @@
         "virtual-ip": {
           "description": "Virtual default gateway IP address",
           "title": "Virtual IP",
-          "type":"array",
+          "type": "array",
           "items": {
-            "type":"string",
+            "type": "string",
             "$ref": "/defaults#/definitions/ipaddr-with-prefix-strict"
           }
         },
         "virtual-mac": {
-          "type":"boolean",
+          "type": "boolean",
           "description": "Assign virtual MAC address to interface",
           "title": "Virtual MAC"
         },
@@ -51,8 +63,8 @@
           "minimum": 1,
           "maximum": 255
         },
-        "priority":{
-          "type":"number",
+        "priority": {
+          "type": "number",
           "description": "VRRP router priority",
           "minimum": 1,
           "maximum": 255,
@@ -69,7 +81,11 @@
           "type": "string",
           "title": "Authentication type",
           "description": "VRRP authentication type",
-          "enum": ["none", "pw", "ah"]
+          "enum": [
+            "none",
+            "pw",
+            "ah"
+          ]
         },
         "key": {
           "type": "string",
@@ -78,56 +94,86 @@
           "minLength": 1,
           "maxLength": 8,
           "modificator": [
-            {"if": [{"auth": "ah"}], "then": {"maxLength": 16, "hidden": false}},
-            {"if": [{"auth": "pw"}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "auth": "ah"
+                }
+              ],
+              "then": {
+                "maxLength": 16,
+                "hidden": false
+              }
+            },
+            {
+              "if": [
+                {
+                  "auth": "pw"
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         }
       }
     }
   },
-
   "delete": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "schema": {
-      "required": ["interface"],
+      "required": [
+        "interface"
+      ],
       "properties": {
-        "interface": { "$ref": "#/definitions/interface" }
+        "interface": {
+          "$ref": "#/definitions/interface"
+        }
       }
     }
   },
-
   "apply": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "status": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   },
-
   "clean": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "reload": true,
     "confirm": true
   },
-
   "set": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "subscript/service/vrrp.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   }
 }

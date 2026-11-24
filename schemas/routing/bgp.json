@@ -1,6 +1,9 @@
 {
   "$schema": "http://json-schema.org/schema#",
-  "documentation": ["local", "global"],
+  "documentation": [
+    "local",
+    "global"
+  ],
   "title": "BGP instances",
   "type": "object",
   "definitions": {
@@ -15,18 +18,27 @@
       "type": "array",
       "items": {
         "type": "string",
-        "cue": ["/routing/filter"]
+        "cue": [
+          "/routing/filter"
+        ]
       }
     }
   },
-
-  "showParams": ["local-as", "local-addr", "neighbor-as", "neighbor-addr"],
-
+  "showParams": [
+    "local-as",
+    "local-addr",
+    "neighbor-as",
+    "neighbor-addr"
+  ],
   "namesake": "name",
   "patternProperties": {
     ".*": {
       "type": "object",
-      "required": ["local-as", "neighbor-addr", "neighbor-as"],
+      "required": [
+        "local-as",
+        "neighbor-addr",
+        "neighbor-as"
+      ],
       "properties": {
         "disabled": {
           "$ref": "/defaults#/definitions/disabled"
@@ -54,9 +66,16 @@
           "title": "Neighbor AS"
         },
         "neighbor-addr": {
-          "$ref": "/defaults#/definitions/ipaddr-port",
+          "title": "Neighbor address",
+          "type": "string",
           "description": "The neighbor this instance will be talking to. Default port 179",
-          "title": "Neighbor address"
+          "pattern": "^((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})(:(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3})|/(3[0-2]|[12]\\d|\\d))?$",
+          "patternDescription": "IP address (and application port) or network address",
+          "patternExample": [
+            "192.168.1.1",
+            "192.168.1.1:51820",
+            "172.30.0.0/24"
+          ]
         },
         "multihop": {
           "type": "boolean",
@@ -70,10 +89,18 @@
           "default": 64,
           "hidden": true,
           "modificator": [
-            {"if": [{"multihop": true}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "multihop": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
-
         "hold-time": {
           "type": "string",
           "title": "Hold Time",
@@ -113,7 +140,16 @@
           "description": "Option for avoid route reflection loops. Default: the same as router id",
           "hidden": true,
           "modificator": [
-            {"if": [{"reflection": true}], "then": {"hidden": false}}
+            {
+              "if": [
+                {
+                  "reflection": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "extra": {
@@ -124,7 +160,10 @@
             "type": "pair",
             "pattern": "^([a-zA-Z0-9\\-_]+[=](on|off|yes|no|true|false|0|[1-9]\\d{0,8}|[1-3]\\d{9}|4[0-1]\\d{8}|42[0-8]\\d{7}|429[0-3]\\d{6}|4294[0-8]\\d{5}|42949[0-5]\\d{4}|429496[0-6]\\d{3}|4294967[0-1]\\d{2}|42949672[0-8]\\d|429496729[0-5]))$",
             "patternDescription": "Key and value (integer, or on/off/yes/no/true/false for switches) separated by the '=' symbol",
-            "patternExample": ["default-bgp_med=0", "med-metric=on"],
+            "patternExample": [
+              "default-bgp_med=0",
+              "med-metric=on"
+            ],
             "strictEnum": false,
             "enum": [
               "default-bgp_med",
@@ -144,40 +183,86 @@
           "title": "Export Filter File",
           "type": "string",
           "description": "Filter config file in bird syntax",
-          "cue": ["/storage/file[file-type:!temporary]"],
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "import-filter-file": {
           "title": "Import Filter File",
           "type": "string",
           "description": "Filter config file in bird syntax",
-          "cue": ["/storage/file[file-type:!temporary]"],
+          "cue": [
+            "/storage/file[file-type:!temporary]"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": true } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": true
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-export": {
           "type": "string",
           "title": "Default export",
           "description": "Default export filter",
-          "enum": ["accept", "reject"],
+          "enum": [
+            "accept",
+            "reject"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "default-import": {
           "type": "string",
           "title": "Default import",
           "description": "Default import filter",
-          "enum": ["accept", "reject"],
+          "enum": [
+            "accept",
+            "reject"
+          ],
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "export-filter": {
@@ -186,7 +271,16 @@
           "description": "Export filter",
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         },
         "import-filter": {
@@ -195,66 +289,87 @@
           "description": "Import filter",
           "hidden": true,
           "modificator": [
-            { "if": [ { "use-filter-file": false } ], "then": { "hidden": false } }
+            {
+              "if": [
+                {
+                  "use-filter-file": false
+                }
+              ],
+              "then": {
+                "hidden": false
+              }
+            }
           ]
         }
       }
     },
-
     "actions": {
       "route-stats": {
         "exec": "./subscript/routing/bgp.uc",
-        "args": ["route_stats"],
+        "args": [
+          "route_stats"
+        ],
         "wait": true,
         "title": "Route stats",
         "description": "Route change statistics as a table"
       }
     }
   },
-
   "delete": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["delete"],
+    "args": [
+      "delete"
+    ],
     "reload": true
   },
-
   "add": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["add"],
+    "args": [
+      "add"
+    ],
     "merge": true,
     "description": "add new entry (params: <name>)",
     "schema": {
-      "required": ["name"],
+      "required": [
+        "name"
+      ],
       "properties": {
-       "name": {"$ref": "/defaults#/definitions/name"}
+        "name": {
+          "$ref": "/defaults#/definitions/name"
+        }
       }
     }
   },
-
   "apply": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["apply"]
+    "args": [
+      "apply"
+    ]
   },
-
   "clean": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["clean"],
+    "args": [
+      "clean"
+    ],
     "confirm": true,
     "reload": true
   },
-
   "set": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["set"]
+    "args": [
+      "set"
+    ]
   },
-
   "acquire": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["get"]
+    "args": [
+      "get"
+    ]
   },
-
   "status": {
     "exec": "./subscript/routing/bgp.uc",
-    "args": ["status"]
+    "args": [
+      "status"
+    ]
   }
 }

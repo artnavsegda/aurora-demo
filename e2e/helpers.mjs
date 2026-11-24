@@ -28,6 +28,9 @@ export async function login(page, username = 'composite') {
         null,
         { timeout: 15_000 },
     )
+    // дождаться сводки: иначе немедленный open() может гоняться с первым
+    // рендером Dashboard и остаться на /dashboard
+    await expect(page.locator('.plates-container').first()).toBeVisible({ timeout: 15_000 })
     return token
 }
 
