@@ -34,7 +34,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - валидация полей и действий из `src/lib/validation`: `pattern`, `minimum`,
   `required`, `$ref`, `modificator`, `@cue enum`;
 - невалидное значение не уходит в `@set`, APPLY/OK блокируются, ADD с пустыми
-  required не создаёт запись, ping без host не отправляется.
+  required не создаёт запись, ping без host не отправляется;
+- Stop обрывает потоковый вывод: окно помечается `stream stopped`, кнопка
+  блокируется, уже полученные строки остаются, `Close` закрывает окно.
 
 ## Тесты валидатора в Halo
 
@@ -48,6 +50,14 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
   `npx playwright test e2e/validation.spec.ts --project=chromium`.
   Для Firefox/WebKit нужны установленные браузеры Playwright.
 
+## Тесты Stop в Halo
+
+- `src/lib/pages/Dashboard/bypass.test.ts` — unit: отмена query сохраняет
+  частичный вывод и не переводит запрос в `error`;
+- `e2e/bypass-stop.spec.ts` — 3 Storybook-e2e: running, stopped, finished;
+- `aurora-demo/e2e/halo/06-actions.spec.mjs` — реальный ping: Stop помечает
+  поток, блокирует кнопку, вывод не растёт, `Close` закрывает окно.
+
 ## Известные недоработки Halo
 
 Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
@@ -58,12 +68,10 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
    `commitMutation.mutate()`), запрос `commit` не уходит.
 2. **Нет глобального revert** в шапке; revert есть только как действие
    `/system/config`.
-3. **Stop не останавливает поток**: `onStop={() => {}}` в
-   `src/Dashboard.svelte`, вывод ping продолжает дописываться.
-4. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
+3. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
    `/modules/dashboard/hardware/index.js` и `.../mobile/index.js` (404).
    Это ограничение демо-модулей, а не входа/схем.
-5. **Качество кода**: в flat-схеме `Render.svelte` передаёт
+4. **Качество кода**: в flat-схеме `Render.svelte` передаёт
    `selectedKey="wtf"`, в production остались `console.log`, а
    `commitMutation` объявлен, но не используется.
 
@@ -73,10 +81,10 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 ## Ожидаемые падения
 
-`04-commit-revert` (commit и revert) и `06-actions` (Stop) — проверки из
-списка выше. `01-dashboard`, `02-edit-apply`, `03-validation`,
-`05-journal`, `06-actions` (ping без host), `07-flat-schema`, `08-crud`,
-`09-input-sync` проходят.
+`04-commit-revert` (commit и revert) — проверки из списка выше.
+`01-dashboard`, `02-edit-apply`, `03-validation`, `05-journal`,
+`06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`
+проходят.
 
 ## Aurora parity
 
