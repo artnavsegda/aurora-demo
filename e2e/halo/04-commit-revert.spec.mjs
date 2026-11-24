@@ -60,7 +60,7 @@ test('Halo: ошибка commit не сбрасывает выбранную з�
 })
 
 test('Halo: revert доступен', async ({ page }) => {
-    test.fail(true, 'Halo: revert отсутствует')
+    test.fail(true, 'revert на стопе: возможно, будет удалён из бэкенда')
     await login(page, 'halo-user2')
     await open(page, '/ip/interface')
 

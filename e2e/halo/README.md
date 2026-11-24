@@ -37,7 +37,10 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
   required не создаёт запись, ping без host не отправляется;
 - Stop обрывает потоковый вывод: окно помечается `stream stopped`, кнопка
   блокируется, уже полученные строки остаются, `Close` закрывает окно;
-- глобальный commit из шапки уходит с `path: "/system/config"` и обновляет данные.
+- глобальный commit из шапки уходит с `path: "/system/config"` и обновляет данные;
+- индикация несохранённых изменений: commit disabled до первого `@set`,
+  активируется после `@set`/`add`/`delete`/`clean`, успешный commit сбрасывает
+  состояние, ошибка commit сохраняет dirty и черновик.
 
 ## Тесты валидатора в Halo
 
@@ -59,13 +62,20 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `aurora-demo/e2e/halo/06-actions.spec.mjs` — реальный ping: Stop помечает
   поток, блокирует кнопку, вывод не растёт, `Close` закрывает окно.
 
+## Тесты несохранённых изменений
+
+- `donyx/e2e/header-commit.spec.ts` — 5 Storybook-e2e: disabled/active,
+  irz/donyx-цвета, `commitPending`;
+- `aurora-demo/e2e/halo/10-unsaved-changes.spec.mjs` — 4 интеграционных e2e:
+  `@set` + Apply + успешный commit, ошибка commit, delete и clean.
+
 ## Известные недоработки Halo
 
 Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
 исправления Halo Playwright начнёт ругаться «expected to fail, but passed».
 
-1. **Нет глобального revert** в шапке; revert есть только как действие
-   `/system/config`.
+1. **Глобальный revert — на стопе**: в шапке его нет; возможно, действие
+   будет удалено из бэкенда, поэтому реализацию в Halo пока не делаем.
 2. **Dashboard-модули**: демо-бэкенд не отдаёт
    `/modules/dashboard/<section>/index.js` для секций сводки (404).
    Это ограничение демо-модулей, а не входа/схем.
@@ -78,10 +88,10 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 ## Ожидаемые падения
 
-`04-commit-revert` (revert) — проверка из списка выше. `01-dashboard`,
+`04-commit-revert` (revert) — проверка на стопе. `01-dashboard`,
 `02-edit-apply`, `03-validation`, `04-commit-revert` (commit), `05-journal`,
-`06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`
-проходят.
+`06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`,
+`10-unsaved-changes` проходят.
 
 ## Aurora parity
 
