@@ -42,7 +42,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
   активируется после `@set`/`add`/`delete`/`clean`, успешный commit сбрасывает
   состояние, ошибка commit сохраняет dirty и черновик;
 - lifecycle действий: `reset`, `reload` (включая массив путей),
-  `responseType: "blob"` и `checkConnection` с ожиданием возврата устройства.
+  `responseType: "blob"` и `checkConnection` с ожиданием возврата устройства;
+- подтверждение вторичных действий (`confirm: true` и строка): Cancel не
+  отправляет команду, OK продолжает действие.
 
 ## Тесты валидатора в Halo
 
@@ -76,25 +78,20 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `donyx/src/lib/actionLifecycle.test.ts` — порядок `reset → reload → checkConnection`;
 - `donyx/src/lib/api.blob.test.ts` — blob-ответ и имя файла из `Content-Disposition`;
 - `aurora-demo/e2e/halo/12-actions-lifecycle.spec.mjs` — 4 e2e: blob,
-  reload массивом, reset и checkConnection;
+  reload массивом, reset и checkConnection + confirm/Cancel для reboot;
 - `aurora-demo/e2e/halo/11-action-lifecycle.spec.mjs` — регрессия: первый опрос
   `/script/dashboard` идёт после `checkConnection.delay`, а не через 1 с.
 
-## Известные недоработки Halo
+## Статус паритета
 
-Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
-исправления Halo Playwright начнёт ругаться «expected to fail, but passed».
+Функциональный паритет Halo с Aurora по текущему scope закрыт. Остаётся только:
 
 1. **Глобальный revert — на стопе**: в шапке его нет; возможно, действие
    будет удалено из бэкенда, поэтому реализацию в Halo пока не делаем.
-2. **Confirm вторичных действий**: `SecondaryStrip` не показывает
-   подтверждение для `actions.*.confirm` (reboot/upgrade/revert и т.п.).
-3. **Dashboard-модули**: демо-бэкенд не отдаёт
-   `/modules/dashboard/<section>/index.js` для секций сводки (404).
-   Это ограничение демо-модулей, а не входа/схем.
-4. **Reorder и upload**: нет drag-and-drop строк и потока `/script/upload`.
-5. **Качество кода**: в flat-схеме `Render.svelte` передаёт
-   `selectedKey="wtf"`, в production остались `console.log`.
+
+Вне текущего scope (не влияет на паритет по рабочим сценариям):
+dashboard-модули демо-стенда (404), reorder/upload и чистка `selectedKey`
+с `console.log`.
 
 Журнал **не является багом Halo**: прод-wrapper читает JSON из stdin без
 проверки `Content-Type`, Halo это делает корректно. Ошибка была в демо-бэкенде,
