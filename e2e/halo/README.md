@@ -30,32 +30,40 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - потоковый ping, вывод в Bypass;
 - журнал: Halo шлёт тело без `Content-Type`, демо-бэкенд теперь разбирает
   такой JSON, как прод-wrapper;
-- `09-input-sync`: поле обновляется из `data` после refetch (`$effect.pre`).
+- `09-input-sync`: поле обновляется из `data` после refetch (`$effect.pre`);
+- валидация полей и действий из `src/lib/validation`: `pattern`, `minimum`,
+  `required`, `$ref`, `modificator`, `@cue enum`;
+- невалидное значение не уходит в `@set`, APPLY/OK блокируются, ADD с пустыми
+  required не создаёт запись, ping без host не отправляется.
+
+## Тесты валидатора в Halo
+
+В `donyx` (`main`):
+
+- `src/lib/validation/validation.test.ts` — 23 unit-теста: значения полей,
+  `$ref`, `modificator`, `@cue enum`, нормализация, `validateForm` и адаптер
+  поля (`validateField`, `visibleIssues`, `sameValue`);
+- `e2e/validation.spec.ts` — 4 Storybook-e2e: форма, APPLY с пустым required,
+  строка таблицы, модалка действия. Прогон:
+  `npx playwright test e2e/validation.spec.ts --project=chromium`.
+  Для Firefox/WebKit нужны установленные браузеры Playwright.
 
 ## Известные недоработки Halo
 
 Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
 исправления Halo Playwright начнёт ругаться «expected to fail, but passed».
 
-1. **Нет валидации полей**: `String`/`Number`/`Modal` проверяют только
-   `required` (и то не всегда), но не `pattern`, `minimum`, `maximum`,
-   `minLength`/`maxLength`. Невалидный `gateway` уходит в `@set`.
-   Файлы: `src/lib/pages/Dashboard/Render/Control/*.svelte`.
-2. **ADD с пустыми required**: модалка Add всегда возвращает `newData`,
-   OK не блокируется; создаётся запись `cfg07` без device/type.
-3. **Commit — заглушка**: кнопка Save в шапке только показывает overlay на
+1. **Commit — заглушка**: кнопка Save в шапке только показывает overlay на
    5 секунд (`src/Dashboard.svelte`, `onCommit` с закомментированным
    `commitMutation.mutate()`), запрос `commit` не уходит.
-4. **Нет глобального revert** в шапке; revert есть только как действие
+2. **Нет глобального revert** в шапке; revert есть только как действие
    `/system/config`.
-5. **Required не блокирует действия**: ping с пустым host уходит в
-   `ping,/tools`; бэкенд подставляет `1.1.1.1`.
-6. **Stop не останавливает поток**: `onStop={() => {}}` в
+3. **Stop не останавливает поток**: `onStop={() => {}}` в
    `src/Dashboard.svelte`, вывод ping продолжает дописываться.
-7. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
+4. **Dashboard-модули hardware/mobile**: демо-бэкенд и сборка не отдают
    `/modules/dashboard/hardware/index.js` и `.../mobile/index.js` (404).
    Это ограничение демо-модулей, а не входа/схем.
-8. **Качество кода**: в flat-схеме `Render.svelte` передаёт
+5. **Качество кода**: в flat-схеме `Render.svelte` передаёт
    `selectedKey="wtf"`, в production остались `console.log`, а
    `commitMutation` объявлен, но не используется.
 
@@ -65,9 +73,10 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 ## Ожидаемые падения
 
-`03-validation`, `04-commit-revert`, `06-actions` — по одной-две проверки из
-списка выше. `01-dashboard`, `02-edit-apply`, `05-journal`,
-`07-flat-schema`, `08-crud`, `09-input-sync` проходят.
+`04-commit-revert` (commit и revert) и `06-actions` (Stop) — проверки из
+списка выше. `01-dashboard`, `02-edit-apply`, `03-validation`,
+`05-journal`, `06-actions` (ping без host), `07-flat-schema`, `08-crud`,
+`09-input-sync` проходят.
 
 ## Aurora parity
 

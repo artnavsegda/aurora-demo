@@ -3,7 +3,6 @@ import { expect, test } from '@playwright/test'
 import { collectRequests, login, open } from './helpers.mjs'
 
 test('Halo: ping не отправляется без обязательного host', async ({ page }) => {
-    test.fail(true, 'Halo: required и Stop не реализованы')
     const requests = collectRequests(page)
     await login(page, 'halo-ping-empty')
     await open(page, '/tools')
@@ -18,7 +17,7 @@ test('Halo: ping не отправляется без обязательного
 })
 
 test('Halo: Stop останавливает потоковый ping', async ({ page }) => {
-    test.fail(true, 'Halo: required и Stop не реализованы')
+    test.fail(true, 'Halo: Stop не реализован')
     await login(page, 'halo-ping-stop')
     await open(page, '/tools')
 
