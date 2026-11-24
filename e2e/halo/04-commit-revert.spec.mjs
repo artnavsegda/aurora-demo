@@ -11,6 +11,7 @@ test('Halo: commit отправляет глобальный /system/config', as
         try { commits.push(JSON.parse(r.postData() || '{}')) } catch (e) {}
     })
     await login(page, 'halo-commit')
+    await expect(commitButton(page)).toBeDisabled()
     await open(page, '/ip/interface')
     await openRow(page, 'bridge0')
 
@@ -19,6 +20,7 @@ test('Halo: commit отправляет глобальный /system/config', as
     await inputs.nth(0).press('Tab')
     await page.getByRole('button', { name: /apply/i }).click()
     await page.waitForTimeout(700)
+    await expect(commitButton(page)).toBeEnabled()
 
     await page.route('**/script/wrapper?commit', async (route) => {
         await new Promise((r) => setTimeout(r, 400))
@@ -31,6 +33,7 @@ test('Halo: commit отправляет глобальный /system/config', as
     expect(commits[0].path).toBe('/system/config')
     expect(requests.some((u) => u.includes('commit'))).toBe(true)
     await expect(page.locator('[data-toast="success"]')).toContainText('Configuration committed.')
+    await expect(commitButton(page)).toBeDisabled()
 })
 
 test('Halo: ошибка commit не сбрасывает выбранную запись и черновик', async ({ page }) => {
@@ -42,6 +45,7 @@ test('Halo: ошибка commit не сбрасывает выбранную з�
     await input.fill('321')
     await input.press('Tab')
     await page.waitForTimeout(700)
+    await expect(commitButton(page)).toBeEnabled()
 
     await page.route('**/script/wrapper?commit', (route) =>
         route.fulfill({ status: 500, body: 'uci: commit failed' }),
@@ -52,6 +56,7 @@ test('Halo: ошибка commit не сбрасывает выбранную з�
         'uci: commit failed',
     )
     await expect(input).toHaveValue('321')
+    await expect(commitButton(page)).toBeEnabled()
 })
 
 test('Halo: revert доступен', async ({ page }) => {
