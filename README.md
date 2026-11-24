@@ -44,14 +44,15 @@ PORT=8098 npm start
 
 ### Docker
 
-Образ демо-бэкенда содержит **только Aurora Vue 2** (`frontend/aurora`).
-Halo/donyx в образ не входит — это внутренняя разработка.
+Образ демо-бэкенда содержит **только Aurora Vue 2** (`frontend/aurora`)
+в брендинге Donyx: тёмная тема, логотип и `Donyx - Control Panel` (сборка
+`DONYX=1`). Halo/donyx в образ не входит — это внутренняя разработка.
 
 Сборка:
 
 ```sh
-# frontend/aurora уже содержит Vue 2 dist; при обновлении:
-# scripts/prepare-frontend.sh /path/to/aurora-vue2/dist
+# frontend/aurora уже содержит Vue 2 dist в брендинге Donyx; при обновлении:
+# scripts/prepare-frontend.sh /path/to/aurora-vue2-donyx/dist
 docker build --platform linux/amd64 -t aurora-demo-backend:2026-11-24-donyx-amd64 .
 docker compose -f docker-compose.deploy.yml up -d
 ```

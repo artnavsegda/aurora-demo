@@ -1,7 +1,7 @@
 FROM node:22-alpine
 
 LABEL org.opencontainers.image.title="aurora-demo-backend" \
-      org.opencontainers.image.description="Demo backend with Donyx iRM data and Aurora Vue 2 frontend" \
+      org.opencontainers.image.description="Demo backend with Donyx iRM data and Donyx-branded Aurora Vue 2 frontend" \
       org.opencontainers.image.source="https://github.com/artnavsegda/aurora-demo"
 
 WORKDIR /app

@@ -1,7 +1,8 @@
 # Aurora Demo Backend — Deployment Guide (x86_64)
 
 This image is for **testing/demo only**. It contains the Aurora demo backend
-with a **Donyx iRM** data/schema snapshot and the **Aurora Vue 2** frontend.
+with a **Donyx iRM** data/schema snapshot and the **Donyx-branded Aurora Vue 2**
+frontend (dark theme, `Donyx - Control Panel`).
 Halo/donyx client code is **not** included.
 
 ## Package contents
