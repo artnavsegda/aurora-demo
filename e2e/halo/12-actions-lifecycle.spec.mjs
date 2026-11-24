@@ -83,6 +83,14 @@ test('Halo: checkConnection ждёт устройство и возвращае�
     })
 
     await page.getByRole('button', { name: /reboot/i }).click()
+    const confirm = page.locator('dialog[open]')
+    await expect(confirm).toContainText('Reboot device?')
+    await confirm.getByRole('button', { name: /^cancel$/i }).click()
+    await expect(page.locator('.overlay')).toHaveCount(0)
+
+    await page.getByRole('button', { name: /reboot/i }).click()
+    await expect(confirm).toContainText('Reboot device?')
+    await confirm.getByRole('button', { name: /^ok$/i }).click()
     await expect(
         page.getByText('The device is rebooting. Please wait'),
     ).toBeVisible()
