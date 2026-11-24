@@ -49,7 +49,7 @@ test('Halo: commit включается после @set и сбрасывает�
     })
 
     await commitButton(page).click()
-    await expect(page.getByText('Please wait to load')).toBeVisible()
+    await expect(page.locator('.overlay')).toContainText('Committing configuration')
     await expect(commitButton(page)).toBeDisabled()
     await expect.poll(() => commits.length, { timeout: 10_000 }).toBe(1)
     expect(commits[0]).toContain('/system/config')

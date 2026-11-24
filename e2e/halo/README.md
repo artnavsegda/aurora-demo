@@ -40,7 +40,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - глобальный commit из шапки уходит с `path: "/system/config"` и обновляет данные;
 - индикация несохранённых изменений: commit disabled до первого `@set`,
   активируется после `@set`/`add`/`delete`/`clean`, успешный commit сбрасывает
-  состояние, ошибка commit сохраняет dirty и черновик.
+  состояние, ошибка commit сохраняет dirty и черновик;
+- lifecycle действий: `reset`, `reload` (включая массив путей),
+  `responseType: "blob"` и `checkConnection` с ожиданием возврата устройства.
 
 ## Тесты валидатора в Halo
 
@@ -69,6 +71,15 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `aurora-demo/e2e/halo/10-unsaved-changes.spec.mjs` — 4 интеграционных e2e:
   `@set` + Apply + успешный commit, ошибка commit, delete и clean.
 
+## Тесты lifecycle действий
+
+- `donyx/src/lib/actionLifecycle.test.ts` — порядок `reset → reload → checkConnection`;
+- `donyx/src/lib/api.blob.test.ts` — blob-ответ и имя файла из `Content-Disposition`;
+- `aurora-demo/e2e/halo/12-actions-lifecycle.spec.mjs` — 4 e2e: blob,
+  reload массивом, reset и checkConnection;
+- `aurora-demo/e2e/halo/11-action-lifecycle.spec.mjs` — регрессия: первый опрос
+  `/script/dashboard` идёт после `checkConnection.delay`, а не через 1 с.
+
 ## Известные недоработки Halo
 
 Тесты с этими проверками помечены `test.fail`: они падают ожидаемо, а после
@@ -76,10 +87,13 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 1. **Глобальный revert — на стопе**: в шапке его нет; возможно, действие
    будет удалено из бэкенда, поэтому реализацию в Halo пока не делаем.
-2. **Dashboard-модули**: демо-бэкенд не отдаёт
+2. **Confirm вторичных действий**: `SecondaryStrip` не показывает
+   подтверждение для `actions.*.confirm` (reboot/upgrade/revert и т.п.).
+3. **Dashboard-модули**: демо-бэкенд не отдаёт
    `/modules/dashboard/<section>/index.js` для секций сводки (404).
    Это ограничение демо-модулей, а не входа/схем.
-3. **Качество кода**: в flat-схеме `Render.svelte` передаёт
+4. **Reorder и upload**: нет drag-and-drop строк и потока `/script/upload`.
+5. **Качество кода**: в flat-схеме `Render.svelte` передаёт
    `selectedKey="wtf"`, в production остались `console.log`.
 
 Журнал **не является багом Halo**: прод-wrapper читает JSON из stdin без
@@ -91,7 +105,7 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 `04-commit-revert` (revert) — проверка на стопе. `01-dashboard`,
 `02-edit-apply`, `03-validation`, `04-commit-revert` (commit), `05-journal`,
 `06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`,
-`10-unsaved-changes` проходят.
+`10-unsaved-changes`, `11-action-lifecycle`, `12-actions-lifecycle` проходят.
 
 ## Aurora parity
 
