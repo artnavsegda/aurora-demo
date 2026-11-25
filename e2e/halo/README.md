@@ -44,7 +44,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - lifecycle действий: `reset`, `reload` (включая массив путей),
   `responseType: "blob"` и `checkConnection` с ожиданием возврата устройства;
 - подтверждение вторичных действий (`confirm: true` и строка): Cancel не
-  отправляет команду, OK продолжает действие.
+  отправляет команду, OK продолжает действие;
+- перестановка строк таблицы (reorder): drag строки отправляет `reorder` с
+  `_section` и `position`, после успеха таблица показывает новый порядок.
 
 ## Тесты валидатора в Halo
 
@@ -82,6 +84,14 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `aurora-demo/e2e/halo/11-action-lifecycle.spec.mjs` — регрессия: первый опрос
   `/script/dashboard` идёт после `checkConnection.delay`, а не через 1 с.
 
+## Тесты reorder
+
+- `aurora-demo/e2e/halo/13-reorder.spec.mjs` — drag строки `/firewall/filter`:
+  проверяет тело `reorder` и итоговый порядок строк в UI;
+- `aurora-demo/src/legacy.mjs` — демо-бэкенд сортирует `status` по порядку
+  `@get`, как реальное устройство после reorder (иначе колонки статуса
+  читаются по позиции и показывают чужую строку).
+
 ## Статус паритета
 
 Функциональный паритет Halo с Aurora по текущему scope закрыт. Остаётся только:
@@ -90,7 +100,7 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
    будет удалено из бэкенда, поэтому реализацию в Halo пока не делаем.
 
 Вне текущего scope (не влияет на паритет по рабочим сценариям):
-dashboard-модули демо-стенда (404), reorder/upload и чистка `selectedKey`
+dashboard-модули демо-стенда (404), upload и чистка `selectedKey`
 с `console.log`.
 
 Журнал **не является багом Halo**: прод-wrapper читает JSON из stdin без
@@ -102,7 +112,8 @@ dashboard-модули демо-стенда (404), reorder/upload и чистк
 `04-commit-revert` (revert) — проверка на стопе. `01-dashboard`,
 `02-edit-apply`, `03-validation`, `04-commit-revert` (commit), `05-journal`,
 `06-actions` (ping и Stop), `07-flat-schema`, `08-crud`, `09-input-sync`,
-`10-unsaved-changes`, `11-action-lifecycle`, `12-actions-lifecycle` проходят.
+`10-unsaved-changes`, `11-action-lifecycle`, `12-actions-lifecycle`,
+`13-reorder` проходят.
 
 ## Aurora parity
 

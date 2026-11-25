@@ -315,11 +315,25 @@ function statusFor(session, path, section) {
     if (value === undefined) {
         value = generatedStatus(session, schema, path)
     } else if (Array.isArray(value)) {
-        // глобальный status снят с устройства и содержит все записи; после
+        // Глобальный status снят с устройства и содержит все записи; после
         // удаления/clean в демо оставляем только те, что ещё есть в сессии.
         const data = session.get(path)
         value = value.filter((row) => !row || row.name == null ||
             findKey(schema, data, row.name) != null)
+
+        // Порядок status на реальном устройстве совпадает с порядком записей в
+        // конфиге; после reorder он меняется. Демо держит status статичным, поэтому
+        // сортируем его по текущему порядку ключей @get, иначе колонки статуса
+        // (chain/src/action…) читаются Halo по позиции и показывают чужую строку.
+        const order = new Map(
+            Object.keys(data).map((key, index) => [key, index]),
+        )
+        value = [...value].sort((a, b) => {
+            const ka = a && a.name != null ? findKey(schema, data, a.name) : null
+            const kb = b && b.name != null ? findKey(schema, data, b.name) : null
+            return (order.get(ka) ?? Number.MAX_SAFE_INTEGER) -
+                (order.get(kb) ?? Number.MAX_SAFE_INTEGER)
+        })
     }
     return liveStatus(value)
 }
