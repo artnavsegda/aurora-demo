@@ -8,7 +8,7 @@ test('Halo: плоская схема — изменение hostname и Apply',
     await open(page, '/system/management')
 
     await expect(page.locator('body')).toContainText(/hostname/i)
-    const hostname = page.locator('input').first()
+    const hostname = page.locator('input[type="text"]').first()
     await hostname.fill('halo-test')
     await hostname.press('Tab')
     await page.waitForTimeout(800)
