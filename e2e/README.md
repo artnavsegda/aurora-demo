@@ -7,13 +7,14 @@
 - **vue3** — ветка `vue3`.
 
 Отдельных тестов под версию нет: сценарии общие. Различия, найденные в Vue 3,
-исправляются в `Desktop/aurora`; различия Vue 2 собираются как баги для Kaiten.
+исправляются в `Desktop/aurora`; баги Vue 2 фиксируются в Kaiten и после
+исправления в `compressed` проверяются теми же сценариями.
 
 ## Сборки
 
 По умолчанию Playwright берёт фронтенды из `frontend/vue2` и `frontend/vue3`
-(эти каталоги в git не входят). Vue 2 собирается из `compressed` **без патчей**:
-так тесты и показывают известные баги. Можно указать готовые `dist` напрямую:
+(эти каталоги в git не входят). Vue 2 собирается из `compressed`; актуальные
+исправления уже в ветке, патчи не применяются. Можно указать готовые `dist` напрямую:
 
 ```sh
 AURORA_VUE2_DIST=/path/to/vue2/dist \
@@ -78,34 +79,16 @@ Playwright сам поднимает два демо-бэкенда: `8102` (Vue
   Схемы и данные — в `test-schemas/` и `fixtures/test-schemas.json`; включаются
   через `DEMO_TEST_SCHEMAS=1` (Playwright выставляет флаг сам).
 
-## Известные баги Vue 2
+## Ранее известные баги Vue 2
 
-Эти тесты помечены `test.fail` для проекта `vue2`: они падают ожидаемо, а при
-исправлении Vue 2 Playwright начнёт ругаться «expected to fail, but passed» —
-тогда `test.fail` надо убрать.
+Все закрыты в ветке `compressed`, `test.fail` снят:
 
-### 1. Пробел между словами теряется при дебаунсе
+- `#75554667` — пробел между словами при дебаунсе `TextElement` (`659ccc1`);
+- `#75512469` — Apply не видел ошибок формы (`7150ee2`);
+- `#75562223` — `BoolElement` писал в скалярные значения (`7145a01`) и
+  `validator` падал на битом `pattern` (`538baac`).
 
-`e2e/02-text-input.spec.mjs`
-
-Vue 2 `TextElement.update()` по таймеру вызывает `setValue()`, а тот делает
-`trim()`. Если после `hello ` сделать паузу и набрать `world`, в поле и в API
-попадает `helloworld`. Vue 3 обрезает значение только по blur/Enter, во время
-дебаунса отдаёт как есть.
-
-Патч: `patches/aurora-vue2-text-debounce.patch`.
-
-### 2. Apply не видит ошибок формы
-
-`e2e/03-validation.spec.mjs`
-
-Vue 2 `Schema.errorUpdate()` пишет новый ключ в `this.errors` напрямую
-(`this.errors[o.name] = o.err`). В Vue 2 это не реактивно: `hasErrors` остаётся
-прежним, кнопка Apply не блокируется и отправляет `apply` с невалидными
-данными. В Vue 3 такой проблемы нет.
-
-Карточка: Kaiten `#75512469`. Патч:
-`patches/aurora-vue2-schema-haserrors.patch`.
+Патчи в `patches/aurora-vue2-*.patch` оставлены только для старых сборок.
 
 ## Halo
 
@@ -130,18 +113,12 @@ Aurora Vue 2/Vue 3. Список известных недоработок Halo 
 Найденные ошибки и предложения по исправлению: `e2e/SCHEMA-ISSUES.md`,
 карточка Kaiten `#75557467`.
 
-`08-schema-business` знает о трёх подтверждённых расхождениях:
+`08-schema-business` знает об одном подтверждённом расхождении:
 
-- `/network/device` — VLAN-схема на всех L2-устройствах;
-- `/service/openvpn-server` — required на отсутствующих в данных полях;
-- `/tunnel/wireguard/interface` — схема-список на плоских данных.
+- `/service/openvpn-server` — required на отсутствующих в данных полях.
 
-Для Vue 2 в последнем случае дополнительно воспроизводится
-`BoolElement.beforeMount` на строке; Vue 3 уже защищён.
-
-Испытательная схема `bad-regexp` нашла ещё одну проблему: `validator` бросал
-`SyntaxError` на невалидном `pattern` из схемы. Vue 3 исправлен (`5981744`),
-для Vue 2 — `patches/aurora-vue2-validator-bad-regexp.patch`.
+Испытательная схема `bad-regexp`: `validator` больше не бросает `SyntaxError`
+на невалидном `pattern` — исправлено и в Vue 2 (`compressed`), и в Vue 3.
 
 ## Правки демо-бэкенда
 

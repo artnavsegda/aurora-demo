@@ -212,9 +212,9 @@ describe('схемы: бизнес-правила на реальных данн
 
         expect([...new Set(problems)].sort()).toEqual([
             '/ip/nhrp#/patternProperties/.*/properties/map/items: patternExample "10.0.1.101@133.94.75.36.14" rejected',
-            '/network/qos/queue#/patternProperties/.*/properties/red-bandwidth: minimum/maximum on type string',
             '/service/dhcp/server#/patternProperties/.*/properties/option/items: patternExample "bootfile=image.bin" rejected',
             '/service/openvpn-server#/properties/push/items: patternExample "route-gateway=192.168.1.1" rejected',
+            '/tools#/actions/sniffer/schema/properties/mac: patternExample "BE:AF:CO:OF:FE:E0" rejected',
             '/tunnel/l2tp-v3#/patternProperties/.*/properties/udp-dport: minimum/maximum on type string',
             '/tunnel/l2tp-v3#/patternProperties/.*/properties/udp-sport: minimum/maximum on type string',
         ])
@@ -266,9 +266,7 @@ describe('схемы: бизнес-правила на реальных данн
                 }
             }
         }
-        expect(problems).toEqual([
-            '/tunnel/wireguard/interface: section schema but flat fixture data',
-        ])
+        expect(problems).toEqual([])
     })
 
     test('данные фикстур проходят validate (Vue 2)', () => {
@@ -312,15 +310,8 @@ describe('схемы: бизнес-правила на реальных данн
             }
         }
         expect([...new Set(problems)].sort()).toEqual([
-            '/network/device/bridge0/device: required but missing',
-            '/network/device/bridge0/type: \'br\' - invalid value = "br"',
-            '/network/device/bridge0/vid: required but missing',
-            '/network/device/eth0/device: required but missing',
-            '/network/device/eth0/type: \'ethernet\' - invalid value = "ethernet"',
-            '/network/device/eth0/vid: required but missing',
-            '/network/device/wlan0/device: required but missing',
-            '/network/device/wlan0/type: \'wireless\' - invalid value = "wireless"',
-            '/network/device/wlan0/vid: required but missing',
+            '/service/openvpn-server/ca: required but missing',
+            '/service/openvpn-server/cert: required but missing',
             '/service/openvpn-server/pool: required but missing',
             '/service/openvpn-server/tunnel-ip: required but missing',
         ])

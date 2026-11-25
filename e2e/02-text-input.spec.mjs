@@ -4,7 +4,6 @@ import { apiGet, collectErrors, login, open } from './helpers.mjs'
 
 test('текстовое поле не съедает пробел между словами при паузе', async ({ page }, testInfo) => {
     // Vue 2 обрезает значение по дебаунсу и теряет пробел; в Vue 3 исправлено
-    test.fail(testInfo.project.name === 'vue2', 'Vue 2: пробел между словами теряется при дебаунсе TextElement')
     const errors = collectErrors(page)
     const token = await login(page, 'composite-text')
     await open(page, '/firewall/filter')

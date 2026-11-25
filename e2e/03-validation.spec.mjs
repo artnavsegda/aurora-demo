@@ -4,7 +4,6 @@ import { collectErrors, login, open } from './helpers.mjs'
 
 test('Apply не залипает после исправления ошибки валидации', async ({ page }, testInfo) => {
     // Vue 2: errorUpdate пишет новый ключ в errors без $set, hasErrors не обновляется
-    test.fail(testInfo.project.name === 'vue2', 'Vue 2: Apply не видит ошибок формы (Kaiten #75512469)')
     const errors = collectErrors(page)
     await login(page, 'composite-validation')
     await open(page, '/firewall/filter')

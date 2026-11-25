@@ -13,7 +13,7 @@ async function loginAndWait(page, username, schemaPath) {
     await loaded
     await open(page, '/' + schemaPath)
 }
-test('испытательная схема validation: типы, границы, cue и modificator', async ({ page }, testInfo) => {
+test('испытательная схема validation: типы, границы, cue и modificator', async ({ page }) => {
     const errors = collectErrors(page)
     await loginAndWait(page, 'adv-validation', 'test/validation')
 
@@ -61,18 +61,13 @@ test('испытательная схема validation: типы, границы
     await expect(page.locator('.schema-element.readonly input')).toHaveAttribute('readonly')
     await expect(page.locator('.schema-element.ref-broken input')).toBeEditable()
 
-    // битый pattern в схеме: Vue 3 показывает ошибку, Vue 2 пока падает в консоль
+    // битый pattern в схеме: и Vue 2, и Vue 3 показывают ошибку поля
     const bad = page.locator('.schema-element.bad-regexp input')
     await bad.fill('x')
     await bad.press('Tab')
     await page.waitForTimeout(900)
-    if (testInfo.project.name === 'vue3') {
-        await expect(page.locator('.schema-element.bad-regexp .element-error-description')).toHaveCount(1)
-        expect(errors).toEqual([])
-    } else {
-        expect(errors.filter((e) => e.includes('Invalid regular expression')).length).toBe(1)
-        expect(errors.filter((e) => !e.includes('Invalid regular expression'))).toEqual([])
-    }
+    await expect(page.locator('.schema-element.bad-regexp .element-error-description')).toHaveCount(1)
+    expect(errors).toEqual([])
 })
 
 test('испытательная схема sections: строки, required, section action', async ({ page }) => {

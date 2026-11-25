@@ -208,8 +208,8 @@ describe('components/Schema', () => {
         wrapper.vm.errorUpdate({ name: 'name', err: undefined })
         await wrapper.vm.$nextTick()
         expect(wrapper.vm.errors.name).toBeUndefined()
-        // известная особенность: ключ добавлен прямым присваиванием, computed не инвалидируется
-        expect(wrapper.vm.hasErrors).toBe(true)
+        // ошибка снята через $set — computed обновляется
+        expect(wrapper.vm.hasErrors).toBe(false)
     })
 
     test('aquiredData/deleteEntry/reorderEntry/autoApply', () => {

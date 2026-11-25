@@ -250,8 +250,8 @@ npm run test:e2e
 
 Отдельно: `npm run test:e2e:vue2`, `npm run test:e2e:vue3`,
 `npm run test:e2e:adversarial`.
-Подробности, список сценариев и известные баги Vue 2 (ожидаемые падения) —
-в `e2e/README.md`; найденные ошибки самих схем — в `e2e/SCHEMA-ISSUES.md`.
+Подробности и список сценариев — в `e2e/README.md`; ранее известные баги Vue 2
+закрыты в `compressed`, найденные ошибки самих схем — в `e2e/SCHEMA-ISSUES.md`.
 
 ### Halo (donyx)
 

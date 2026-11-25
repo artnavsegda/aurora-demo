@@ -143,8 +143,8 @@ required нет; можно вынести проверку в обработч�
   `hidden:true`); это не ошибка, но лучше не смешивать.
 - Vue 3 уже исправлен для массива без `items`: `SectionOption.type` больше не
   падает (`Desktop/aurora` `b286106`), а `BoolElement` не пишет в строку
-  (`d4030fe`). Для Vue 2 патч к `BoolElement`:
-  `patches/aurora-vue2-bool-scalar-values.patch`.
+  (`d4030fe`). Vue 2 исправлен в `compressed` (`7145a01`); патч
+  `patches/aurora-vue2-bool-scalar-values.patch` оставлен для старых сборок.
 
 ## Испытательные схемы
 
@@ -154,8 +154,8 @@ required нет; можно вынести проверку в обработч�
 
 Первый прогон (`e2e/09-adversarial-schemas.spec.mjs`) нашёл падение
 `validator.checkPattern` на невалидном `pattern` из схемы: `new RegExp('[')`
-бросал `SyntaxError` прямо из `check_valid`. Vue 3 исправлен (`5981744`), для
-Vue 2 — `patches/aurora-vue2-validator-bad-regexp.patch`.
+бросал `SyntaxError` прямо из `check_valid`. Vue 3 исправлен (`5981744`), Vue 2 — в `compressed`
+(`538baac`); патч оставлен для старых сборок.
 Остальные неудобные конструкции (пустой enum, битые `$ref`, массивы без
 items, отсутствующие условия modificator, cue-источники) обрабатываются без
 падений на обеих версиях.
