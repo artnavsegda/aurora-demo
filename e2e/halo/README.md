@@ -47,6 +47,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
   отправляет команду, OK продолжает действие;
 - перестановка строк таблицы (reorder): drag строки отправляет `reorder` с
   `_section` и `position`, после успеха таблица показывает новый порядок.
+- cue: запросы строк идут с `path` текущей секции, `$option` разрешается из
+  записи; enum из cue по умолчанию нестрогий (можно ввести своё значение),
+  `strictEnum: true` сохраняется; в модалках в ключ кэша входят значения формы.
 
 ## Тесты валидатора в Halo
 
@@ -91,6 +94,13 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `aurora-demo/src/legacy.mjs` — демо-бэкенд сортирует `status` по порядку
   `@get`, как реальное устройство после reorder (иначе колонки статуса
   читаются по позиции и показывают чужую строку).
+
+## Тесты cue
+
+- `donyx/src/lib/cue.test.ts` — зависимости `$field`, ключ кэша, `cueOf`,
+  `withCueEnum` и `strictEnum`;
+- `aurora-demo/e2e/halo/14-cue.spec.mjs` — реальные схемы `/mobile/modem`:
+  `$option` из текущей записи и ручной ввод значения в cue-enum.
 
 ## Статус паритета
 
