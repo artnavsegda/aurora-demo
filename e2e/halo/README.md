@@ -49,7 +49,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
   `_section` и `position`, после успеха таблица показывает новый порядок.
 - cue: запросы строк идут с `path` текущей секции, `$option` разрешается из
   записи; enum из cue по умолчанию нестрогий (можно ввести своё значение),
-  `strictEnum: true` сохраняется; в модалках в ключ кэша входят значения формы.
+  `strictEnum: true` сохраняется; в модалках в ключ кэша входят значения формы;
+- выбранная запись в заголовке/хлебных крошках показывается по `namesake`
+  (`bridge0`, `port1`), а не по внутреннему ключу объекта.
 
 ## Тесты валидатора в Halo
 
@@ -102,6 +104,11 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 - `aurora-demo/e2e/halo/14-cue.spec.mjs` — 3 e2e: `$option` из текущей
   записи `/mobile/modem`, ручной ввод значения в cue-enum и загрузка cue в
   модалке действия `/system/config`.
+
+## Тесты namesake
+
+- `aurora-demo/e2e/halo/15-bridge-title.spec.mjs` — выбранный `/network/bridge`
+  показывает `bridge0`, а не ключ `0f5ad700c`.
 
 ## Статус паритета
 
