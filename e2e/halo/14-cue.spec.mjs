@@ -48,3 +48,26 @@ test('Halo: cue-enum по умолчанию нестрогий, можно вв
     expect(set.body.data._section).toBe('modem1')
     expect(set.body.data._value).toContain('n99')
 })
+
+
+test('Halo: cue в модалке действия загружает список', async ({ page }) => {
+    const bodies = []
+    page.on('request', (r) => {
+        if (!r.url().includes('/script/wrapper'))
+            return
+        try {
+            bodies.push({ url: r.url(), body: JSON.parse(r.postData() || '{}') })
+        } catch (e) {}
+    })
+
+    await login(page, 'halo-cue-modal')
+    await open(page, '/system/config')
+    await page.getByRole('button', { name: /^import config$/i }).click()
+    await expect(page.locator('dialog[open]')).toBeVisible()
+
+    await expect.poll(() => bodies
+        .some((item) => item.url.includes('@cue,/system/config'))).toBe(true)
+    const cue = bodies.find((item) =>
+        item.url.includes('@cue,/system/config'))
+    expect(cue.body.data).toContain('/storage/file')
+})

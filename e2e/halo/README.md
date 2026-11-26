@@ -99,8 +99,9 @@ HALO_DIST=/Users/artnavsegda/Documents/GitHub/donyx/dist \
 
 - `donyx/src/lib/cue.test.ts` — зависимости `$field`, ключ кэша, `cueOf`,
   `withCueEnum` и `strictEnum`;
-- `aurora-demo/e2e/halo/14-cue.spec.mjs` — реальные схемы `/mobile/modem`:
-  `$option` из текущей записи и ручной ввод значения в cue-enum.
+- `aurora-demo/e2e/halo/14-cue.spec.mjs` — 3 e2e: `$option` из текущей
+  записи `/mobile/modem`, ручной ввод значения в cue-enum и загрузка cue в
+  модалке действия `/system/config`.
 
 ## Статус паритета
 
