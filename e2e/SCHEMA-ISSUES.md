@@ -2,59 +2,92 @@
 
 Карточка Kaiten: `#75557467`.
 
-Найдено статическим разбором `scripts/check-schemas.mjs`, юнит-тестами на
-реальных схемах (`aurora-vue2-tests/tests/schemas`, `aurora-vue3-tests/tests/schemas`)
-и бизнес-проходом Playwright `e2e/08-schema-business.spec.mjs`.
+Повторная проверка — 2026-11-27, после замены демо-фикстур на слепок боевого
+роутера Donyx iRM (`fixtures/fixtures.json`, `source: donyx-irm snapshot
+2026-11-24`). Дополнительно схемы и данные сверены с прод-R2
+(`https://192.168.1.1`, только чтение: `@schemas`, `@get`, `status`,
+`/schema/*.json`).
 
-## Критичные: схема не соответствует данным
+## Итог повторной проверки
+
+Первичный разбор (`5 ошибок, 50 предупреждений`) частично опирался на
+неправильные демо-фикстуры. На актуальном слепке:
+
+- снято как артефакт фикстур — `/network/device`,
+  `/tunnel/wireguard/interface`;
+- уже исправлено в схемах — `$ref` в `/tunnel/ipsec/profile` и
+  `/tunnel/ipsec/proposal`;
+- остаётся реальным — `/service/openvpn-server`, `/network/fdb`,
+  `/tunnel/ipsec/connection`, `/mobile/sms`, `/network/bridge-vlan`,
+  `/firewall/mangle`, примеры/ограничения и `@cue`;
+- на прод-R2 дополнительно воспроизводятся `/network/qos/queue` и
+  `/peripheral/serial-port` (в слепке Donyx iRM этих схем нет).
+
+Текущий статический разбор:
+
+```text
+Схем: 74; ошибок: 3, предупреждений: 45, заметок: 29
+```
+
+## Снято: артефакты старых фикстур
 
 ### `/network/device`
 
-Схема описывает только VLAN-устройства, но в таблице и фикстуре лежат
-`bridge0` (`type: br`), `eth0` (`ethernet`), `wlan0` (`wireless`).
-У секции `required: ["name", "device", "vid"]`, а `type` имеет `enum: ["vlan"]`.
+Старая фикстура отдавала `bridge0` (`type: br`), `eth0` и `wlan0`, из-за чего
+форма показывала `invalid value` и `value required`. Сейчас `@get` пустой и в
+демо, и на прод-R2:
 
-На каждой строке форма показывает:
+```json
+{ "get": {} }
+```
 
-- `type`: `'br'/'ethernet'/'wireless' - invalid value`;
-- `device`: `value required`;
-- `vid`: `value required`.
-
-**Предложение:** разделить схему на «все L2-устройства» (типы
-`br/ethernet/wireless`, required только `name`) и отдельную форму создания VLAN
-(required `name/device/vid`), либо сделать `device`/`vid` условно обязательными
-для `type=vlan`. В текущем формате `required` — плоский список, условного
-required нет; можно вынести проверку в обработчик `add/set`.
-
-### `/service/openvpn-server`
-
-`required: ["tunnel-ip", "pool", "ca", "cert"]`, но в фикстуре этих полей нет,
-а сервер выключен (`disabled: 1`). На странице сразу видны четыре
-`value required`.
-
-**Предложение:** убрать эти поля из `required` (оставить `name`), а обязательность
-проверять в `apply`/`add` по `disabled` и `tls-mode`; либо добавить значения в
-фикстуру, если демо должно показывать заполненный сервер.
+Строк нет — ошибок на странице нет. Схема при этом остаётся VLAN-ориентированной
+(`definitions.type.enum: ["vlan"]`, `required: ["name", "device", "vid"]`), а
+остальные L2-устройства живут в `/network/ethernet`, `/network/bridge` и
+`/wireless/*`. Дизайн-замечание к заголовку секции остаётся теоретическим:
+подтверждать его нужно на данных, где `/network/device` реально отдаёт
+не-VLAN строки.
 
 ### `/tunnel/wireguard/interface`
 
-Схема объявляет `patternProperties[".*"]` (список интерфейсов), а `@get` и
-фикстура отдают плоский объект:
+Старая фикстура отдавала плоский объект (`proto`, `disabled`, `tunnel-ip`, ...)
+при схеме с `patternProperties[".*"]`; из-за этого Vue 2 падал в
+`BoolElement.beforeMount`. Сейчас `@get` пустой и в демо, и на прод-R2:
 
 ```json
-{ "proto": "wireguard", "disabled": "1", "tunnel-ip": ["10.99.0.1/24"], ... }
+{ "get": {} }
 ```
 
-В результате таблица показывает строки `proto/disabled/...`, клик по строке
-передаёт в `SectionOption` строку, а не объект; Vue 2 роняет
-`BoolElement.beforeMount` на `this.values[disabled] = ...`.
-В Vue 3 это уже защищено, но схема/данные всё равно не совпадают.
+Строк нет — падения нет. Само расхождение «плоский объект против
+`patternProperties`» остаётся латентным: его можно подтвердить только на
+роутере с настроенным WireGuard-интерфейсом. Vue 2 дополнительно защищён в
+`compressed` (`7145a01`): `BoolElement` больше не пишет в скалярные значения.
 
-**Предложение:** привести схему к плоскому объекту (`properties` вместо
-`patternProperties`) — это один интерфейс, как в `/tunnel/openvpn`; либо
-изменить `@get/@set` и фикстуру на `{ "wg0": { ... } }`. Согласовать с прошивкой.
+## Уже исправлено в схемах
 
-## Критичные: битые `$ref`
+### `/tunnel/ipsec/profile`, `/tunnel/ipsec/proposal`
+
+В `add.schema.properties.name` теперь `/defaults#/definitions/name` и в демо,
+и на прод-R2. Локальной ссылки `#/definitions/name` больше нет.
+
+## Остаётся реальным
+
+### `/service/openvpn-server`
+
+`required: ["tunnel-ip", "pool", "ca", "cert"]`, но этих полей нет в данных, а
+сервер выключен (`disabled: "1"`). На странице сразу видны четыре
+`value required`; это единственное известное расхождение в
+`e2e/08-schema-business.spec.mjs`.
+
+Воспроизводится и в демо, и на прод-R2 — данные и `required` совпадают.
+
+**Предложение:** убрать эти поля из `required` (оставить `name`), а
+обязательность проверять в `apply`/`add` по `disabled` и `tls-mode`; либо
+добавить значения в фикстуру, если демо должно показывать заполненный сервер.
+
+Отдельно: в слепке Donyx iRM в `push.items.enum` нет `route-gateway`, а на
+прод-R2 он уже добавлен (и pattern допускает `+`). Это отставание слепка, а не
+ошибка клиента.
 
 ### `/network/fdb`
 
@@ -63,33 +96,17 @@ required нет; можно вынести проверку в обработч�
 + "$ref": "/defaults#/definitions/macaddr"
 ```
 
-В `/defaults` нет `definitions.mac`; после замены поле MAC получит pattern и
-пример.
-
-### `/tunnel/ipsec/profile`, `/tunnel/ipsec/proposal`
-
-В `add.schema.properties.name` стоит локальная ссылка, а локального
-`definitions.name` нет:
-
-```diff
-- "$ref": "#/definitions/name"
-+ "$ref": "/defaults#/definitions/name"
-```
-
-Иначе форма добавления профиля/предложения остаётся без pattern и описания.
-
-## Критичные: неверные `required`/типы
+`/defaults` определяет только `macaddr`; ссылка `mac` не разрешается. Одинаково
+в демо и на прод-R2, ловится `check-schemas` как ERROR. После замены поле MAC
+получит pattern и пример.
 
 ### `/tunnel/ipsec/connection`
 
-`required: ["psk", "ca", "cert"]`, но:
+`required: ["psk", "cert"]`, хотя `psk` и `cert` взаимоисключающие по `auth`
+(`psk` / `pubkey`). Одинаково в демо и на прод-R2.
 
-- свойства `ca` нет (есть `psk`, `cert`);
-- `psk` и `cert` взаимоисключающие по `auth` (`psk` / `pubkey`).
-
-**Предложение:** убрать `psk/ca/cert` из `required`; проверять по `auth` в
-обработчике или добавить в формат условный `required`. Если `ca` нужен — добавить
-свойство с `cue: ["/storage/certificate"]`.
+**Предложение:** убрать `psk/cert` из `required` и проверять выбранный `auth` в
+обработчике.
 
 ### `/mobile/sms`, action `send-sms`
 
@@ -98,42 +115,87 @@ required нет; можно вынести проверку в обработч�
 + "message": { "type": "string" }
 ```
 
-`text` не тип JSON Schema и не прикладной тип клиента (клиент валидирует его как
-строку, но схема становится невалидной для внешних генераторов).
+`text` не тип JSON Schema. Клиент валидирует его как строку, но схема
+становится невалидной для внешних генераторов. Одинаково в демо и на прод-R2,
+ловится `check-schemas` как ERROR.
 
-### `/peripheral/serial-port`
+### `/network/bridge-vlan`
 
-Во всех NTRIP-полях условие ссылается на несуществующее поле секции:
+`required: ["name"]`, но свойства `name` в `properties` нет (есть `bridge`,
+`vid`, `disabled`, `untagged`, `port`). Одинаково в демо и на прод-R2, ловится
+`check-schemas` как ERROR.
 
-```diff
-- { "if": [{ "mode": "ntripclient" }, { "ntripclient_installed": true }], ... }
-+ { "if": [{ "mode": "ntripclient" }, { "/defaults/ntripclient_installed": true }], ... }
-```
+**Предложение:** убрать `name` из `required` или добавить свойство.
 
-В `/defaults` есть `ntripclient_installed`. Сейчас NTRIP-поля никогда не
-показываются: `condProcess` читает `values.ntripclient_installed`, которого нет.
+### `/firewall/mangle`
 
-## Ошибки в примерах/ограничениях
+У `set-mark`, `set-dscp`, `set-mss`, `set-ttl` стоит `"required": true`
+(булево), а клиент ожидает массив имён полей. Одинаково в демо и на прод-R2.
+
+**Предложение:** убрать `required` или реализовать условную обязательность по
+`action`.
+
+### Примеры и ограничения
 
 | Схема | Проблема | Предложение |
 | --- | --- | --- |
 | `/ip/nhrp`, `map.items` | второй `patternExample` — 5 октетов: `10.0.1.101@133.94.75.36.14` | `10.0.1.101@133.94.75.36` |
-| `/service/dhcp/server`, `option.items` | пример `bootfile=image.bin` не проходит pattern/enum | `bootfile-name=image.bin` |
-| `/service/openvpn-server`, `push.items` | `route-gateway=192.168.1.1` — ключа нет в `enum` | добавить `route-gateway` в enum или заменить пример на `route-metric=10` |
-| `/network/qos/queue`, `red-bandwidth` | `minimum: 1` на строковом bandwidth | убрать `minimum` или сделать поле числом |
+| `/service/dhcp/server`, `option.items` | пример `bootfile=image.bin` не проходит pattern | `bootfile-name=image.bin` |
 | `/tunnel/l2tp-v3`, `udp-dport/sport` | `minimum: 1024` на строковом порту | убрать `minimum` или сменить тип |
-| `/firewall/mangle`, `set-mark/set-dscp/set-mss/set-ttl` | `"required": true` на поле; клиент такое не читает | убрать или реализовать условный required |
 | `/network/bridge`, `/tunnel/eoip`, `/tunnel/l2tp-v3`, `/wireless/network` | `default: "auto"` не подходит под MAC-pattern | разрешить `auto` в pattern или убрать default |
 | `/storage/certificate`, `issuer/subject/alt-name` | `enum: []` у items | пометить `readOnly/noExport` либо заполнить |
 | `/system/package`, `depends.items` | `enum: []` | то же |
 | `/routing/status`, `attributes`; `/tunnel/ipsec/status`, `local-ts/remote-ts` | массив без `items` | добавить `items` или `readOnly` |
 
-## @cue
+Пункты таблицы проверены на прод-R2 там, где схема есть; на R2 отсутствует
+только `/wireless/network`. Остальные схемы совпадают с демо.
 
-Много источников `/tunnel` и `/tunnel/atunnel` в `defaults.json` и firewall-схемах.
-В списке схем такого пути нет; демо-бэкенд возвращает пустой список. Если на
-прошивке такого агрегата тоже нет — заменить на конкретные
-`/tunnel/eoip`, `/tunnel/gre`, ...; если есть — добавить схему/путь в fixtures.
+### `@cue`
+
+Источники `/tunnel` и `/tunnel/atunnel` встречаются в `defaults.json` и
+firewall-схемах, но такого пути нет ни в `@schemas` демо, ни в `@schemas`
+прод-R2. Демо-бэкенд возвращает пустой список.
+
+**Предложение:** заменить на конкретные `/tunnel/eoip`, `/tunnel/gre`,
+`/tunnel/l2tp`, ...; если агрегат есть в прошивке — добавить схему и путь.
+
+## Дополнительно на прод-R2
+
+Эти схемы есть на R2, но отсутствуют в слепке Donyx iRM, поэтому в демо они не
+воспроизводятся.
+
+### `/network/qos/queue`
+
+`red-bandwidth`: `minimum: 1` при строковом типе (ссылка на
+`#/definitions/bandwidth`). Убрать `minimum` или сделать поле числом.
+
+### `/peripheral/serial-port`
+
+`mode` уже использует `/defaults/ntripclient_installed` — и это работает:
+`/defaults` в данных отдаёт `ntripclient_installed`. Но `ntrip-mode` и
+остальные NTRIP-поля по-прежнему ссылаются на локальный
+`ntripclient_installed`, которого в секции нет: данные содержат
+`ntripclient-installed` (через дефис), а свойств с таким именем в схеме тоже
+нет.
+
+**Предложение:** заменить локальный ключ на `/defaults/ntripclient_installed`
+во всех NTRIP-условиях. Добавлять флаг в `/defaults` не нужно — он там уже есть.
+
+## Слепок Donyx iRM и прод-R2
+
+Схемы расходятся в 14 общих путях. Для этой карточки важны:
+
+| Путь | Donyx iRM (демо) | Прод-R2 |
+| --- | --- | --- |
+| `/service/openvpn-server` | в `push` нет `route-gateway` | добавлен `route-gateway`, pattern с `+` |
+| `/mobile/sms` | у read-only `text` есть `multiline` | `multiline` нет |
+| `/network/bridge`, `/network/bridge-vlan` | порты через `$ref` на `l2-device` | cue-список `_available-ports` |
+| `/tunnel/ipsec/connection` | без `dynamic/interface/service` | добавлены read-only `dynamic/interface/service` |
+
+R2 также отдаёт 79 путей против 74 в слепке: добавлены `/network/qos/*`,
+`/peripheral/*`, `/service/link-client`, `/service/torrent`,
+`/system/dashboard-load`, `/system/firmware`, `/system/software`; в слепке
+остались `/service/drm-client` и `/wireless/*`, которых нет в списке R2.
 
 ## Что осталось за пределами карточки
 
